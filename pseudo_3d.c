@@ -3,16 +3,21 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 
-void move_f( const short int map_arr[], float location[], float direction, float rot, short int mod, bool noclip, const float pi ) {
+float move_f( const short int map_arr[], float location[], float direction, float rot, short int mod, bool noclip, const float pi ) {
 	float tmp[] = { location[0], location[1] };
 	tmp[0] += 0.125 * sin(direction * pi)*mod;
-	tmp[0] += 0.125 * cos(direction * pi)*mod;
-//	if(int tmp[0]<
-//	check if 1 on position
+	tmp[1] += 0.125 * cos(direction * pi)*mod;
+    int index[] = {ceil(tmp[0]), ceil(tmp[1])};
+	if(index[0]<9 && index[0]>0 && index[1]<12 && map_arr[index[0]] != 1) {
+        return * tmp;
+    }
+    else {
+        return * location;
+    }
 	printf("move\n");
 }
 
-int rad_ch(float direction, float rot) {
+float rad_ch(float direction, float rot) {
 	direction += rot;
 	if(direction>=2) {
 		direction -=  2;
@@ -21,7 +26,7 @@ int rad_ch(float direction, float rot) {
 		direction += 2;
 	}
 	}
-	return(direction);
+	return direction;
 }
 
 void raycast(float direction, const short int map_arr[], const float step, const float shift) {
@@ -64,9 +69,9 @@ void visual(float direction, const short int map_arr, float location, const shor
 	printf("visual");
 }
 
-void main() {
+int main(void) {
 	const float pi = 3.141592;
-	const short int map_arr[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,};
+	const short int map_arr[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 	const short int length = 100;
 	const short int h = 500;
 	const short int sacle = 5;
@@ -77,4 +82,5 @@ void main() {
 	float mod = 0.5;
 	short int move_tic = 1;
 	printf("main\n");
+    return 0;
 }
