@@ -2,6 +2,7 @@
 #include <math.h>
 #include <SDL2/SDL.h>
 #include <stdbool.h>
+#include <string.h>
 
 void move_f( const short int map_arr[], float *location, float direction, float rot, float mod, bool noclip, const float pi ) {
 	float tmp[] = { location[0], location[1] };
@@ -32,8 +33,10 @@ void rad_ch(float *direction, float rot) {
 //    printf("%f\n", *direction);
 }
 
-float raycast(float direction, const short int map_arr[], float *location, const float step, const float shift, const float pi) {
-	float hit[200] = {};
+float* raycast(float direction, const short int map_arr[], float *location, const float step, const float shift, const float pi) {
+//	float hit[200] = {};
+    float *hit = (float *)malloc(200*sizeof(float));
+    memset(hit, -1, 200*sizeof(*hit));
     float angle = direction;
 	rad_ch(&angle, shift);
 	int i = 0;
@@ -56,32 +59,48 @@ float raycast(float direction, const short int map_arr[], float *location, const
 		}
 		rad_ch(&angle, step);
 //        printf("%f %f\n", hit[i], hit[i+1]);
+//        if (hit[i] != hit[i]) { will check if nan
 	}
-    return *hit;
-}
-
-void line(float dist, const short int h, short int num, const short int scale) {
-	short int start = 0;
-	short int end = h - 1;
-	if(dist != 0) {
-		start = h / 2 * (1 - 1/dist);
-		end = h / 2 * (1 - 1/dist);
-	}
-	if(start<0) {
-		start = 0;
-	}
-	if(end>h) {
-		end = h - 1;
-	}
-	printf("line"); // output line
+    return hit;
 }
 
 //void print_map( const short int map_arr[], float direction, float location[], float hit[]) {
 //	printf("map");
 //}
 
-void visual(float direction, const short int map_arr, float location, const short int h, const short int scale, bool show_map, bool noclip, const float step, const float shift) {
-	printf("visual");
+int* visual(float direction, const short int map_arr, float *location, const short int h, bool show_map, bool noclip, const float step, const float shift, const float pi) {
+	int start = 0;
+	int end = 0;
+//	int lines[200] = {};
+    int *lines = (int *)malloc(200*sizeof(int));
+    memset(lines, -1, 200*sizeof(*lines));
+    float dist = 0;
+    int i = 0;
+    float* hit = raycast(direction, &map_arr, location, 0.005, -0.25, pi);
+    //printf("%f\n", hit);
+    for (i = 0; i < 200; i+=2) {
+        if(hit[i]!=hit[i]) continue;
+        else {
+            start = 0;
+            end = h - 1;
+            dist = hit[i+1];
+            if(dist != 0) {
+                start = h / 2 * (1 - 1/dist);
+                end = h / 2 * (1 - 1/dist);
+            }
+            if(start<0) {
+                start = 0;
+            }
+            if(end>h) {
+                end = h - 1;
+            lines[i/2] = start;
+            lines[i/2+1] = end;
+            }
+        }
+    }
+    free(hit);
+    hit = NULL;
+    return lines;
 }
 
 int main(void) {
@@ -101,7 +120,7 @@ int main(void) {
                                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 	const short int length = 100;
 	const short int h = 500;
-	const short int sacle = 5;
+	const short int scale = 5;
 	float location[2] = {2, 2};
 	float direction = 0;
 	bool show_map = false;
@@ -111,6 +130,52 @@ int main(void) {
 	printf("main\n%fx %fy\n", location[0], location[1]);
     move_f(map_arr, &*location, direction, 0.5, mod, false, pi);
 	printf("%fx %fy\n", location[0], location[1]);
-    raycast(direction, map_arr, &*location, 0.005, -0.25, pi);
+//    raycast(direction, map_arr, &*location, 0.005, -0.25, pi);
+//    visual(direction, *map_arr, &*location, h, show_map, noclip, 0.005, -0.25, pi);
+    bool quit = false;
+    SDL_Event event;
+ 
+    // init SDL
+ 
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Window * window = SDL_CreateWindow("SDL2 line drawing",
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, length, h, 0);
+    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
+ 
+    // handle events
+ 
+    while (!quit)
+    {
+        SDL_Delay(10);
+        SDL_PollEvent(&event);
+ 
+        switch (event.type)
+        {
+            case SDL_QUIT:
+                quit = true;
+                break;
+            // TODO input handling code goes here
+        }
+ 
+        // clear window
+ 
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+ 
+        int* line = visual(direction, *map_arr, &*location, h, show_map, noclip, 0.005, -0.25, pi);
+        free(line);
+        line = NULL;
+        // TODO rendering code goes here
+ 
+        // render window
+ 
+        SDL_RenderPresent(renderer);
+    }
+ 
+    // cleanup SDL
+ 
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
     return 0;
 }
