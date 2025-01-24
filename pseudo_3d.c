@@ -77,9 +77,10 @@ int* visual(float direction, const short int map_arr, float *location, const sho
     float dist = 0;
     int i = 0;
     float* hit = raycast(direction, &map_arr, location, 0.005, -0.25, pi);
+    int index = 0;
     //printf("%f\n", hit);
     for (i = 0; i < 200; i+=2) {
-        if(hit[i]!=hit[i]) continue;
+        if(hit[i]!=hit[i]) { continue; }
         else {
             start = 0;
             end = h - 1;
@@ -93,9 +94,11 @@ int* visual(float direction, const short int map_arr, float *location, const sho
             }
             if(end>h) {
                 end = h - 1;
-            lines[i/2] = start;
-            lines[i/2+1] = end;
             }
+            lines[i] = start;
+            lines[i+1] = end;
+            //printf("%d %d\n", lines[i], lines[i+1]);
+            //printf("%d %d\n", start, end);
         }
     }
     free(hit);
@@ -139,7 +142,7 @@ int main(void) {
  
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window * window = SDL_CreateWindow("SDL2 line drawing",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, length, h, 0);
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, length*scale, h, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
  
     // handle events
@@ -162,7 +165,17 @@ int main(void) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
  
+        SDL_SetRenderDrawColor(renderer, 242, 242, 242, 255);
         int* line = visual(direction, *map_arr, &*location, h, show_map, noclip, 0.005, -0.25, pi);
+        int i = 0;
+        int j = 0;
+        for (i=0; i<200; i+=2) {
+            if (line[i]!=line[i] || line[i] < 0 || line[i+1] < 0) { continue; }
+            printf("drawing a line\n%d %d\n", line[i], line[i+1]);
+            for (j=0; j<scale; j++) {
+                SDL_RenderDrawLine(renderer, i*scale+j, line[i], i*scale+j, line[i+1]);
+            }
+        }
         free(line);
         line = NULL;
         // TODO rendering code goes here
