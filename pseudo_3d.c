@@ -32,20 +32,32 @@ void rad_ch(float *direction, float rot) {
 //    printf("%f\n", *direction);
 }
 
-void raycast(float direction, const short int map_arr[], const float step, const float shift) {
+float raycast(float direction, const short int map_arr[], float *location, const float step, const float shift, const float pi) {
 	float hit[200] = {};
     float angle = direction;
 	rad_ch(&angle, shift);
 	int i = 0;
 	int j = 0;
+    int index[2] = {};
     float mov = 0;
 	for (i = 0; i < 200; i+=2) {
 		mov = 0; // change for const step per ray
 		for (j = 0; j < 100; j++) {
+            index[0] = ceil(location[0] + mov * sin(angle * pi));
+            index[1] = ceil(location[1] + mov * cos(angle * pi));
+            //map_arr[ceil(location[0] + mov * sin(angle * pi))][ceil(location[1] + mov * cos(angle * pi))] == "#"
+            //printf("index %dx %dy\n", index[0], index[1]);
+            if(map_arr[index[0]*10+index[1]] == 1) {
+                hit[i] = angle;
+                hit[i+1] = mov;
+                break;
+            }
 			mov += 0.1;
 		}
 		rad_ch(&angle, step);
+//        printf("%f %f\n", hit[i], hit[i+1]);
 	}
+    return *hit;
 }
 
 void line(float dist, const short int h, short int num, const short int scale) {
@@ -99,6 +111,6 @@ int main(void) {
 	printf("main\n%fx %fy\n", location[0], location[1]);
     move_f(map_arr, &*location, direction, 0.5, mod, false, pi);
 	printf("%fx %fy\n", location[0], location[1]);
-    raycast(direction, map_arr, 0.0025, -0.25);
+    raycast(direction, map_arr, &*location, 0.005, -0.25, pi);
     return 0;
 }
