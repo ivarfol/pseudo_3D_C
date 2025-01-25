@@ -14,7 +14,7 @@ void move_f( const short int map_arr[], float *location, float direction, float 
 //	printf("%f\n", 0.125 * cos(direction * pi) * mod);
 //    printf("all %fx %fy\n", tmp[0], tmp[1]);
     int index[] = {ceil(tmp[0]), ceil(tmp[1])};
-	if(index[0]<9 && index[0]>0 && index[1]<12 && map_arr[index[0]*10+index[1]] != 1) {
+	if(index[0]<9 && index[0]>0 && index[1]<12 && map_arr[index[0]+index[1] * 10] != 1) {
 //        printf("tmp %fx %fy\n", tmp[0], tmp[1]);
         location[0] = tmp[0];
         location[1] = tmp[1];
@@ -49,7 +49,7 @@ float* raycast(float direction, const short int map_arr[], float *location, cons
             index[1] = ceil(location[1] + mov * cos(angle * pi));
             //map_arr[ceil(location[0] + mov * sin(angle * pi))][ceil(location[1] + mov * cos(angle * pi))] == "#"
             //printf("index %dx %dy\n", index[0], index[1]);
-            if(map_arr[index[0]*10+index[1]] == 1) {
+            if(map_arr[index[0]+index[1] * 10] == 1) {
                 hit[i] = angle;
                 hit[i+1] = mov;
                 break;
@@ -159,7 +159,7 @@ int main(void) {
             // TODO input handling code goes here
         }
  
-        direction += 0.001;
+        rad_ch(&direction, 0.001);
         move_f(map_arr, &*location, direction, 0.0, mod, false, pi);
         // clear window
  
@@ -177,6 +177,26 @@ int main(void) {
                 SDL_RenderDrawLine(renderer, i*scale + j, line[i], i * scale + j, line[i+1]);
             }
         }
+        SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
+        for (i=0; i<13; i++) {
+            for (j=0; j<10; j++) {
+                if (map_arr[i * 10 + j] == 1) {
+                    SDL_Rect r;
+                    r.x = j * 10;
+                    r.y = i * 10;
+                    r.w = 10;
+                    r.h = 10;
+                    SDL_RenderDrawRect( renderer, &r );
+                }
+            }
+        }
+        SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 );
+        SDL_Rect r;
+        r.x = round(location[0] * 10)+9;
+        r.y = round(location[1] * 10)+9;
+        r.w = 3;
+        r.h = 3;
+        SDL_RenderDrawRect( renderer, &r );
         free(line);
         line = NULL;
         // TODO rendering code goes here
