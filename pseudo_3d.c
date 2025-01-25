@@ -7,14 +7,14 @@
 void move_f( const short int map_arr[], float *location, float direction, float rot, float mod, bool noclip, const float pi ) {
 	float tmp[] = { location[0], location[1] };
 //    printf("all %fx %fy\n", tmp[0], tmp[1]);
-	tmp[0] += 0.125 * sin(direction * pi) * mod;
+	tmp[0] += 0.125 * cos(direction * pi) * mod;
 // 	printf("%f\n", 0.125 * sin(direction * pi) * mod);
 // 	printf("%f %f %f\n", sin(direction * pi), direction, pi);
-	tmp[1] += 0.125 * cos(direction * pi) * mod;
+	tmp[1] += 0.125 * sin(direction * pi) * mod;
 //	printf("%f\n", 0.125 * cos(direction * pi) * mod);
 //    printf("all %fx %fy\n", tmp[0], tmp[1]);
     int index[] = {ceil(tmp[0]), ceil(tmp[1])};
-	if(index[0]<9 && index[0]>0 && index[1]<12 && map_arr[index[0]+index[1] * 10] != 1) {
+	if(index[0]<9 && index[0]>0 && index[1]<10 && map_arr[index[0]+index[1] * 10] != 1) {
 //        printf("tmp %fx %fy\n", tmp[0], tmp[1]);
         location[0] = tmp[0];
         location[1] = tmp[1];
@@ -33,7 +33,6 @@ void rad_ch(float *direction, float rot) {
 }
 
 float* raycast(float direction, const short int map_arr[], float *location, const float step, const float shift, const float pi) {
-//	float hit[200] = {};
     float *hit = (float *)malloc(200*sizeof(float));
     memset(hit, -1, 200*sizeof(*hit));
     float angle = direction;
@@ -44,12 +43,12 @@ float* raycast(float direction, const short int map_arr[], float *location, cons
     float mov = 0;
 	for (i = 0; i < 200; i+=2) {
 		mov = 0; // change for const step per ray
-		for (j = 0; j < 2000; j++) {
-            index[0] = ceil(location[0] + mov * sin(angle * pi));
-            index[1] = ceil(location[1] + mov * cos(angle * pi));
+		for (j = 0; j < 1000; j++) {
+            index[0] = ceil(location[0] + mov * cos(angle * pi));
+            index[1] = ceil(location[1] + mov * sin(angle * pi));
             //map_arr[ceil(location[0] + mov * sin(angle * pi))][ceil(location[1] + mov * cos(angle * pi))] == "#"
             //printf("index %dx %dy\n", index[0], index[1]);
-            if(map_arr[index[0]+index[1] * 10] == 1) {
+            if(map_arr[index[0]+index[1]*10] == 1) {
                 hit[i] = angle;
                 hit[i+1] = mov;
                 break;
@@ -67,11 +66,11 @@ float* raycast(float direction, const short int map_arr[], float *location, cons
 //	printf("map");
 //}
 
-int* visual(float direction, const short int map_arr, float *location, const short int h, bool show_map, bool noclip, const float step, const float shift, const float pi) {
+float* visual(float direction, const short int map_arr, float *location, const short int h, bool show_map, bool noclip, const float step, const float shift, const float pi) {
 	int start = 0;
 	int end = 0;
 //	int lines[200] = {};
-    int *lines = (int *)malloc(400*sizeof(int));
+    float *lines = (float *)malloc(400*sizeof(float));
     memset(lines, -1, 400*sizeof(*lines));
     float dist = 0;
     int i = 0;
@@ -126,7 +125,7 @@ int main(void) {
 	const short int length = 100;
 	const short int h = 500;
 	const short int scale = 5;
-	float location[2] = {5, 5};
+	float location[2] = {1, 1};
 	float direction = 0;
 	bool show_map = false;
 	bool noclip = false;
@@ -154,15 +153,19 @@ int main(void) {
         SDL_Delay(10);
         SDL_PollEvent(&event);
  
-        switch (event.type)
-        {
-            case SDL_QUIT:
-                quit = true;
-                break;
-            // TODO input handling code goes here
+        if (event.type == SDL_QUIT) {
+            quit = true;
+            break;
         }
+//        switch (event.type)
+//        {
+//            case SDL_QUIT:
+//                quit = true;
+//                break;
+            // TODO input handling code goes here
+//        }
  
-        rad_ch(&direction, 0.01);
+        rad_ch(&direction, -0.01);
 //        move_f(map_arr, &*location, direction, 0.0, mod, false, pi);
         // clear window
  
@@ -170,14 +173,14 @@ int main(void) {
         SDL_RenderClear(renderer);
  
         SDL_SetRenderDrawColor(renderer, 242, 242, 242, 255);
-        int* line = visual(direction, *map_arr, &*location, h, show_map, noclip, 0.005, -0.25, pi);
+        float* line = visual(direction, *map_arr, &*location, h, show_map, noclip, 0.005, -0.25, pi);
         int i = 0;
         int j = 0;
         for (i=0; i<200; i+=2) {
-            if (line[i]!=line[i] || line[i] < 0 || line[i+1] < 0) { continue; }
+            if (round(line[i]) < 0 || round(line[i+0]) < 0) { continue; }
 //            printf("drawing a line\n%d %d\n", line[i], line[i+1]);
             for (j=0; j<=scale*2; j++) {
-                SDL_RenderDrawLine(renderer, i*scale + j, line[i], i * scale + j, line[i+1]);
+                SDL_RenderDrawLine(renderer, i*scale + j, round(line[i]), i * scale + j, round(line[i+1]));
             }
         }
         SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
@@ -195,16 +198,18 @@ int main(void) {
         }
         SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 );
         SDL_Rect r;
-        r.x = round(location[0] * 10)+9;
-        r.y = round(location[1] * 10)+9;
+        r.x = round(location[0] * 10)+4;
+        r.y = round(location[1] * 10)+4;
         r.w = 3;
         r.h = 3;
         SDL_RenderDrawRect( renderer, &r );
         for (i=200; i<400; i+=2) {
-            if(line[i] > 0) {
-                SDL_RenderDrawLine(renderer, round(location[0]*10)+10, round(location[1]*10)+10, ceil((location[0] + line[i+1] * cos(line[i] * pi)) * 4 + 10), ceil((location[1] + line[i+1] * sin(line[i] * pi)) * 4 + 10));
+            if(round(line[i]) >= 0) {
+                SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + line[i+1] * cos(line[i] * pi)) * 10 + 5), ceil((location[1] + line[i+1] * sin(line[i] * pi)) * 10 + 5));
+//                printf("%f %f\n", line[i], line[i + 1]);
             }
         }
+//        printf("\n");
         free(line);
         line = NULL;
         // TODO rendering code goes here
