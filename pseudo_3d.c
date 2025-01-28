@@ -208,7 +208,7 @@ int main(void) {
         r.h = 3;
         SDL_RenderDrawRect( renderer, &r );
         for (i=0; i<hit_size; i+=2) {
-            SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + line[i+1] * cos(line[i] * pi)) * 10), ceil((location[1] + line[i+1] * sin(line[i] * pi)) * 10));
+            SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i] * pi)) * 10), ceil((location[1] + hit[i+1] * sin(hit[i] * pi)) * 10));
 //                printf("%f %f\n", line[i], line[i + 1]);
         }
 //        printf("\n");
