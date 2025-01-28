@@ -46,13 +46,18 @@ float* raycast(float direction, const short int map_arr[], float *location, cons
 		for (j = 0; j < 1000; j++) {
             index[0] = ceil(location[0] + mov * cos(angle * pi));
             index[1] = ceil(location[1] + mov * sin(angle * pi));
-            //map_arr[ceil(location[0] + mov * sin(angle * pi))][ceil(location[1] + mov * cos(angle * pi))] == "#"
-            //printf("index %dx %dy\n", index[0], index[1]);
-            if(map_arr[index[0]+index[1]*10] == 1) {
+            if (index[0] < 1 || index[0] > 9 || index[1] < 1 || index[1] > 12) {
                 hit[i] = angle;
                 hit[i+1] = mov;
                 break;
             }
+            //map_arr[ceil(location[0] + mov * sin(angle * pi))][ceil(location[1] + mov * cos(angle * pi))] == "#"
+            //printf("index %dx %dy\n", index[0], index[1]);
+//            if(map_arr[index[0]+index[1]*10] == 1) {
+//                hit[i] = angle;
+//                hit[i+1] = mov;
+//                break;
+//            }
 			mov += 0.1;
 		}
 		rad_ch(&angle, step);
@@ -205,7 +210,7 @@ int main(void) {
         SDL_RenderDrawRect( renderer, &r );
         for (i=200; i<400; i+=2) {
             if(round(line[i]) >= 0) {
-                SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + line[i+1] * cos(line[i] * pi)) * 10 + 5), ceil((location[1] + line[i+1] * sin(line[i] * pi)) * 10 + 5));
+                SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + line[i+1] * cos(line[i] * pi)) * 10), ceil((location[1] + line[i+1] * sin(line[i] * pi)) * 10));
 //                printf("%f %f\n", line[i], line[i + 1]);
             }
         }
