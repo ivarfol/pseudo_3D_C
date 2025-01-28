@@ -66,6 +66,10 @@ float* raycast(float direction, const short int map_arr[], float *location, cons
 //        if (hit[i] != hit[i]) { will check if nan
 	}
     float *out_hit = (float *)malloc(rays_num*sizeof(float));
+    if(out_hit==NULL) {
+        printf("Failed to allocate memory!\n");
+        exit(1);
+    }
     short int out_counter = 0;
     for (i=0; i<200; i+=2) {
         if(hit[i]<0) { continue; }
@@ -84,6 +88,10 @@ int* visual(float direction, const short int map_arr, float *location, const sho
 	int end = 0;
 //	int lines[200] = {};
     int *lines = (int *)malloc(hit_size*sizeof(int));
+    if(lines==NULL) {
+        printf("Failed to allocate memory!\n");
+        exit(1);
+    }
     float dist = 0;
     int i = 0;
     //printf("%f\n", hit);
@@ -187,6 +195,8 @@ int main(void) {
                 SDL_RenderDrawLine(renderer, i*scale + j, line[i], i * scale + j, line[i+1]);
             }
         }
+        free(line);
+        line = NULL;
         SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
         for (i=0; i<13; i++) {
             for (j=0; j<10; j++) {
@@ -211,13 +221,8 @@ int main(void) {
             SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i] * pi)) * 10), ceil((location[1] + hit[i+1] * sin(hit[i] * pi)) * 10));
 //                printf("%f %f\n", line[i], line[i + 1]);
         }
-//        printf("\n");
-        free(line);
         free(hit);
-        line = NULL;
         hit = NULL;
-        // TODO rendering code goes here
- 
         // render window
  
         SDL_RenderPresent(renderer);
