@@ -1,5 +1,6 @@
 *
 !*.c
 !.gitignore
-!bin/
-!bin/*.zip
+!binaries/
+!binaries/*.zip
+!Makefile
