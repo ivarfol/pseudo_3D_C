@@ -44,74 +44,23 @@ float* raycast(float direction, const short int map_arr[][10], float *location, 
 	rad_ch(&angle, shift);
     short int rays_num = 0;
 	int i;
-	int j;
     int index[2] = {};
-    float len_y;
     float len_x;
-    float delta_x;
-    float delta_y;
-    int stepX;
-    int stepY;
     int wall_hit;
-    int side;
-    int quad_x;
-    int quad_y;
 	for (i = 0; i < 200; i+=2) {
 	wall_hit = 0;
-        quad_x = floor(location[0]);
-        quad_y = floor(location[1]);
-//        printf("%fx %fy  quad_x %d quad_y %d ", location[0], location[1], quad_x, quad_y);
-        delta_x = abs(1 / cos(angle * pi));
-        delta_y = abs(1 / sin(angle * pi));
-        if (angle > 1.5 || angle < 0.5) {
-            stepX = 1;
-            len_x = abs(quad_x + 1.0 - location[0]) * delta_x;
-        }
-        else {
-            stepX = -1;
-            len_x = abs(location[0] - quad_x) * delta_x;
-        }
-        if (angle < 1.0) {
-            stepY = 1;
-            len_y = abs(quad_y + 1.0 - location[1]) * delta_y;
-        }
-        else {
-            stepY = -1;
-            len_y = abs(location[1] - quad_y) * delta_y;
-        }
 	len_x = 0;
         while (wall_hit == 0) {
-//            if (len_x < len_y ) {
                 len_x += 0.01;
-//                quad_x += stepX;
-//                side = 0;
-//            }
-//            else {
-//                len_y += delta_y;
-//                quad_y += stepY;
-//                side = 1;
-//            }
             index[1] = round(location[1] + len_x * sin(angle * pi));
             index[0] = round(location[0] + len_x * cos(angle * pi));
             if (map_arr[index[1]][index[0]] == 1) {wall_hit = 1;}
         }
         hit[i] = angle;
-//        printf("%dx %dy", quad_x, quad_y);
-//        if (side == 0) {
-//		len_x -= delta_x;
 		hit[i+1] = (len_x);
-//		printf(" x  %fx %fy  lenght %f  angle %f\n", location[0] + len_x * cos(angle * pi), location[1] + len_x * sin(angle * pi), len_x, angle);
-//	}
-//        else {
-//		len_y -= delta_y;
-//		hit[i+1] = (len_y);
-//		printf(" y  %fx %fy  length %f  angle %f\n", location[0] + len_y * cos(angle * pi), location[1] + len_y * sin(angle * pi), len_y, angle);
-//	}
         rays_num += 2;
 	rad_ch(&angle, step);
-//        printf("out %f %f\n", hit[i], hit[i+1]);
     }
-//    printf("%d\n", out_counter);
     *hit_size = rays_num;
     return hit;
 }
@@ -250,7 +199,7 @@ int main(void) {
         r.h = 3;
         SDL_RenderDrawRect( renderer, &r );
         for (i=0; i<hit_size; i+=2) {
-            SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i] * pi)) * 10), ceil((location[1] + hit[i+1] * sin(hit[i] * pi)) * 10));
+            SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i] * pi)) * 10) + 5, ceil((location[1] + hit[i+1] * sin(hit[i] * pi)) * 10) + 5);
 //                printf("%f %f\n", line[i], line[i + 1]);
         }
         free(hit);
