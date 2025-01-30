@@ -47,7 +47,7 @@ int main(void) {
 	const short int h = 500;
 	const short int scale = 5;
 	float location[2] = {2, 2};
-	float direction = 1.5;
+	float direction = 0;
 	bool show_map = false;
 	bool noclip = false;
 	float mod = 1;
@@ -100,7 +100,7 @@ int main(void) {
 	    float len_x;
 	    float hit[200] = {};
 	    int wall_hit;
-        int map_pos[2] = {(int)location[0], (int)location[1]};
+        int map_pos[2] = {floor(location[0]), floor(location[1])};
         float cos_a;
         float sin_a;
         float x_vert;
@@ -118,8 +118,8 @@ int main(void) {
 		for (k = 0; k < 200; k+=2) {
             wall_hit = 0;
             len_x = 0;
-            sin_a = sin(angle);
-            cos_a = cos(angle);
+            sin_a = sin(angle * pi);
+            cos_a = cos(angle * pi);
             //horizontals
             if (sin_a > 0) {
                 y_hor = map_pos[1] + 1;
@@ -166,10 +166,16 @@ int main(void) {
                 depth_vert += delta_depth;
 
             }
+            printf("x_hor %f y_hot %f x_vert %f y_vert %f\nh %f v %f %fa\n", x_hor, y_hor, x_vert, y_vert, depth_hor, depth_vert, angle);
+            if (depth_vert < depth_hor) {
+                hit[k+1] = depth_vert;
+            }
+            else {
+                hit[k+1] = depth_hor;
+            }
 
             //old
             hit[k] = angle;
-			hit[k+1] = (1);
             rays_num += 2;
             rad_ch(&angle, step);
 	    }
