@@ -97,12 +97,12 @@ float* raycast(float direction, const short int map_arr[][10], float *location, 
         hit[i] = angle;
 //        printf("%dx %dy", quad_x, quad_y);
         if (side == 0) {
-//		len_x = abs(len_x - delta_x);
+		len_x -= delta_x;
 		hit[i+1] = (len_x);
 //		printf(" x  %fx %fy  lenght %f  angle %f\n", location[0] + len_x * cos(angle * pi), location[1] + len_x * sin(angle * pi), len_x, angle);
 	}
         else {
-//		len_y = abs(len_y - delta_y);
+		len_y -= delta_y;
 		hit[i+1] = (len_y);
 //		printf(" y  %fx %fy  length %f  angle %f\n", location[0] + len_y * cos(angle * pi), location[1] + len_y * sin(angle * pi), len_y, angle);
 	}
