@@ -50,7 +50,7 @@ float* raycast(float direction, const short int map_arr[][10], float *location, 
 	for (i = 0; i < 200; i+=2) {
 	wall_hit = 0;
 	len_x = 0;
-        while (wall_hit == 0) {
+        while (wall_hit == 0 && len_x < 30) {
                 len_x += 0.01;
             index[1] = round(location[1] + len_x * sin(angle * pi));
             index[0] = round(location[0] + len_x * cos(angle * pi));
@@ -76,7 +76,6 @@ int* visual(float direction, float *location, const short int h, bool show_map, 
     }
     float dist = 0;
     int i = 0;
-    //printf("%f\n", hit);
     for (i = 0; i < hit_size; i+=2) {
         start = 0;
         end = h - 1;
@@ -93,8 +92,6 @@ int* visual(float direction, float *location, const short int h, bool show_map, 
         }
         lines[i] = start;
         lines[i+1] = end;
-//            printf("%d %d\n", lines[i], lines[i+1]);
-//            printf("%d %d\n", start, end);
     }
     return lines;
 }
@@ -122,12 +119,8 @@ int main(void) {
 	bool noclip = false;
 	float mod = 1;
 	short int move_tic = 1;
+	int color;
     int hit_size = 0;
-	printf("main\n%fx %fy\n", location[0], location[1]);
-//    move_f(map_arr, &*location, direction, 0.5, mod, false, pi);
-	printf("%fx %fy\n", location[0], location[1]);
-//    raycast(direction, map_arr, &*location, 0.005, -0.25, pi);
-//    visual(direction, *map_arr, &*location, h, show_map, noclip, 0.005, -0.25, pi);
     bool quit = false;
     SDL_Event event;
  
@@ -164,14 +157,13 @@ int main(void) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
  
-        SDL_SetRenderDrawColor(renderer, 242, 242, 242, 255);
         float* hit = raycast(direction, *&map_arr, location, 0.005, -0.25, &hit_size);
-//        printf("hit size %d\n", hit_size);
         int* line = visual(direction, &*location, h, show_map, noclip, 0.005, -0.25, hit, hit_size);
         int i = 0;
         int j = 0;
         for (i=0; i<hit_size; i+=2) {
-//            printf("drawing a line\n%d %d\n", line[i], line[i+1]);
+		color = round(242 -8.066666 * hit[i+1]);
+		SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             for (j=0; j<=scale*2; j++) {
                 SDL_RenderDrawLine(renderer, i*scale + j, line[i], i * scale + j, line[i+1]);
             }
@@ -200,7 +192,6 @@ int main(void) {
         SDL_RenderDrawRect( renderer, &r );
         for (i=0; i<hit_size; i+=2) {
             SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i] * pi)) * 10) + 5, ceil((location[1] + hit[i+1] * sin(hit[i] * pi)) * 10) + 5);
-//                printf("%f %f\n", line[i], line[i + 1]);
         }
         free(hit);
         hit = NULL;
