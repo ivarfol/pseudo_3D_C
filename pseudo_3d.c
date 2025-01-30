@@ -29,68 +29,6 @@ void move_f( const short int map_arr[][10], float *location, float direction, fl
     }
 }
 
-float* raycast(float direction, const short int map_arr[][10], float *location, const float step, const float shift, int *hit_size) {
-    float *hit = (float *)malloc(200*sizeof(float));
-    if(hit==NULL) {
-        printf("Failed to allocate memory!\n");
-        exit(1);
-    }
-    float angle = direction;
-	rad_ch(&angle, shift);
-    short int rays_num = 0;
-	int i;
-    int index[2] = {};
-    float len_x;
-    int wall_hit;
-	for (i = 0; i < 200; i+=2) {
-	wall_hit = 0;
-	len_x = 0;
-        while (wall_hit == 0 && len_x < 30) {
-                len_x += 0.01;
-            index[1] = round(location[1] + len_x * sin(angle * pi));
-            index[0] = round(location[0] + len_x * cos(angle * pi));
-            if (map_arr[index[1]][index[0]] == 1) {wall_hit = 1;}
-        }
-        hit[i] = angle;
-		hit[i+1] = (len_x);
-        rays_num += 2;
-	rad_ch(&angle, step);
-    }
-    *hit_size = rays_num;
-    return hit;
-}
-
-int* visual(float direction, float *location, const short int h, bool show_map, bool noclip, const float step, const float shift, float *hit, int hit_size) {
-	int start = 0;
-	int end = 0;
-//	int lines[200] = {};
-    int *lines = (int *)malloc(hit_size*sizeof(int));
-    if(lines==NULL) {
-        printf("Failed to allocate memory!\n");
-        exit(1);
-    }
-    float dist = 0;
-    int i = 0;
-    for (i = 0; i < hit_size; i+=2) {
-        start = 0;
-        end = h - 1;
-        dist = hit[i+1];
-        if(dist != 0) {
-            start = h / 2 * (1 - 1/dist);
-            end = h / 2 * (1 + 1/dist);
-        }
-        if(start<0) {
-            start = 0;
-        }
-        if(end>h) {
-            end = h - 1;
-        }
-        lines[i] = start;
-        lines[i+1] = end;
-    }
-    return lines;
-}
-
 int main(void) {
 	const short int map_arr[13][10] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                                   {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
