@@ -157,19 +157,76 @@ int main(void) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
  
-        float* hit = raycast(direction, *&map_arr, location, 0.005, -0.25, &hit_size);
-        int* line = visual(direction, &*location, h, show_map, noclip, 0.005, -0.25, hit, hit_size);
-        int i = 0;
-        int j = 0;
-        for (i=0; i<hit_size; i+=2) {
+	// get hits
+	float shift = -0.25;
+	float step = 0.005;
+	    float angle = direction;
+		rad_ch(&angle, shift);
+	    short int rays_num = 0;
+		int k;
+	    int index[2] = {};
+	    float len_x;
+	    float hit[200] = {};
+	    int wall_hit;
+		for (k = 0; k < 200; k+=2) {
+		wall_hit = 0;
+		len_x = 0;
+		while (wall_hit == 0 && len_x < 30) {
+			len_x += 0.01;
+		    index[1] = round(location[1] + len_x * sin(angle * pi));
+		    index[0] = round(location[0] + len_x * cos(angle * pi));
+		    if (map_arr[index[1]][index[0]] == 1) {wall_hit = 1;}
+		}
+		hit[k] = angle;
+			hit[k+1] = (len_x);
+		rays_num += 2;
+		rad_ch(&angle, step);
+	    }
+	    hit_size = rays_num;
+
+	    // get line start and end
+//        int* line = visual(direction, &*location, h, show_map, noclip, 0.005, -0.25, hit, hit_size);
+//
+//
+		int start = 0;
+		int end = 0;
+//		int lines[200] = {};
+	    float dist = 0;
+		int j;
+		int i;
+	    for (i = 0; i < 200; i+=2) {
+		start = 0;
+		end = h - 1;
+		dist = hit[i+1];
+		if(dist != 0) {
+		    start = h / 2 * (1 - 1/dist);
+		    end = h / 2 * (1 + 1/dist);
+		}
+		if(start<0) {
+		    start = 0;
+		}
+		if(end>h) {
+		    end = h - 1;
+		}
+//		lines[i] = start;
+//		lines[i+1] = end;
 		color = round(242 -8.066666 * hit[i+1]);
 		SDL_SetRenderDrawColor(renderer, color, color, color, 255);
-            for (j=0; j<=scale*2; j++) {
-                SDL_RenderDrawLine(renderer, i*scale + j, line[i], i * scale + j, line[i+1]);
-            }
-        }
-        free(line);
-        line = NULL;
+		j = 0;
+	        for (j=0; j<=scale*2; j++) {
+                SDL_RenderDrawLine(renderer, i*scale + j, start, i * scale + j, end);
+                }
+	    }
+
+
+        //i = 0;
+//        for (i=0; i<hit_size; i+=2) {
+//		color = round(242 -8.066666 * hit[i+1]);
+//		SDL_SetRenderDrawColor(renderer, color, color, color, 255);
+//            for (j=0; j<=scale*2; j++) {
+//                SDL_RenderDrawLine(renderer, i*scale + j, line[i], i * scale + j, line[i+1]);
+//            }
+//        }
         SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
         for (i=0; i<13; i++) {
             for (j=0; j<10; j++) {
@@ -193,8 +250,6 @@ int main(void) {
         for (i=0; i<hit_size; i+=2) {
             SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i] * pi)) * 10) + 5, ceil((location[1] + hit[i+1] * sin(hit[i] * pi)) * 10) + 5);
         }
-        free(hit);
-        hit = NULL;
         // render window
  
         SDL_RenderPresent(renderer);
