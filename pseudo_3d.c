@@ -100,7 +100,7 @@ int main(void) {
 	    float len_x;
 	    float hit[200] = {};
 	    int wall_hit;
-        int map_pos[2] = {floor(location[0]), floor(location[1])};
+        int map_pos[2] = {(int)location[0], (int)location[1]};
         float cos_a;
         float sin_a;
         float x_vert;
@@ -136,7 +136,6 @@ int main(void) {
             for (l=0; l<30; l++) {
                 tile_hor[0] = (int)x_hor;
                 tile_hor[1] = (int)y_hor;
-//                printf("h %dx %dy %fa\n", tile_hor[0], tile_hor[1], angle);
                 if (tile_hor[1] > 13 || tile_hor[1] < 0 || tile_hor[0] > 10 || tile_hor[0] < 0 || map_arr[tile_hor[1]][tile_hor[0]] == 1) { break; }
                 x_hor += dx;
                 y_hor += dy;
@@ -153,20 +152,19 @@ int main(void) {
             }
             depth_vert = (x_vert - location[0]) / cos_a;
             y_vert = location[1] + depth_vert * sin_a;
-//            printf("y_vert %f\ndepth_vert = (%f - %f) / %f\ny_vert = %f + %f * %f\n", y_vert, x_vert, location[0], cos_a, location[1], depth_vert, sin_a);
             delta_depth = dx / cos_a;
             dy = delta_depth * sin_a;
             for (l=0; l<30; l++) {
                 tile_vert[0] = (int)x_vert;
                 tile_vert[1] = (int)y_vert;
-//                printf("v %dx %dy %fa\n", tile_vert[0], tile_vert[1], angle);
                 if (tile_vert[1] > 13 || tile_vert[1] < 0 || tile_vert[0] > 10 || tile_vert[0] < 0 || map_arr[tile_vert[1]][tile_vert[0]] == 1) { break; }
                 x_vert += dx;
                 y_vert += dy;
                 depth_vert += delta_depth;
 
             }
-            printf("x_hor %f y_hot %f x_vert %f y_vert %f\nh %f v %f %fa\n", x_hor, y_hor, x_vert, y_vert, depth_hor, depth_vert, angle);
+//            if (!(tile_vert[1] > 13 || tile_vert[1] < 0 || tile_vert[0] > 10 || tile_vert[0] < 0)) {printf("%d\n", map_arr[tile_vert[1]][tile_vert[0]]);}
+//            printf("x_hor %f y_hot %f x_vert %f y_vert %f\nh %f v %f %fa\n", x_hor, y_hor, x_vert, y_vert, depth_hor, depth_vert, angle);
             if (depth_vert < depth_hor) {
                 hit[k+1] = depth_vert;
             }
@@ -174,7 +172,6 @@ int main(void) {
                 hit[k+1] = depth_hor;
             }
 
-            //old
             hit[k] = angle;
             rays_num += 2;
             rad_ch(&angle, step);
@@ -231,7 +228,7 @@ int main(void) {
         r.h = 3;
         SDL_RenderDrawRect( renderer, &r );
         for (i=0; i<hit_size; i+=2) {
-            SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i] * pi)) * 10) + 5, ceil((location[1] + hit[i+1] * sin(hit[i] * pi)) * 10) + 5);
+            SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i] * pi)) * 10), ceil((location[1] + hit[i+1] * sin(hit[i] * pi)) * 10));
         }
         // render window
  
