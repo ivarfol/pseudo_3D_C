@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define pi 3.1415926535
+#define PI 3.1415926535
 
 void rad_ch(float *direction, float rot) {
 	*direction += rot;
@@ -19,13 +19,13 @@ void rad_ch(float *direction, float rot) {
 void move_f( const short int map_arr[][10], float *location, float direction, float rot, float mod, bool noclip) {
 	float angle = direction;
 	rad_ch(&angle, rot);
-	float tmp[] = { location[0], location[1] };
-	tmp[0] += 0.125 * cos(angle * pi) * mod;
-	tmp[1] += 0.125 * sin(angle * pi) * mod;
-    int index[] = {round(tmp[0]), round(tmp[1])};
-    if (map_arr[index[1]][index[0]] == 0) {
-        location[0] = tmp[0];
-        location[1] = tmp[1];
+	float x = location[0] + 0.125 * cos(angle * PI) * mod;
+	float y = location [1] + 0.125 * sin(angle * PI) * mod;
+    int round_x = round(x);
+    int round_y = round(y);
+    if (map_arr[round_x][round_y] == 0) {
+        location[0] = x;
+        location[1] = y;
     }
 }
 
@@ -47,13 +47,13 @@ int main(void) {
 	const short int h = 500;
 	const short int scale = 5;
 	float location[2] = {2, 2};
-	float direction = 0;
+	float direction = 1.5;
 	bool show_map = false;
 	bool noclip = false;
 	float mod = 1;
 	short int move_tic = 1;
 	int color;
-    int hit_size = 0;
+    int hit_size = 1;
     bool quit = false;
     SDL_Event event;
  
@@ -83,7 +83,7 @@ int main(void) {
 //        }
  
         rad_ch(&direction, -0.01);
-//        move_f(map_arr, &*location, direction, 0.5, mod, false);
+        move_f(map_arr, &*location, direction, 0.5, mod, false);
         // clear window
  
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -118,8 +118,8 @@ int main(void) {
 		for (k = 0; k < 200; k+=2) {
             wall_hit = 0;
             len_x = 0;
-            sin_a = sin(angle * pi);
-            cos_a = cos(angle * pi);
+            sin_a = sin(angle * PI);
+            cos_a = cos(angle * PI);
             //horizontals
             if (sin_a > 0) {
                 y_hor = map_pos[1] + 1;
@@ -228,7 +228,7 @@ int main(void) {
         r.h = 3;
         SDL_RenderDrawRect( renderer, &r );
         for (i=0; i<hit_size; i+=2) {
-            SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i] * pi)) * 10), ceil((location[1] + hit[i+1] * sin(hit[i] * pi)) * 10));
+            SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i] * PI)) * 10), ceil((location[1] + hit[i+1] * sin(hit[i] * PI)) * 10));
         }
         // render window
  
