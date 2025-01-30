@@ -23,7 +23,7 @@ void move_f( const short int map_arr[][10], float *location, float direction, fl
 	float y = location [1] + 0.125 * sin(angle) * mod;
     int round_x = round(x);
     int round_y = round(y);
-    if (map_arr[round_x][round_y] == 0) {
+    if (map_arr[round_y][round_x] == 0) {
         location[0] = x;
         location[1] = y;
     }
