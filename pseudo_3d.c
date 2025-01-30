@@ -79,32 +79,34 @@ float* raycast(float direction, const short int map_arr[][10], float *location, 
             stepY = -1;
             len_y = abs(location[1] - quad_y) * delta_y;
         }
-//        printf("len_x %f delta_x %f len_y %f delta_y %f ", len_x, delta_x, len_y, delta_y);
+	len_x = 0;
         while (wall_hit == 0) {
-            if (len_x < len_y ) {
-                len_x += delta_x;
-                quad_x += stepX;
-                side = 0;
-            }
-            else {
-                len_y += delta_y;
-                quad_y += stepY;
-                side = 1;
-            }
-            if (map_arr[quad_y][quad_x] == 1) {wall_hit = 1;}
+//            if (len_x < len_y ) {
+                len_x += 0.01;
+//                quad_x += stepX;
+//                side = 0;
+//            }
+//            else {
+//                len_y += delta_y;
+//                quad_y += stepY;
+//                side = 1;
+//            }
+            index[1] = round(location[1] + len_x * sin(angle * pi));
+            index[0] = round(location[0] + len_x * cos(angle * pi));
+            if (map_arr[index[1]][index[0]] == 1) {wall_hit = 1;}
         }
         hit[i] = angle;
 //        printf("%dx %dy", quad_x, quad_y);
-        if (side == 0) {
-		len_x -= delta_x;
+//        if (side == 0) {
+//		len_x -= delta_x;
 		hit[i+1] = (len_x);
 //		printf(" x  %fx %fy  lenght %f  angle %f\n", location[0] + len_x * cos(angle * pi), location[1] + len_x * sin(angle * pi), len_x, angle);
-	}
-        else {
-		len_y -= delta_y;
-		hit[i+1] = (len_y);
+//	}
+//        else {
+//		len_y -= delta_y;
+//		hit[i+1] = (len_y);
 //		printf(" y  %fx %fy  length %f  angle %f\n", location[0] + len_y * cos(angle * pi), location[1] + len_y * sin(angle * pi), len_y, angle);
-	}
+//	}
         rays_num += 2;
 	rad_ch(&angle, step);
 //        printf("out %f %f\n", hit[i], hit[i+1]);
