@@ -61,13 +61,12 @@ int main(void) {
  
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window * window = SDL_CreateWindow("SDL2 line drawing",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, length*scale*2, h, 0);
+    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, length*scale*2, h, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
  
     // handle events
  
-    while (!quit)
-    {
+    while (!quit) {
         SDL_Delay(10);
         SDL_PollEvent(&event);
  
@@ -90,9 +89,9 @@ int main(void) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
  
-	// get hits
-	float shift = -0.25;
-	float step = 0.005;
+        // get hits
+        float shift = -0.25;
+        float step = 0.005;
 	    float angle = direction;
 		rad_ch(&angle, shift);
 	    short int rays_num = 0;
@@ -102,18 +101,18 @@ int main(void) {
 	    float hit[200] = {};
 	    int wall_hit;
 		for (k = 0; k < 200; k+=2) {
-		wall_hit = 0;
-		len_x = 0;
-		while (wall_hit == 0 && len_x < 30) {
-			len_x += 0.01;
-		    index[1] = round(location[1] + len_x * sin(angle * pi));
-		    index[0] = round(location[0] + len_x * cos(angle * pi));
-		    if (map_arr[index[1]][index[0]] == 1) {wall_hit = 1;}
-		}
-		hit[k] = angle;
+            wall_hit = 0;
+            len_x = 0;
+            while (wall_hit == 0 && len_x < 30) {
+                len_x += 0.01;
+                index[1] = round(location[1] + len_x * sin(angle * pi));
+                index[0] = round(location[0] + len_x * cos(angle * pi));
+                if (map_arr[index[1]][index[0]] == 1) {wall_hit = 1;}
+            }
+            hit[k] = angle;
 			hit[k+1] = (len_x);
-		rays_num += 2;
-		rad_ch(&angle, step);
+            rays_num += 2;
+            rad_ch(&angle, step);
 	    }
 	    hit_size = rays_num;
 
@@ -124,24 +123,24 @@ int main(void) {
 		int j;
 		int i;
 	    for (i = 0; i < 200; i+=2) {
-		start = 0;
-		end = h - 1;
-		dist = hit[i+1];
-		if(dist != 0) {
-		    start = h / 2 * (1 - 1/dist);
-		    end = h / 2 * (1 + 1/dist);
-		}
-		if(start<0) {
-		    start = 0;
-		}
-		if(end>h) {
-		    end = h - 1;
-		}
-		color = round(242 -8.066666 * hit[i+1]);
-		SDL_SetRenderDrawColor(renderer, color, color, color, 255);
-		j = 0;
-	        for (j=0; j<=scale*2; j++) {
-                SDL_RenderDrawLine(renderer, i*scale + j, start, i * scale + j, end);
+            start = 0;
+            end = h - 1;
+            dist = hit[i+1];
+            if(dist != 0) {
+                start = h / 2 * (1 - 1/dist);
+                end = h / 2 * (1 + 1/dist);
+            }
+            if(start<0) {
+                start = 0;
+            }
+            if(end>h) {
+                end = h - 1;
+            }
+            color = round(242 -8.066666 * hit[i+1]);
+            SDL_SetRenderDrawColor(renderer, color, color, color, 255);
+            j = 0;
+                for (j=0; j<=scale*2; j++) {
+                    SDL_RenderDrawLine(renderer, i*scale + j, start, i * scale + j, end);
                 }
 	    }
 
