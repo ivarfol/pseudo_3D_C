@@ -52,10 +52,13 @@ float* raycast(float direction, const short int map_arr[][10], float *location, 
     int stepY;
     int wall_hit = 0;
     int side;
-    int quad_x = round(location[0]);
-    int quad_y = round(location[1]);
+    int quad_x;
+    int quad_y;
 	for (i = 0; i < 200; i+=2) {
+        quad_x = floor(location[0]);
+        quad_y = floor(location[1]);
 //		mov = 0; // change for const step per ray
+        printf("%fx %fy  quad_x %d quad_y %d ", location[0], location[1], quad_x, quad_y);
         delta_x = 1 / cos(angle * pi);
         delta_y = 1 / sin(angle * pi);
         if (angle > 1.5 || angle < 0.5) {
@@ -66,30 +69,34 @@ float* raycast(float direction, const short int map_arr[][10], float *location, 
             stepX = -1;
             len_x = (location[0] - quad_x) * delta_x;
         }
-        if (angle > 0 && angle < 1.0) {
+        if (angle > 1.0) {
             stepY = 1;
-            len_x = (quad_y + 1.0 - location[1]) * delta_y;
+            len_y = (quad_y + 1.0 - location[1]) * delta_y;
         }
         else {
             stepY = -1;
             len_y = (location[1] - quad_y) * delta_y;
         }
+        printf("len_x %f delta_x %f len_y %f delta_y %f ", len_x, delta_x, len_y, delta_y);
         while (wall_hit == 0) {
             if (len_x < len_y ) {
                 len_x += delta_x;
+//                if (location[1] + len_x * sin(angle * pi) > 13) {continue;}
                 quad_x += stepX;
                 side = 0;
             }
             else {
                 len_y += delta_y;
+//                if (location[0] + len_y * cos(angle * pi) > 10) {continue;}
                 quad_y += stepY;
                 side = 1;
             }
             if (map_arr[quad_y][quad_x] == 1) {wall_hit = 1;}
         }
         hit[i] = angle;
-        if (side == 0) {hit[i+1] = (delta_x);}
-        else {hit[i+1] = (delta_y);}
+        printf("%dx %dy", quad_x, quad_y);
+        if (side == 0) {hit[i+1] = (len_x); printf(" x  %fx %fy  lenght %f  angle %f\n", location[0] + len_x * cos(angle * pi), location[1] + len_x * sin(angle * pi), len_x, angle); }
+        else {hit[i+1] = (len_y); printf(" y  %fx %fy  length %f  angle %f\n", location[0] + len_y * cos(angle * pi), location[1] + len_y * sin(angle * pi), len_y, angle); }
         rays_num += 2;
 //		for (j = 0; j < 1000; j++) {
 //            index[0] = ceil(location[0] + mov * cos(angle * pi));
@@ -181,7 +188,7 @@ int main(void) {
 	const short int length = 100;
 	const short int h = 500;
 	const short int scale = 5;
-	float location[2] = {1, 1};
+	float location[2] = {5, 6};
 	float direction = 0;
 	bool show_map = false;
 	bool noclip = false;
