@@ -83,7 +83,7 @@ int main(void) {
 //        }
  
         rad_ch(&direction, -0.01);
-        move_f(map_arr, &*location, direction, 0.5, mod, false);
+//        move_f(map_arr, &*location, direction, 0.5, mod, false);
         // clear window
  
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -100,17 +100,76 @@ int main(void) {
 	    float len_x;
 	    float hit[200] = {};
 	    int wall_hit;
+        int map_pos[2] = {(int)location[0], (int)location[1]};
+        float cos_a;
+        float sin_a;
+        float x_vert;
+        int dx;
+        float y_vert;
+        float depth_vert;
+        float delta_depth;
+        float dy;
+        int tile_vert[2] = {};
+        int l = 0;
+        float y_hor;
+        float x_hor;
+        float depth_hor;
+        int tile_hor[2] = {};
 		for (k = 0; k < 200; k+=2) {
             wall_hit = 0;
             len_x = 0;
-            while (wall_hit == 0 && len_x < 30) {
-                len_x += 0.01;
-                index[1] = round(location[1] + len_x * sin(angle * pi));
-                index[0] = round(location[0] + len_x * cos(angle * pi));
-                if (map_arr[index[1]][index[0]] == 1) {wall_hit = 1;}
+            sin_a = sin(angle);
+            cos_a = cos(angle);
+            //horizontals
+            if (sin_a > 0) {
+                y_hor = map_pos[1] + 1;
+                dy = 1;
             }
+            else {
+                y_hor = map_pos[1] - 0.000001;
+                dy = -1;
+            }
+            depth_hor = (y_hor - location[1]) / sin_a;
+            x_hor = location[0] + depth_hor * cos_a;
+            delta_depth = dy / sin_a;
+            dx = delta_depth * cos_a;
+            for (l=0; l<30; l++) {
+                tile_hor[0] = (int)x_hor;
+                tile_hor[1] = (int)y_hor;
+//                printf("h %dx %dy %fa\n", tile_hor[0], tile_hor[1], angle);
+                if (tile_hor[1] > 13 || tile_hor[1] < 0 || tile_hor[0] > 10 || tile_hor[0] < 0 || map_arr[tile_hor[1]][tile_hor[0]] == 1) { break; }
+                x_hor += dx;
+                y_hor += dy;
+                depth_hor += delta_depth;
+            }
+            // verticals
+            if (cos_a > 0) {
+                x_vert = map_pos[0] + 1;
+                dx = 1;
+            }
+            else {
+                x_vert = map_pos[0] - 0.000001;
+                dx = -1;
+            }
+            depth_vert = (x_vert - location[0]) / cos_a;
+            y_vert = location[1] + depth_vert * sin_a;
+//            printf("y_vert %f\ndepth_vert = (%f - %f) / %f\ny_vert = %f + %f * %f\n", y_vert, x_vert, location[0], cos_a, location[1], depth_vert, sin_a);
+            delta_depth = dx / cos_a;
+            dy = delta_depth * sin_a;
+            for (l=0; l<30; l++) {
+                tile_vert[0] = (int)x_vert;
+                tile_vert[1] = (int)y_vert;
+//                printf("v %dx %dy %fa\n", tile_vert[0], tile_vert[1], angle);
+                if (tile_vert[1] > 13 || tile_vert[1] < 0 || tile_vert[0] > 10 || tile_vert[0] < 0 || map_arr[tile_vert[1]][tile_vert[0]] == 1) { break; }
+                x_vert += dx;
+                y_vert += dy;
+                depth_vert += delta_depth;
+
+            }
+
+            //old
             hit[k] = angle;
-			hit[k+1] = (len_x);
+			hit[k+1] = (1);
             rays_num += 2;
             rad_ch(&angle, step);
 	    }
