@@ -63,6 +63,15 @@ int main(void)
     float dist;
     int j;
     int i;
+    float shift = -0.25 * PI;
+    float step = 0.005 * PI;
+    float angle;
+    int k;
+    float len_x;
+    float hit[200] = {};
+    int wall_hit;
+    int ray_x;
+    int ray_y;
     SDL_Event event;
  
     // init SDL
@@ -98,23 +107,16 @@ int main(void)
         SDL_RenderClear(renderer);
  
         // get hits
-        float shift = -0.25 * PI;
-        float step = 0.005 * PI;
-        float angle = direction;
+        angle = direction;
         rad_ch(&angle, shift);
-        int k;
-        int index[2] = {};
-        float len_x;
-        float hit[200] = {};
-        int wall_hit;
         for (k = 0; k < 200; k+=2) {
             wall_hit = 0;
             len_x = 0;
             while (wall_hit == 0 && len_x < 30) {
                 len_x += 0.01;
-                index[1] = round(location[1] + len_x * sin(angle));
-                index[0] = round(location[0] + len_x * cos(angle));
-                if (map_arr[index[1]][index[0]] == 1) {wall_hit = 1;}
+                ray_y = round(location[1] + len_x * sin(angle));
+                ray_x = round(location[0] + len_x * cos(angle));
+                if (map_arr[ray_y][ray_x] == 1) {wall_hit = 1;}
             }
             hit[k] = angle;
             hit[k+1] = (len_x);
