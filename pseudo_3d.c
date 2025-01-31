@@ -23,7 +23,7 @@ void rad_ch(float *direction, float rot)
     }
 }
 
-void move_f( const short int map_arr[][10], float *location, float direction, float rot, float mod, bool noclip)
+void move_f( const short int map_arr[][10], float location[], float direction, float rot, float mod, bool noclip)
 {
     float angle = direction;                                                    
     rad_ch(&angle, rot);                                                        
@@ -87,7 +87,7 @@ int main(void)
 //        }
  
         rad_ch(&direction, -0.01 * PI);
-        move_f(map_arr, &*location, direction, 0.5 * PI, mod, false);
+        move_f(map_arr, location, direction, 0.5 * PI, mod, false);
         // clear window
  
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
