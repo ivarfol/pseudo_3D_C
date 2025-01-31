@@ -6,17 +6,20 @@
 
 #define PI 3.1415926535
 
-void rad_ch(float *direction, float rot) {
+void rad_ch(float *direction, float rot)
+{
 	*direction += rot;
 	if(*direction>=2 * PI) {
 		*direction -=  2 * PI;
 	}
 	else { if(*direction<0) {
 		*direction += 2 * PI;
-	}}
+        }
+    }
 }
 
-void move_f( const short int map_arr[][10], float *location, float direction, float rot, float mod, bool noclip) {
+void move_f( const short int map_arr[][10], float *location, float direction, float rot, float mod, bool noclip)
+{
     float angle = direction;                                                    
     rad_ch(&angle, rot);                                                        
     float x = location[0] + 0.125 * cos(angle) * mod;                           
@@ -29,30 +32,31 @@ void move_f( const short int map_arr[][10], float *location, float direction, fl
     }
 }
 
-int main(void) {
-	const short int map_arr[13][10] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                                  {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                  {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                  {1, 0, 0, 0, 1, 1, 0, 0, 0, 1},
-                                  {1, 0, 0, 0, 1, 1, 0, 0, 0, 1},
-                                  {1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-                                  {1, 0, 1, 0, 1, 0, 0, 0, 0, 1},
-                                  {1, 0, 0, 0, 1, 0, 0, 0, 0, 1},
-                                  {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                  {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                  {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                  {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                  {1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
-	const short int length = 100;
-	const short int h = 500;
-	const short int scale = 5;
-	float location[2] = {2, 2};
-	float direction = 1.5 * PI;
-	bool show_map = false;
-	bool noclip = false;
-	float mod = 1;
-	short int move_tic = 1;
-	int color;
+int main(void)
+{
+    const short int map_arr[13][10] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 1, 1, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 1, 1, 0, 0, 0, 1},
+                                        {1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 1, 0, 1, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
+    const short int length = 100;
+    const short int h = 500;
+    const short int scale = 5;
+    float location[2] = {2, 2};
+    float direction = 1.5 * PI;
+    bool show_map = false;
+    bool noclip = false;
+    float mod = 1;
+    short int move_tic = 1;
+    int color;
     int hit_size = 0;
     bool quit = false;
     SDL_Event event;
@@ -92,15 +96,15 @@ int main(void) {
         // get hits
         float shift = -0.25 * PI;
         float step = 0.005 * PI;
-	    float angle = direction;
-		rad_ch(&angle, shift);
-	    short int rays_num = 0;
-		int k;
-	    int index[2] = {};
-	    float len_x;
-	    float hit[200] = {};
-	    int wall_hit;
-		for (k = 0; k < 200; k+=2) {
+        float angle = direction;
+        rad_ch(&angle, shift);
+        short int rays_num = 0;
+        int k;
+        int index[2] = {};
+        float len_x;
+        float hit[200] = {};
+        int wall_hit;
+        for (k = 0; k < 200; k+=2) {
             wall_hit = 0;
             len_x = 0;
             while (wall_hit == 0 && len_x < 30) {
@@ -110,19 +114,19 @@ int main(void) {
                 if (map_arr[index[1]][index[0]] == 1) {wall_hit = 1;}
             }
             hit[k] = angle;
-			hit[k+1] = (len_x);
+            hit[k+1] = (len_x);
             rays_num += 2;
             rad_ch(&angle, step);
-	    }
-	    hit_size = rays_num;
+        }
+        hit_size = rays_num;
 
-	    // get line start and end
-		int start = 0;
-		int end = 0;
-	    float dist = 0;
-		int j;
-		int i;
-	    for (i = 0; i < 200; i+=2) {
+        // get line start and end
+        int start = 0;
+        int end = 0;
+        float dist = 0;
+        int j;
+        int i;
+        for (i = 0; i < 200; i+=2) {
             start = 0;
             end = h - 1;
             dist = hit[i+1];
@@ -139,10 +143,10 @@ int main(void) {
             color = round(242 -8.066666 * hit[i+1]);
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             j = 0;
-                for (j=0; j<=scale*2; j++) {
-                    SDL_RenderDrawLine(renderer, i*scale + j, start, i * scale + j, end);
-                }
-	    }
+            for (j=0; j<=scale*2; j++) {
+                SDL_RenderDrawLine(renderer, i*scale + j, start, i * scale + j, end);
+            }
+        }
 
 
         SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
