@@ -69,8 +69,6 @@ int main(void)
     float length_ray;
     float hit[200] = {};
     int wall_hit;
-    int ray_x;
-    int ray_y;
     SDL_Event event;
  
     // init SDL
@@ -113,9 +111,7 @@ int main(void)
             length_ray = 0;
             while (wall_hit == 0 && length_ray < 30) {
                 length_ray += 0.01;
-                ray_y = round(location[1] + length_ray * sin(angle));
-                ray_x = round(location[0] + length_ray * cos(angle));
-                if (map_arr[ray_y][ray_x] == 1) {wall_hit = 1;}
+                if (map_arr[(int)round(location[1] + length_ray * sin(angle))][(int)round(location[0] + length_ray * cos(angle))] == 1) {wall_hit = 1;}
             }
             hit[i] = angle;
             hit[i+1] = (length_ray);
