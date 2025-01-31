@@ -24,9 +24,7 @@ void move_f( const short int map_arr[][10], float *location, float direction, fl
     rad_ch(&angle, rot);                                                        
     float x = location[0] + 0.125 * cos(angle) * mod;                           
     float y = location [1] + 0.125 * sin(angle) * mod;                          
-    int round_x = round(x);                                                     
-    int round_y = round(y);                                                     
-    if (map_arr[round_y][round_x] == 0) {                                       
+    if (map_arr[(int)round(y)][(int)round(x)] == 0) {                                       
         location[0] = x;                                                        
         location[1] = y;
     }
@@ -102,7 +100,7 @@ int main(void)
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
  
-        // get hits
+        // ray casting
         angle = direction;
         rad_ch(&angle, shift);
         for (i = 0; i < 200; i+=2) {
@@ -115,7 +113,7 @@ int main(void)
             hit[i] = angle;
             hit[i+1] = (dist);
             rad_ch(&angle, step);
-            // lines
+            // vertical lines for the screen output created
             start = 0;
             end = h - 1;
             if(dist != 0) {
