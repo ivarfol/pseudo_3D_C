@@ -66,8 +66,7 @@ int main(void)
     float shift = -0.25 * PI;
     float step = 0.005 * PI;
     float angle;
-    int k;
-    float len_x;
+    float length_ray;
     float hit[200] = {};
     int wall_hit;
     int ray_x;
@@ -109,22 +108,22 @@ int main(void)
         // get hits
         angle = direction;
         rad_ch(&angle, shift);
-        for (k = 0; k < 200; k+=2) {
+        for (i = 0; i < 200; i+=2) {
             wall_hit = 0;
-            len_x = 0;
-            while (wall_hit == 0 && len_x < 30) {
-                len_x += 0.01;
-                ray_y = round(location[1] + len_x * sin(angle));
-                ray_x = round(location[0] + len_x * cos(angle));
+            length_ray = 0;
+            while (wall_hit == 0 && length_ray < 30) {
+                length_ray += 0.01;
+                ray_y = round(location[1] + length_ray * sin(angle));
+                ray_x = round(location[0] + length_ray * cos(angle));
                 if (map_arr[ray_y][ray_x] == 1) {wall_hit = 1;}
             }
-            hit[k] = angle;
-            hit[k+1] = (len_x);
+            hit[i] = angle;
+            hit[i+1] = (length_ray);
             rad_ch(&angle, step);
             // lines
             start = 0;
             end = h - 1;
-            dist = len_x;
+            dist = length_ray;
             if(dist != 0) {
                 start = h / 2 * (1 - 1/dist);
                 end = h / 2 * (1 + 1/dist);
@@ -139,7 +138,7 @@ int main(void)
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             j = 0;
             for (j=0; j<=scale*2; j++) {
-                SDL_RenderDrawLine(renderer, k * scale + j, start, k * scale + j, end);
+                SDL_RenderDrawLine(renderer, i * scale + j, start, i * scale + j, end);
             }
         }
 
