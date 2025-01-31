@@ -57,8 +57,12 @@ int main(void)
     float mod = 1;
     short int move_tic = 1;
     int color;
-    int hit_size = 0;
     bool quit = false;
+    int start;
+    int end;
+    float dist;
+    int j;
+    int i;
     SDL_Event event;
  
     // init SDL
@@ -98,7 +102,6 @@ int main(void)
         float step = 0.005 * PI;
         float angle = direction;
         rad_ch(&angle, shift);
-        short int rays_num = 0;
         int k;
         int index[2] = {};
         float len_x;
@@ -115,21 +118,11 @@ int main(void)
             }
             hit[k] = angle;
             hit[k+1] = (len_x);
-            rays_num += 2;
             rad_ch(&angle, step);
-        }
-        hit_size = rays_num;
-
-        // get line start and end
-        int start = 0;
-        int end = 0;
-        float dist = 0;
-        int j;
-        int i;
-        for (i = 0; i < 200; i+=2) {
+            // lines
             start = 0;
             end = h - 1;
-            dist = hit[i+1];
+            dist = len_x;
             if(dist != 0) {
                 start = h / 2 * (1 - 1/dist);
                 end = h / 2 * (1 + 1/dist);
@@ -140,14 +133,13 @@ int main(void)
             if(end>h) {
                 end = h - 1;
             }
-            color = round(242 -8.066666 * hit[i+1]);
+            color = round(242 -8.066666 * dist);
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             j = 0;
             for (j=0; j<=scale*2; j++) {
-                SDL_RenderDrawLine(renderer, i*scale + j, start, i * scale + j, end);
+                SDL_RenderDrawLine(renderer, k * scale + j, start, k * scale + j, end);
             }
         }
-
 
         SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
         for (i=0; i<13; i++) {
@@ -169,7 +161,7 @@ int main(void)
         r.w = 3;
         r.h = 3;
         SDL_RenderDrawRect( renderer, &r );
-        for (i=0; i<hit_size; i+=2) {
+        for (i=0; i<200; i+=2) {
             SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i])) * 10) + 5, ceil((location[1] + hit[i+1] * sin(hit[i])) * 10) + 5);
         }
         // render window
