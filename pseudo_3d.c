@@ -5,11 +5,11 @@
 #include <string.h>
 
 #define PI 3.1415926535
-#define LENGTH 100
+#define LENGTH 200
 #define H 500
-#define SCALE 5
+#define SCALE 2
 #define SHIFT -0.25 * PI
-#define STEP 0.005 * PI
+#define STEP 0.0025 * PI
 
 void rad_ch(float *direction, float rot)
 {
@@ -57,7 +57,7 @@ int main(void)
     short int move_tic = 1;
     int color, start, end, i, j, wall_hit;
     float dist, angle;
-    float hit[200] = {};
+    float hit[LENGTH * 2] = {};
     show_map = noclip = quit = false;
     SDL_Event event;
  
@@ -96,7 +96,7 @@ int main(void)
         // ray casting
         angle = direction;
         rad_ch(&angle, SHIFT);
-        for (i = 0; i < 200; i+=2) {
+        for (i = 0; i < LENGTH * 2; i+=2) {
             wall_hit = 0;
             dist= 0;
             while (wall_hit == 0 && dist< 30) {
@@ -147,7 +147,7 @@ int main(void)
         r.w = 3;
         r.h = 3;
         SDL_RenderDrawRect( renderer, &r );
-        for (i=0; i<200; i+=2) {
+        for (i=0; i<LENGTH * 2; i+=2) {
             SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i])) * 10) + 5, ceil((location[1] + hit[i+1] * sin(hit[i])) * 10) + 5);
         }
         // render window
