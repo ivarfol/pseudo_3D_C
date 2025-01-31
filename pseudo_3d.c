@@ -5,6 +5,11 @@
 #include <string.h>
 
 #define PI 3.1415926535
+#define LENGTH 100
+#define H 500
+#define SCALE 5
+#define SHIFT -0.25 * PI
+#define STEP 0.005 * PI
 
 void rad_ch(float *direction, float rot)
 {
@@ -45,34 +50,22 @@ int main(void)
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
-    const short int length = 100;
-    const short int h = 500;
-    const short int scale = 5;
     float location[2] = {2, 2};
     float direction = 1.5 * PI;
-    bool show_map = false;
-    bool noclip = false;
+    bool show_map, noclip, quit;
     float mod = 1;
     short int move_tic = 1;
-    int color;
-    bool quit = false;
-    int start;
-    int end;
-    float dist;
-    int j;
-    int i;
-    float shift = -0.25 * PI;
-    float step = 0.005 * PI;
-    float angle;
+    int color, start, end, i, j, wall_hit;
+    float dist, angle;
     float hit[200] = {};
-    int wall_hit;
+    show_map = noclip = quit = false;
     SDL_Event event;
  
     // init SDL
  
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window * window = SDL_CreateWindow("SDL2 line drawing",
-    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, length*scale*2, h, 0);
+    SDL_Window * window = SDL_CreateWindow("Pseudo 3D",
+    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LENGTH*SCALE*2, H, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
  
     // handle events
@@ -102,7 +95,7 @@ int main(void)
  
         // ray casting
         angle = direction;
-        rad_ch(&angle, shift);
+        rad_ch(&angle, SHIFT);
         for (i = 0; i < 200; i+=2) {
             wall_hit = 0;
             dist= 0;
@@ -112,25 +105,25 @@ int main(void)
             }
             hit[i] = angle;
             hit[i+1] = (dist);
-            rad_ch(&angle, step);
+            rad_ch(&angle, STEP);
             // vertical lines for the screen output created
             start = 0;
-            end = h - 1;
+            end = H - 1;
             if(dist != 0) {
-                start = h / 2 * (1 - 1/dist);
-                end = h / 2 * (1 + 1/dist);
+                start = H / 2 * (1 - 1/dist);
+                end = H / 2 * (1 + 1/dist);
             }
             if(start<0) {
                 start = 0;
             }
-            if(end>h) {
-                end = h - 1;
+            if(end>H) {
+                end = H - 1;
             }
             color = round(242 -8.066666 * dist);
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             j = 0;
-            for (j=0; j<=scale*2; j++) {
-                SDL_RenderDrawLine(renderer, i * scale + j, start, i * scale + j, end);
+            for (j=0; j<=SCALE*2; j++) {
+                SDL_RenderDrawLine(renderer, i * SCALE + j, start, i * SCALE + j, end);
             }
         }
 
