@@ -66,7 +66,6 @@ int main(void)
     float shift = -0.25 * PI;
     float step = 0.005 * PI;
     float angle;
-    float length_ray;
     float hit[200] = {};
     int wall_hit;
     SDL_Event event;
@@ -108,18 +107,17 @@ int main(void)
         rad_ch(&angle, shift);
         for (i = 0; i < 200; i+=2) {
             wall_hit = 0;
-            length_ray = 0;
-            while (wall_hit == 0 && length_ray < 30) {
-                length_ray += 0.01;
-                if (map_arr[(int)round(location[1] + length_ray * sin(angle))][(int)round(location[0] + length_ray * cos(angle))] == 1) {wall_hit = 1;}
+            dist= 0;
+            while (wall_hit == 0 && dist< 30) {
+                dist+= 0.01;
+                if (map_arr[(int)round(location[1] + dist* sin(angle))][(int)round(location[0] + dist* cos(angle))] == 1) {wall_hit = 1;}
             }
             hit[i] = angle;
-            hit[i+1] = (length_ray);
+            hit[i+1] = (dist);
             rad_ch(&angle, step);
             // lines
             start = 0;
             end = h - 1;
-            dist = length_ray;
             if(dist != 0) {
                 start = h / 2 * (1 - 1/dist);
                 end = h / 2 * (1 + 1/dist);
