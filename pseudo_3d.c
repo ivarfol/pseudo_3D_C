@@ -55,7 +55,7 @@ int main(void)
     float location[2] = {2, 2};
     float direction = 1.5 * PI;
     bool show_map, noclip, quit;
-    float mod = 1;
+    float mod = 1.0;
     short int move_tic = 1;
     int color, start, end, i, j, wall_hit;
     float angle;
@@ -95,6 +95,12 @@ int main(void)
                     break;
             }
         }
+        if (KEYS[SDL_SCANCODE_LSHIFT]) {
+            mod = 2.0;
+        }
+        else {
+            mod = 1.0;
+        }
         if (KEYS[SDL_SCANCODE_A]) {
             move_f(map_arr, location, direction, 0.5 * PI, mod, false);
         }
@@ -108,16 +114,16 @@ int main(void)
             move_f(map_arr, location, direction, 1.0 * PI, mod, false);
         }
         if (KEYS[SDL_SCANCODE_Q]) {
-            rad_ch(&direction, -0.01 * PI);
+            rad_ch(&direction, -0.01 * PI * mod);
         }
         if (KEYS[SDL_SCANCODE_E]) {
-            rad_ch(&direction, 0.01 * PI);
+            rad_ch(&direction, 0.01 * PI * mod);
         }
         if (!OLD_KEYS[SDL_SCANCODE_M] && KEYS[SDL_SCANCODE_M]) {
             if (show_map) { show_map = false; }
             else { show_map = true; }
         }
-        // clear window
+       // clear window
  
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
