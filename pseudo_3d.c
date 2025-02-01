@@ -5,11 +5,11 @@
 #include <string.h>
 
 #define PI 3.1415926535
-#define LENGTH 200
+#define LENGTH 320
 #define H 500
-#define SCALE 3
+#define SCALE 2
 #define SHIFT -0.25 * PI
-#define STEP 0.0025 * PI
+#define STEP 0.0015625 * PI
 #define MAP_W 10
 #define MAP_H 13
 #define MAP_SCALE 20
