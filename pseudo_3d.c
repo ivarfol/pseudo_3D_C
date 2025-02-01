@@ -10,6 +10,8 @@
 #define SCALE 3
 #define SHIFT -0.25 * PI
 #define STEP 0.0025 * PI
+#define MAP_W 10
+#define MAP_H 13
 
 void rad_ch(float *direction, float rot)
 {
@@ -23,7 +25,7 @@ void rad_ch(float *direction, float rot)
     }
 }
 
-void move_f( const short int map_arr[][10], float location[], float direction, float rot, float mod, bool noclip)
+void move_f( const short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip)
 {
     float angle = -direction;
     rad_ch(&angle, rot);
@@ -39,7 +41,7 @@ void move_f( const short int map_arr[][10], float location[], float direction, f
 
 int main(void)
 {
-    const short int map_arr[13][10] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    const short int map_arr[MAP_H][MAP_W] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 1, 1, 0, 0, 0, 1},
@@ -143,8 +145,8 @@ int main(void)
 
             while(dof<30)
             {
-            mx=(int)(rx); my=(int)(ry); mp = my * 10 + mx;
-            if(mp>0 && mp<13*10 && map_arr[my][mx]==1){ dof=30; disV=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
+            mx=(int)(rx); my=(int)(ry); mp = my * MAP_W + mx;
+            if(mp>0 && mp<MAP_H*MAP_W && map_arr[my][mx]==1){ dof=30; disV=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
             else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
             }
             vx=rx; vy=ry;
@@ -158,8 +160,8 @@ int main(void)
 
             while(dof<30)
             {
-            mx=(int)(rx); my=(int)(ry); mp = my * 10 + mx;
-            if(mp>0 && mp<13*10 && map_arr[my][mx]==1){ dof=30; disH=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
+            mx=(int)(rx); my=(int)(ry); mp = my * MAP_W + mx;
+            if(mp>0 && mp<MAP_H*MAP_W && map_arr[my][mx]==1){ dof=30; disH=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
             else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
             }
 
@@ -196,12 +198,12 @@ int main(void)
 
         if (show_map) {
             SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
-            for (i=0; i<13; i++) {
-                for (j=0; j<10; j++) {
+            for (i=0; i<MAP_H; i++) {
+                for (j=0; j<MAP_W; j++) {
                     if (map_arr[i][j] == 1) {
                         SDL_Rect r;
-                        r.x = (9 - j) * 10;
-                        r.y = (12 - i) * 10;
+                        r.x = (MAP_W - 1 - j) * 10;
+                        r.y = (MAP_H - 1 - i) * 10;
                         r.w = 10;
                         r.h = 10;
                         SDL_RenderDrawRect( renderer, &r );
@@ -210,13 +212,13 @@ int main(void)
             }
             SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 );
             SDL_Rect r;
-            r.x = round(-location[0] * 10)+9*10 +4;
-            r.y = round(-location[1] * 10)+12 *10 +4;
+            r.x = round(-location[0] * 10)+(MAP_W - 1)*10 +4;
+            r.y = round(-location[1] * 10)+(MAP_H - 1)*10 +4;
             r.w = 3;
             r.h = 3;
             SDL_RenderDrawRect( renderer, &r );
             for (i=0; i<LENGTH * 2; i+=2) {
-                SDL_RenderDrawLine(renderer, round(10*9 -location[0]*10 + 5), round(12 * 10 -location[1]*10 + 5), ceil((-location[0] - hit[i+1] * cos(hit[i]) + 10) * 10-5), ceil((-location[1] - hit[i+1] * sin(hit[i]) + 13) * 10-5));
+                SDL_RenderDrawLine(renderer, round(10*(MAP_W - 1) -location[0]*10 + 5), round((MAP_H - 1)* 10 -location[1]*10 + 5), ceil((-location[0] - hit[i+1] * cos(hit[i]) + MAP_W) * 10-5), ceil((-location[1] - hit[i+1] * sin(hit[i]) + MAP_H) * 10-5));
             }
         }
         // render window
