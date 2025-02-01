@@ -87,7 +87,7 @@ int main(void)
 //        }
  
         rad_ch(&direction, -0.01 * PI);
-//        move_f(map_arr, location, direction, 0.5 * PI, mod, false);
+        move_f(map_arr, location, direction, 0.5 * PI, mod, false);
         // clear window
  
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -96,8 +96,8 @@ int main(void)
         // ray casting
         angle = direction;
         rad_ch(&angle, SHIFT);
-        float px = location[0];
-        float py = location[1];
+        float px = location[0] + 0.5;
+        float py = location[1] + 0.5;
         for (i = 0; i < LENGTH * 2; i+=2) {
             int r,mx,my,mp,dof,side; float vx,vy,rx,ry,xo,yo,disV,disH;
             dof=0; side=0; disV=100000;
@@ -163,8 +163,8 @@ int main(void)
             for (j=0; j<10; j++) {
                 if (map_arr[i][j] == 1) {
                     SDL_Rect r;
-                    r.x = j * 10;
-                    r.y = i * 10;
+                    r.x = (9 - j) * 10;
+                    r.y = (12 - i) * 10;
                     r.w = 10;
                     r.h = 10;
                     SDL_RenderDrawRect( renderer, &r );
@@ -173,13 +173,13 @@ int main(void)
         }
         SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 );
         SDL_Rect r;
-        r.x = round(location[0] * 10)+4;
-        r.y = round(location[1] * 10)+4;
+        r.x = round(-location[0] * 10)+9*10 +4;
+        r.y = round(-location[1] * 10)+12 *10 +4;
         r.w = 3;
         r.h = 3;
         SDL_RenderDrawRect( renderer, &r );
         for (i=0; i<LENGTH * 2; i+=2) {
-            SDL_RenderDrawLine(renderer, round(location[0]*10 + 5), round(location[1]*10 + 5), ceil((location[0] + hit[i+1] * cos(hit[i])) * 10) + 5, ceil((location[1] + hit[i+1] * sin(hit[i])) * 10) + 5);
+            SDL_RenderDrawLine(renderer, round(10*9 -location[0]*10 + 5), round(12 * 10 -location[1]*10 + 5), ceil((-location[0] - hit[i+1] * cos(hit[i]) + 10) * 10-5), ceil((-location[1] - hit[i+1] * sin(hit[i]) + 13) * 10-5));
         }
         // render window
  
