@@ -61,6 +61,7 @@ int main(void)
     float angle;
     float hit[LENGTH * 2] = {};
     bool KEYS[322];
+    bool OLD_KEYS[322];
     show_map = noclip = quit = false;
     for (i=0;i<322;i++) { KEYS[i] = false; }
  
@@ -74,6 +75,7 @@ int main(void)
     // handle events
  
     while (!quit) {
+        for (i=0;i<322;i++) { OLD_KEYS[i] = KEYS[i]; }
         SDL_Delay(10);
  
 //        if (event.type == SDL_QUIT) {
@@ -110,6 +112,10 @@ int main(void)
         }
         if (KEYS[SDL_SCANCODE_E]) {
             rad_ch(&direction, 0.01 * PI);
+        }
+        if (!OLD_KEYS[SDL_SCANCODE_M] && KEYS[SDL_SCANCODE_M]) {
+            if (show_map) { show_map = false; }
+            else { show_map = true; }
         }
         // clear window
  
@@ -182,28 +188,30 @@ int main(void)
             }
         }
 
-        SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
-        for (i=0; i<13; i++) {
-            for (j=0; j<10; j++) {
-                if (map_arr[i][j] == 1) {
-                    SDL_Rect r;
-                    r.x = (9 - j) * 10;
-                    r.y = (12 - i) * 10;
-                    r.w = 10;
-                    r.h = 10;
-                    SDL_RenderDrawRect( renderer, &r );
+        if (show_map) {
+            SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
+            for (i=0; i<13; i++) {
+                for (j=0; j<10; j++) {
+                    if (map_arr[i][j] == 1) {
+                        SDL_Rect r;
+                        r.x = (9 - j) * 10;
+                        r.y = (12 - i) * 10;
+                        r.w = 10;
+                        r.h = 10;
+                        SDL_RenderDrawRect( renderer, &r );
+                    }
                 }
             }
-        }
-        SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 );
-        SDL_Rect r;
-        r.x = round(-location[0] * 10)+9*10 +4;
-        r.y = round(-location[1] * 10)+12 *10 +4;
-        r.w = 3;
-        r.h = 3;
-        SDL_RenderDrawRect( renderer, &r );
-        for (i=0; i<LENGTH * 2; i+=2) {
-            SDL_RenderDrawLine(renderer, round(10*9 -location[0]*10 + 5), round(12 * 10 -location[1]*10 + 5), ceil((-location[0] - hit[i+1] * cos(hit[i]) + 10) * 10-5), ceil((-location[1] - hit[i+1] * sin(hit[i]) + 13) * 10-5));
+            SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 );
+            SDL_Rect r;
+            r.x = round(-location[0] * 10)+9*10 +4;
+            r.y = round(-location[1] * 10)+12 *10 +4;
+            r.w = 3;
+            r.h = 3;
+            SDL_RenderDrawRect( renderer, &r );
+            for (i=0; i<LENGTH * 2; i+=2) {
+                SDL_RenderDrawLine(renderer, round(10*9 -location[0]*10 + 5), round(12 * 10 -location[1]*10 + 5), ceil((-location[0] - hit[i+1] * cos(hit[i]) + 10) * 10-5), ceil((-location[1] - hit[i+1] * sin(hit[i]) + 13) * 10-5));
+            }
         }
         // render window
  
