@@ -123,7 +123,7 @@ int main(void)
         float py = location[1] + 0.5;
         for (i = 0; i < LENGTH * 2; i+=2) {
             int r,mx,my,mp,dof,side; float vx,vy,rx,ry,xo,yo,disV,disH;
-            dof=0; side=0; disV=100000;
+            dof=0; side=1; disV=100000;
             float Tan=tan(angle);
             if(cos(angle)> 0.001){ rx=(int)px+1;      ry=(px-rx)*Tan+py; xo= 1; yo=-xo*Tan;}//looking left
             else if(cos(angle)<-0.001){ rx=(int)px -0.0001; ry=(px-rx)*Tan+py; xo=-1; yo=-xo*Tan;}//looking right
@@ -151,7 +151,7 @@ int main(void)
             else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
             }
 
-            if(disV<disH){ rx=vx; ry=vy; disH=disV;}                  //horizontal hit first
+            if(disV<disH){ rx=vx; ry=vy; disH=disV; side=0; }                  //horizontal hit first
 
             float tmp_angle = -angle + 2.0 * PI;
             rad_ch(&tmp_angle, 0.0);
@@ -174,6 +174,7 @@ int main(void)
                 end = H - 1;
             }
             color = round(242 -8.066666 * disH);
+            if (side == 1) { color += 10; }
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             j = 0;
             for (j=0; j<=SCALE*2; j++) {
