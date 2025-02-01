@@ -204,8 +204,8 @@ int main(void)
                 for (j=0; j<MAP_W; j++) {
                     if (map_arr[i][j] == 1) {
                         SDL_Rect r;
-                        r.x = (MAP_W - 1 - j) * MAP_SCALE;
-                        r.y = (MAP_H - 1 - i) * MAP_SCALE;
+                        r.x = j * MAP_SCALE;
+                        r.y = i * MAP_SCALE;
                         r.w = MAP_SCALE;
                         r.h = MAP_SCALE;
                         SDL_RenderDrawRect( renderer, &r );
@@ -214,13 +214,13 @@ int main(void)
             }
             SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 );
             SDL_Rect r;
-            r.x = round(-location[0] * MAP_SCALE)+(MAP_W - 1)*MAP_SCALE+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
-            r.y = round(-location[1] * MAP_SCALE)+(MAP_H - 1)*MAP_SCALE+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
+            r.x = round(location[0] * MAP_SCALE)+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
+            r.y = round(location[1] * MAP_SCALE)+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
             r.w = (int)HALF_MAP_SCALE/2;
             r.h = (int)HALF_MAP_SCALE/2;
             SDL_RenderDrawRect( renderer, &r );
             for (i=0; i<LENGTH * 2; i+=2) {
-                SDL_RenderDrawLine(renderer, round(MAP_SCALE*(MAP_W - 1) -location[0]*MAP_SCALE+ HALF_MAP_SCALE), round((MAP_H - 1)* MAP_SCALE-location[1]*MAP_SCALE+ HALF_MAP_SCALE), ceil((-location[0] - hit[i+1] * cos(hit[i]) + MAP_W) * MAP_SCALE-HALF_MAP_SCALE), ceil((-location[1] - hit[i+1] * sin(hit[i]) + MAP_H) * MAP_SCALE-HALF_MAP_SCALE));
+                SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round(location[1]*MAP_SCALE + HALF_MAP_SCALE), ceil((location[0] + hit[i+1] * cos(hit[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((location[1] + hit[i+1] * sin(hit[i])) * MAP_SCALE+HALF_MAP_SCALE));
             }
         }
         // render window
