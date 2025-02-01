@@ -130,10 +130,12 @@ int main(void)
 
             if(disV<disH){ rx=vx; ry=vy; disH=disV;}                  //horizontal hit first
 
-            hit[i] = angle;
+            float tmp_angle = -angle + 2.0 * PI;
+            rad_ch(&tmp_angle, 0.0);
+            hit[i] = tmp_angle;
             hit[i+1] = (disH);
-            float ca = direction;
-            rad_ch(&ca, -angle); disH=disH*cos(ca);                            //fix fisheye
+//            float ca = direction;
+//            rad_ch(&ca, -angle); disH=disH*cos(ca);                            //fix fisheye
             rad_ch(&angle, STEP);
                         // vertical lines for the screen output created
             start = 0;
