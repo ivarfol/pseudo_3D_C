@@ -12,6 +12,8 @@
 #define STEP 0.0025 * PI
 #define MAP_W 10
 #define MAP_H 13
+#define MAP_SCALE 20
+#define HALF_MAP_SCALE 10
 
 void rad_ch(float *direction, float rot)
 {
@@ -202,23 +204,23 @@ int main(void)
                 for (j=0; j<MAP_W; j++) {
                     if (map_arr[i][j] == 1) {
                         SDL_Rect r;
-                        r.x = (MAP_W - 1 - j) * 10;
-                        r.y = (MAP_H - 1 - i) * 10;
-                        r.w = 10;
-                        r.h = 10;
+                        r.x = (MAP_W - 1 - j) * MAP_SCALE;
+                        r.y = (MAP_H - 1 - i) * MAP_SCALE;
+                        r.w = MAP_SCALE;
+                        r.h = MAP_SCALE;
                         SDL_RenderDrawRect( renderer, &r );
                     }
                 }
             }
             SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 );
             SDL_Rect r;
-            r.x = round(-location[0] * 10)+(MAP_W - 1)*10 +4;
-            r.y = round(-location[1] * 10)+(MAP_H - 1)*10 +4;
-            r.w = 3;
-            r.h = 3;
+            r.x = round(-location[0] * MAP_SCALE)+(MAP_W - 1)*MAP_SCALE+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
+            r.y = round(-location[1] * MAP_SCALE)+(MAP_H - 1)*MAP_SCALE+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
+            r.w = (int)HALF_MAP_SCALE/2;
+            r.h = (int)HALF_MAP_SCALE/2;
             SDL_RenderDrawRect( renderer, &r );
             for (i=0; i<LENGTH * 2; i+=2) {
-                SDL_RenderDrawLine(renderer, round(10*(MAP_W - 1) -location[0]*10 + 5), round((MAP_H - 1)* 10 -location[1]*10 + 5), ceil((-location[0] - hit[i+1] * cos(hit[i]) + MAP_W) * 10-5), ceil((-location[1] - hit[i+1] * sin(hit[i]) + MAP_H) * 10-5));
+                SDL_RenderDrawLine(renderer, round(MAP_SCALE*(MAP_W - 1) -location[0]*MAP_SCALE+ HALF_MAP_SCALE), round((MAP_H - 1)* MAP_SCALE-location[1]*MAP_SCALE+ HALF_MAP_SCALE), ceil((-location[0] - hit[i+1] * cos(hit[i]) + MAP_W) * MAP_SCALE-HALF_MAP_SCALE), ceil((-location[1] - hit[i+1] * sin(hit[i]) + MAP_H) * MAP_SCALE-HALF_MAP_SCALE));
             }
         }
         // render window
