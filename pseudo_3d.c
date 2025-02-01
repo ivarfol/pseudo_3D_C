@@ -7,7 +7,7 @@
 #define PI 3.1415926535
 #define LENGTH 200
 #define H 500
-#define SCALE 2
+#define SCALE 3
 #define SHIFT -0.25 * PI
 #define STEP 0.0025 * PI
 
@@ -25,12 +25,14 @@ void rad_ch(float *direction, float rot)
 
 void move_f( const short int map_arr[][10], float location[], float direction, float rot, float mod, bool noclip)
 {
-    float angle = direction;                                                    
-    rad_ch(&angle, rot);                                                        
-    float x = location[0] + 0.125 * cos(angle) * mod;                           
-    float y = location [1] + 0.125 * sin(angle) * mod;                          
-    if (map_arr[(int)round(y)][(int)round(x)] == 0) {                                       
-        location[0] = x;                                                        
+    float angle = -direction;
+    rad_ch(&angle, rot);
+//    printf("dir %f rot %f fin %f\n", direction/PI, rot/PI, angle/PI);
+//    rad_ch(&angle, 1.5 * PI);
+    float x = location[0] + 0.125 * cos(angle) * mod;
+    float y = location [1] + 0.125 * sin(angle) * mod;
+    if (map_arr[(int)round(y)][(int)round(x)] == 0) {
+        location[0] = x;
         location[1] = y;
     }
 }
@@ -58,8 +60,9 @@ int main(void)
     int color, start, end, i, j, wall_hit;
     float angle;
     float hit[LENGTH * 2] = {};
+    bool KEYS[322];
     show_map = noclip = quit = false;
-    SDL_Event event;
+    for (i=0;i<322;i++) { KEYS[i] = false; }
  
     // init SDL
  
@@ -67,27 +70,47 @@ int main(void)
     SDL_Window * window = SDL_CreateWindow("Pseudo 3D",
     SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LENGTH*SCALE*2, H, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
- 
+    SDL_Event event;
     // handle events
  
     while (!quit) {
         SDL_Delay(10);
-        SDL_PollEvent(&event);
  
-        if (event.type == SDL_QUIT) {
-            quit = true;
-            break;
-        }
-//        switch (event.type)
-//        {
-//            case SDL_QUIT:
-//                quit = true;
-//                break;
-            // TODO input handling code goes here
+//        if (event.type == SDL_QUIT) {
+//            quit = true;
+//            break;
 //        }
- 
-        rad_ch(&direction, -0.01 * PI);
-        move_f(map_arr, location, direction, 0.5 * PI, mod, false);
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT:
+                    quit = true;
+                    break;
+                case SDL_KEYDOWN:
+                    KEYS[event.key.keysym.scancode] = true;
+                    break;
+                case SDL_KEYUP:
+                    KEYS[event.key.keysym.scancode] = false;
+                    break;
+            }
+        }
+        if (KEYS[SDL_SCANCODE_A]) {
+            move_f(map_arr, location, direction, 0.5 * PI, mod, false);
+        }
+        if (KEYS[SDL_SCANCODE_D]) {
+            move_f(map_arr, location, direction, 1.5 * PI, mod, false);
+        }
+        if (KEYS[SDL_SCANCODE_W]) {
+            move_f(map_arr, location, direction, 0.0, mod, false);
+        }
+        if (KEYS[SDL_SCANCODE_S]) {
+            move_f(map_arr, location, direction, 1.0 * PI, mod, false);
+        }
+        if (KEYS[SDL_SCANCODE_Q]) {
+            rad_ch(&direction, -0.01 * PI);
+        }
+        if (KEYS[SDL_SCANCODE_E]) {
+            rad_ch(&direction, 0.01 * PI);
+        }
         // clear window
  
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
