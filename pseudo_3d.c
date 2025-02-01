@@ -87,7 +87,7 @@ int main(void)
 //        }
  
         rad_ch(&direction, -0.01 * PI);
-        move_f(map_arr, location, direction, 0.5 * PI, mod, false);
+//        move_f(map_arr, location, direction, 0.5 * PI, mod, false);
         // clear window
  
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -96,9 +96,10 @@ int main(void)
         // ray casting
         angle = direction;
         rad_ch(&angle, SHIFT);
+        float px = location[0];
+        float py = location[1];
         for (i = 0; i < LENGTH * 2; i+=2) {
             int r,mx,my,mp,dof,side; float vx,vy,rx,ry,xo,yo,disV,disH;
-            angle=FixAng(direction-0.5);
             dof=0; side=0; disV=100000;
             float Tan=tan(angle);
             if(cos(angle)> 0.001){ rx=(int)px+1;      ry=(px-rx)*Tan+py; xo= 1; yo=-xo*Tan;}//looking left
@@ -107,8 +108,8 @@ int main(void)
 
             while(dof<30)
             {
-            mx=(int)(rx); my=(int)(ry); mp=my*mapX+mx;
-            if(mp>0 && mp<mapX*mapY && map[mp]==1){ dof=30; disV=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
+            mx=(int)(rx); my=(int)(ry); mp = my * 10 + mx;
+            if(mp>0 && mp<13*10 && map_arr[my][mx]==1){ dof=30; disV=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
             else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
             }
             vx=rx; vy=ry;
@@ -122,16 +123,17 @@ int main(void)
 
             while(dof<30)
             {
-            mx=(int)(rx)>>6; my=(int)(ry); mp=my*mapX+mx;
-            if(mp>0 && mp<mapX*mapY && map[mp]==1){ dof=30; disH=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
+            mx=(int)(rx); my=(int)(ry); mp = my * 10 + mx;
+            if(mp>0 && mp<13*10 && map_arr[my][mx]==1){ dof=30; disH=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
             else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
             }
 
-            if(disV<disH){ rx=vx; ry=vy; disH=disV; glColor3f(0,0.6,0);}                  //horizontal hit first
+            if(disV<disH){ rx=vx; ry=vy; disH=disV;}                  //horizontal hit first
 
             hit[i] = angle;
             hit[i+1] = (disH);
-            int ca=FixAng(direction-angle); disH=disH*cos(ca);                            //fix fisheye
+            float ca = direction;
+            rad_ch(&ca, -angle); disH=disH*cos(ca);                            //fix fisheye
             rad_ch(&angle, STEP);
                         // vertical lines for the screen output created
             start = 0;
