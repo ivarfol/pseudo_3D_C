@@ -56,7 +56,7 @@ int main(void)
     float mod = 1;
     short int move_tic = 1;
     int color, start, end, i, j, wall_hit;
-    float dist, angle;
+    float angle;
     float hit[LENGTH * 2] = {};
     show_map = noclip = quit = false;
     SDL_Event event;
@@ -97,21 +97,48 @@ int main(void)
         angle = direction;
         rad_ch(&angle, SHIFT);
         for (i = 0; i < LENGTH * 2; i+=2) {
-            wall_hit = 0;
-            dist= 0;
-            while (wall_hit == 0 && dist< 30) {
-                dist+= 0.01;
-                if (map_arr[(int)round(location[1] + dist* sin(angle))][(int)round(location[0] + dist* cos(angle))] == 1) {wall_hit = 1;}
+            int r,mx,my,mp,dof,side; float vx,vy,rx,ry,xo,yo,disV,disH;
+            angle=FixAng(direction-0.5);
+            dof=0; side=0; disV=100000;
+            float Tan=tan(angle);
+            if(cos(angle)> 0.001){ rx=(int)px+1;      ry=(px-rx)*Tan+py; xo= 1; yo=-xo*Tan;}//looking left
+            else if(cos(angle)<-0.001){ rx=(int)px -0.0001; ry=(px-rx)*Tan+py; xo=-1; yo=-xo*Tan;}//looking right
+            else { rx=px; ry=py; dof=30;}                                                  //looking up or down. no hit
+
+            while(dof<30)
+            {
+            mx=(int)(rx); my=(int)(ry); mp=my*mapX+mx;
+            if(mp>0 && mp<mapX*mapY && map[mp]==1){ dof=30; disV=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
+            else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
             }
+            vx=rx; vy=ry;
+
+            //---Horizontal---
+            dof=0; disH=100000;
+            Tan=1.0/Tan;
+            if(sin(angle)> 0.001){ ry=(int)py -0.0001; rx=(py-ry)*Tan+px; yo=-1; xo=-yo*Tan;}//looking up
+            else if(sin(angle)<-0.001){ ry=(int)py+1;      rx=(py-ry)*Tan+px; yo= 1; xo=-yo*Tan;}//looking down
+            else{ rx=px; ry=py; dof=30;}                                                   //looking straight left or right
+
+            while(dof<30)
+            {
+            mx=(int)(rx)>>6; my=(int)(ry); mp=my*mapX+mx;
+            if(mp>0 && mp<mapX*mapY && map[mp]==1){ dof=30; disH=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
+            else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
+            }
+
+            if(disV<disH){ rx=vx; ry=vy; disH=disV; glColor3f(0,0.6,0);}                  //horizontal hit first
+
             hit[i] = angle;
-            hit[i+1] = (dist);
+            hit[i+1] = (disH);
+            int ca=FixAng(direction-angle); disH=disH*cos(ca);                            //fix fisheye
             rad_ch(&angle, STEP);
-            // vertical lines for the screen output created
+                        // vertical lines for the screen output created
             start = 0;
             end = H - 1;
-            if(dist != 0) {
-                start = H / 2 * (1 - 1/dist);
-                end = H / 2 * (1 + 1/dist);
+            if(disH != 0) {
+                start = H / 2 * (1 - 1/disH);
+                end = H / 2 * (1 + 1/disH);
             }
             if(start<0) {
                 start = 0;
@@ -119,7 +146,7 @@ int main(void)
             if(end>H) {
                 end = H - 1;
             }
-            color = round(242 -8.066666 * dist);
+            color = round(242 -8.066666 * disH);
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             j = 0;
             for (j=0; j<=SCALE*2; j++) {
