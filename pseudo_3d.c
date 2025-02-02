@@ -23,7 +23,7 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
     float x = location[0] + 0.125 * cos(angle) * mod;
     float y = location [1] + 0.125 * sin(angle) * mod;
     if (map_arr[(int)round(y)][(int)round(location[0])] == 0) {
-        location[1] = y;
+        location[1] = y - 0.0625 * sin(angle) * mod;
     }
     else {
         if (sin(angle) < 0) {
@@ -34,7 +34,7 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
         }
     }
     if (map_arr[(int)round(location[1])][(int)round(x)] == 0) {
-        location[0] = x;
+        location[0] = x - 0.0625 * cos(angle) * mod;
     }
     else {
         if (cos(angle) < 0) {
@@ -121,7 +121,7 @@ int main(void)
             }
         }
         if (KEYS[SDL_SCANCODE_W] && !KEYS[SDL_SCANCODE_S]) {
-            move_direction_v = 0.0;
+            move_direction_v = 2.0;
         }
         else {
             if (KEYS[SDL_SCANCODE_S] && !KEYS[SDL_SCANCODE_W]) {
@@ -139,10 +139,13 @@ int main(void)
             else { show_map = true; }
         }
         if (move_direction_h > 0) {
-            if (move_direction_v >= 0) {
+            if (move_direction_v > 0) {
                 move_direction_h = (move_direction_h + move_direction_v) / 2;
+                if (move_direction_v == 2.0 && move_direction_h == 1.25) {
+                    move_direction_h = 0.25;
+                }
             }
-            move_f(map_arr, location, direction, move_direction_h * PI, mod, false);
+            move_f(map_arr, location, direction, rad_ch(move_direction_h * PI), mod, false);
         }
         else {
             if (move_direction_v >=0) {
