@@ -22,9 +22,11 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
     angle = rad_ch(angle + rot);
     float x = location[0] + 0.125 * cos(angle) * mod;
     float y = location [1] + 0.125 * sin(angle) * mod;
-    if (map_arr[(int)round(y)][(int)round(x)] == 0) {
-        location[0] = x;
+    if (map_arr[(int)round(y)][(int)round(location[0])] == 0) {
         location[1] = y;
+    }
+    if (map_arr[(int)round(location[1])][(int)round(x)] == 0) {
+        location[0] = x;
     }
 }
 
