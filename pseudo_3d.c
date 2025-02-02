@@ -121,7 +121,7 @@ int main(void)
             }
         }
         if (KEYS[SDL_SCANCODE_W] && !KEYS[SDL_SCANCODE_S]) {
-            move_direction_v = 2.0;
+            move_direction_v = 0.0;
         }
         else {
             if (KEYS[SDL_SCANCODE_S] && !KEYS[SDL_SCANCODE_W]) {
@@ -139,10 +139,10 @@ int main(void)
             else { show_map = true; }
         }
         if (move_direction_h > 0) {
-            if (move_direction_v > 0) {
+            if (move_direction_v >= 0) {
                 move_direction_h = (move_direction_h + move_direction_v) / 2;
-                if (move_direction_v == 2.0 && move_direction_h == 1.25) {
-                    move_direction_h = 0.25;
+                if (move_direction_v == 0.0 && move_direction_h == 0.75) {
+                    move_direction_h = 1.75;
                 }
             }
             move_f(map_arr, location, direction, rad_ch(move_direction_h * PI), mod, false);
