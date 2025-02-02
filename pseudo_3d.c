@@ -14,25 +14,12 @@
 #define MAP_H 13
 #define MAP_SCALE 20
 #define HALF_MAP_SCALE 10
-
-void rad_ch(float *direction, float rot)
-{
-	*direction += rot;
-	if(*direction>=2 * PI) {
-		*direction -=  2 * PI;
-	}
-	else { if(*direction<0) {
-		*direction += 2 * PI;
-        }
-    }
-}
+#define rad_ch(a) fmod(2 * PI + fmod(a, 2 * PI), 2 * PI)
 
 void move_f( const short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip)
 {
     float angle = -direction;
-    rad_ch(&angle, rot);
-//    printf("dir %f rot %f fin %f\n", direction/PI, rot/PI, angle/PI);
-//    rad_ch(&angle, 1.5 * PI);
+    angle = rad_ch(angle + rot);
     float x = location[0] + 0.125 * cos(angle) * mod;
     float y = location [1] + 0.125 * sin(angle) * mod;
     if (map_arr[(int)round(y)][(int)round(x)] == 0) {
@@ -44,18 +31,18 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
 int main(void)
 {
     const short int map_arr[MAP_H][MAP_W] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 1, 1, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 1, 1, 0, 0, 0, 1},
-                                        {1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 1, 0, 1, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 1, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
+                                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                              {1, 0, 0, 0, 1, 1, 0, 0, 0, 1},
+                                              {1, 0, 0, 0, 1, 1, 0, 0, 0, 1},
+                                              {1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+                                              {1, 0, 1, 0, 1, 0, 0, 0, 0, 1},
+                                              {1, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+                                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                              {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                              {1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
     float location[2] = {2, 2};
     float direction = 1.5 * PI;
     bool show_map, noclip, quit;
@@ -118,10 +105,10 @@ int main(void)
             move_f(map_arr, location, direction, 1.0 * PI, mod, false);
         }
         if (KEYS[SDL_SCANCODE_Q]) {
-            rad_ch(&direction, -0.01 * PI * mod);
+            direction = rad_ch(direction - 0.01 * PI * mod);
         }
         if (KEYS[SDL_SCANCODE_E]) {
-            rad_ch(&direction, 0.01 * PI * mod);
+            direction = rad_ch(direction + 0.01 * PI * mod);
         }
         if (!OLD_KEYS[SDL_SCANCODE_M] && KEYS[SDL_SCANCODE_M]) {
             if (show_map) { show_map = false; }
@@ -133,8 +120,7 @@ int main(void)
         SDL_RenderClear(renderer);
  
         // ray casting
-        angle = direction;
-        rad_ch(&angle, SHIFT);
+        angle = rad_ch(direction + SHIFT);
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
         for (i = 0; i < LENGTH * 2; i+=2) {
@@ -169,13 +155,11 @@ int main(void)
 
             if(disV<disH){ rx=vx; ry=vy; disH=disV; side=0; }                  //horizontal hit first
 
-            float tmp_angle = -angle + 2.0 * PI;
-            rad_ch(&tmp_angle, 0.0);
-            hit[i] = tmp_angle;
+            hit[i] = rad_ch(2.0 * PI - angle);
             hit[i+1] = (disH);
 //            float ca = direction;
-//            rad_ch(&ca, -angle); disH=disH*cos(ca);                            //fix fisheye
-            rad_ch(&angle, STEP);
+//            ca = rad_ch(ca -angle); disH=disH*cos(ca);                            //fix fisheye
+            angle = rad_ch(angle + STEP);
                         // vertical lines for the screen output created
             start = 0;
             end = H - 1;
