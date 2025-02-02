@@ -25,8 +25,24 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
     if (map_arr[(int)round(y)][(int)round(location[0])] == 0) {
         location[1] = y;
     }
+    else {
+        if (sin(angle) < 0) {
+            location[1] = round(y) + 0.50001;
+        }
+        else {
+            location[1] = round(y) - 0.50001;
+        }
+    }
     if (map_arr[(int)round(location[1])][(int)round(x)] == 0) {
         location[0] = x;
+    }
+    else {
+        if (cos(angle) < 0) {
+            location[0] = round(x) + 0.50001;
+        }
+        else {
+            location[0] = round(x) - 0.50001;
+        }
     }
 }
 
@@ -51,7 +67,7 @@ int main(void)
     float mod = 1.0;
     short int move_tic = 1;
     int color, start, end, i, j, wall_hit;
-    float angle;
+    float angle, move_direction_h, move_direction_v;
     float hit[LENGTH * 2] = {};
     bool KEYS[322];
     bool OLD_KEYS[322];
@@ -94,17 +110,23 @@ int main(void)
         else {
             mod = 1.0;
         }
-        if (KEYS[SDL_SCANCODE_A]) {
-            move_f(map_arr, location, direction, 0.5 * PI, mod, false);
+        move_direction_h = -1;
+        move_direction_v = -1;
+        if (KEYS[SDL_SCANCODE_A] && !KEYS[SDL_SCANCODE_D]) {
+            move_direction_h = 0.5;
         }
-        if (KEYS[SDL_SCANCODE_D]) {
-            move_f(map_arr, location, direction, 1.5 * PI, mod, false);
+        else {
+            if (KEYS[SDL_SCANCODE_D] && !KEYS[SDL_SCANCODE_A]) {
+                move_direction_h = 1.5;
+            }
         }
-        if (KEYS[SDL_SCANCODE_W]) {
-            move_f(map_arr, location, direction, 0.0, mod, false);
+        if (KEYS[SDL_SCANCODE_W] && !KEYS[SDL_SCANCODE_S]) {
+            move_direction_v = 0.0;
         }
-        if (KEYS[SDL_SCANCODE_S]) {
-            move_f(map_arr, location, direction, 1.0 * PI, mod, false);
+        else {
+            if (KEYS[SDL_SCANCODE_S] && !KEYS[SDL_SCANCODE_W]) {
+                move_direction_v = 1.0;
+            }
         }
         if (KEYS[SDL_SCANCODE_Q]) {
             direction = rad_ch(direction - 0.01 * PI * mod);
@@ -115,6 +137,17 @@ int main(void)
         if (!OLD_KEYS[SDL_SCANCODE_M] && KEYS[SDL_SCANCODE_M]) {
             if (show_map) { show_map = false; }
             else { show_map = true; }
+        }
+        if (move_direction_h > 0) {
+            if (move_direction_v >= 0) {
+                move_direction_h = (move_direction_h + move_direction_v) / 2;
+            }
+            move_f(map_arr, location, direction, move_direction_h * PI, mod, false);
+        }
+        else {
+            if (move_direction_v >=0) {
+                move_f(map_arr, location, direction, move_direction_v * PI, mod, false);
+            }
         }
        // clear window
  
