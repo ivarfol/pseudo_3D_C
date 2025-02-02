@@ -193,7 +193,7 @@ int main(void)
             if (side == 1) { color += 10; }
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             j = 0;
-            for (j=0; j<=SCALE*2; j++) {
+            for (j=0; j<=SCALE*2 - 1; j++) {
                 SDL_RenderDrawLine(renderer, i * SCALE + j, start, i * SCALE + j, end);
             }
         }
