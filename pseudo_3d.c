@@ -5,9 +5,9 @@
 #include <string.h>
 
 #define PI 3.1415926535
-#define LENGTH 1600 
+#define LENGTH 800 
 #define H 800
-#define SCALE 1.0
+#define SCALE 2.0
 #define FOV 0.5 * PI
 #define SHIFT FOV / 2
 #define STEP FOV / LENGTH
@@ -160,7 +160,6 @@ int main(void)
  
         // ray casting
         angle = rad_ch(direction + SHIFT);
-        int h_position;
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
         for (i = 0; i < LENGTH * 2; i+=2) {
@@ -220,8 +219,8 @@ int main(void)
             color = round(242 -8.066666 * disH);
             if (side == 1) { color += 10; }
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
-            h_position = round((0.5 -tan(rad_ch(rad_ch(angle + STEP) - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH);
-            int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH);
+            int h_position = round((0.5 -tan(rad_ch(rad_ch(angle + STEP) - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
+            int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
 //            if (h_position < 0) { h_position = LENGTH - h_position; }
 //            printf("%d\n", h_position);
             SDL_RenderDrawLine(renderer, h_position, start, h_position, end);
