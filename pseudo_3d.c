@@ -5,16 +5,17 @@
 #include <string.h>
 
 #define PI 3.1415926535
-#define LENGTH 320
-#define H 500
-#define SCALE 2
-#define SHIFT -0.25 * PI
-#define STEP 0.0015625 * PI
+#define LENGTH 960
+#define H 480
+#define SCALE 1.0
+#define FOV 0.5 * PI
+#define SHIFT FOV / 2
+#define STEP FOV / LENGTH
 #define MAP_W 10
 #define MAP_H 13
 #define MAP_SCALE 20
 #define HALF_MAP_SCALE 10
-#define rad_ch(a) fmod(2 * PI + fmod(a, 2 * PI), 2 * PI)
+#define rad_ch(a) fmod(2.0 * PI + fmod(a, 2.0 * PI), 2.0 * PI)
 
 void move_f( const short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip)
 {
@@ -78,7 +79,7 @@ int main(void)
  
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window * window = SDL_CreateWindow("Pseudo 3D",
-    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LENGTH*SCALE*2, H, 0);
+    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LENGTH*SCALE, H, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_Event event;
     // handle events
@@ -158,7 +159,7 @@ int main(void)
         SDL_RenderClear(renderer);
  
         // ray casting
-        angle = rad_ch(direction - SHIFT);
+        angle = rad_ch(direction + SHIFT);
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
         for (i = 0; i < LENGTH * 2; i+=2) {
@@ -219,9 +220,8 @@ int main(void)
             color = round(242 -8.066666 * disH);
             if (side == 1) { color += 10; }
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
-            j = 0;
-            for (j=0; j<=SCALE*2 - 1; j++) {
-                SDL_RenderDrawLine(renderer, i * SCALE + j, start, i * SCALE + j, end);
+            for (j=0; j<SCALE; j++) {
+                SDL_RenderDrawLine(renderer, i / 2 * SCALE + j, start, i / 2 * SCALE + j, end);
             }
         }
 //        break;
