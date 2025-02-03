@@ -75,7 +75,7 @@ int main(void)
     bool OLD_KEYS[322];
     unsigned int ticks, old_ticks;
     double delta = 0;
-    old_ticks = 1000/60.0;
+    old_ticks = 16.6;
     show_map = noclip = quit = false;
     for (i=0;i<322;i++) { KEYS[i] = false; }
  
@@ -91,9 +91,9 @@ int main(void)
     while (!quit) {
         ticks = SDL_GetTicks();
         delta = ticks - old_ticks;
-//        printf("%f %f\n", delta, (float)delta / 1000.0 * 60);
+//        printf("%f\n", 1000.0 / delta);
         if (delta < 1000/60.0) {
-            SDL_Delay(1000/60.0 - delta);
+            SDL_Delay(1000.0/60.0 - delta);
         }
         for (i=0;i<322;i++) { OLD_KEYS[i] = KEYS[i]; }
  
