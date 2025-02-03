@@ -28,10 +28,10 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
     }
     else {
         if (sin(angle) < 0) {
-            location[1] = round(y) + 0.50001;
+            location[1] = round(y) + 0.5001;
         }
         else {
-            location[1] = round(y) - 0.50001;
+            location[1] = round(y) - 0.5001;
         }
     }
     if (map_arr[(int)round(location[1])][(int)round(x)] == 0) {
@@ -39,10 +39,10 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
     }
     else {
         if (cos(angle) < 0) {
-            location[0] = round(x) + 0.50001;
+            location[0] = round(x) + 0.5001;
         }
         else {
-            location[0] = round(x) - 0.50001;
+            location[0] = round(x) - 0.5001;
         }
     }
 }
@@ -216,11 +216,19 @@ int main(void)
             if(end>H) {
                 end = H - 1;
             }
-            color = round(242 -8.066666 * disH);
-            if (side == 1) { color += 10; }
-            SDL_SetRenderDrawColor(renderer, color, color, color, 255);
+            color = round(242 -8.066666 * hit[i+1]);
+//            if (side == 1) { color += 10; }
+            if (side == 1) {
+                if (Sin > 0) { SDL_SetRenderDrawColor(renderer, 0, color, color, 255); }
+                else { SDL_SetRenderDrawColor(renderer, 0, color, 0, 255); }
+            }
+            else {
+                if (Cos > 0) { SDL_SetRenderDrawColor(renderer, color, 0, color, 255); }
+                else { SDL_SetRenderDrawColor(renderer, color, color, 0, 255); }
+            }
+//            SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             int h_position = round((0.5 -tan(rad_ch(rad_ch(angle + STEP) - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
-            int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
+            int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001);
 //            if (h_position < 0) { h_position = LENGTH - h_position; }
 //            printf("%d\n", h_position);
             SDL_RenderDrawLine(renderer, h_position, start, h_position, end);
