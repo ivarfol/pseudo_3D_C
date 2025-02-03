@@ -172,7 +172,7 @@ int main(void)
             while(dof<30)
             {
             mx=(int)(rx); my=(int)(ry); mp = my * MAP_W + mx;
-            if(mp>0 && mp<MAP_H*MAP_W && map_arr[my][mx]==1){ dof=30; disV=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
+            if(mp>-1 && mp<MAP_H*MAP_W && map_arr[my][mx]==1){ dof=30; disV=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
             else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
             }
             vx=rx; vy=ry;
@@ -187,7 +187,7 @@ int main(void)
             while(dof<30)
             {
             mx=(int)(rx); my=(int)(ry); mp = my * MAP_W + mx;
-            if(mp>0 && mp<MAP_H*MAP_W && map_arr[my][mx]==1){ dof=30; disH=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
+            if(mp>-1 && mp<MAP_H*MAP_W && map_arr[my][mx]==1){ dof=30; disH=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
             else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
             }
 
