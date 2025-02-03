@@ -113,11 +113,11 @@ int main(void)
         move_direction_h = -1;
         move_direction_v = -1;
         if (KEYS[SDL_SCANCODE_A] && !KEYS[SDL_SCANCODE_D]) {
-            move_direction_h = 0.5;
+            move_direction_h = 1.5;
         }
         else {
             if (KEYS[SDL_SCANCODE_D] && !KEYS[SDL_SCANCODE_A]) {
-                move_direction_h = 1.5;
+                move_direction_h = 0.5;
             }
         }
         if (KEYS[SDL_SCANCODE_W] && !KEYS[SDL_SCANCODE_S]) {
@@ -129,10 +129,10 @@ int main(void)
             }
         }
         if (KEYS[SDL_SCANCODE_Q]) {
-            direction = rad_ch(direction - 0.01 * PI * mod);
+            direction = rad_ch(direction + 0.01 * PI * mod);
         }
         if (KEYS[SDL_SCANCODE_E]) {
-            direction = rad_ch(direction + 0.01 * PI * mod);
+            direction = rad_ch(direction - 0.01 * PI * mod);
         }
         if (!OLD_KEYS[SDL_SCANCODE_M] && KEYS[SDL_SCANCODE_M]) {
             if (show_map) { show_map = false; }
@@ -158,7 +158,7 @@ int main(void)
         SDL_RenderClear(renderer);
  
         // ray casting
-        angle = rad_ch(direction + SHIFT);
+        angle = rad_ch(direction - SHIFT);
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
         for (i = 0; i < LENGTH * 2; i+=2) {
@@ -193,6 +193,8 @@ int main(void)
                     }
                 }
             }
+//            printf("ang %f ryh %f rxh %f yoh %f xoh %f disH %f\n", angle / PI, ryh, rxh, yoh, xoh,  disH);
+//            printf("ang %f ryv %f rxv %f yov %f xov %f disV %f\n", angle / PI, ryv, rxv, yov, xov, disV);
 
             if(disV<disH){ rxh=rxv; ryh=ryv; disH=disV; side=0; }                  //horizontal hit first
 
@@ -200,7 +202,7 @@ int main(void)
             hit[i+1] = (disH);
 //            float ca = direction;
 //            ca = rad_ch(ca -angle); disH=disH*cos(ca);                            //fix fisheye
-            angle = rad_ch(angle + STEP);
+            angle = rad_ch(angle - STEP);
                         // vertical lines for the screen output created
             start = 0;
             end = H - 1;
@@ -222,6 +224,7 @@ int main(void)
                 SDL_RenderDrawLine(renderer, i * SCALE + j, start, i * SCALE + j, end);
             }
         }
+//        break;
 
         if (show_map) {
             SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
@@ -230,7 +233,7 @@ int main(void)
                     if (map_arr[i][j] == 1) {
                         SDL_Rect r;
                         r.x = j * MAP_SCALE;
-                        r.y = (MAP_H - i - 1) * MAP_SCALE;
+                        r.y = i * MAP_SCALE;
                         r.w = MAP_SCALE;
                         r.h = MAP_SCALE;
                         SDL_RenderDrawRect( renderer, &r );
@@ -240,12 +243,12 @@ int main(void)
             SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 );
             SDL_Rect r;
             r.x = round(location[0] * MAP_SCALE)+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
-            r.y = round((MAP_H - location[1] - 1) * MAP_SCALE)+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
+            r.y = round(location[1] * MAP_SCALE)+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
             r.w = (int)HALF_MAP_SCALE/2;
             r.h = (int)HALF_MAP_SCALE/2;
             SDL_RenderDrawRect( renderer, &r );
             for (i=0; i<LENGTH * 2; i+=2) {
-                SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round((MAP_H - location[1])*MAP_SCALE - HALF_MAP_SCALE), ceil((location[0] + hit[i+1] * cos(hit[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((MAP_H - location[1] - hit[i+1] * sin(hit[i])) * MAP_SCALE-HALF_MAP_SCALE));
+                SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round(location[1]*MAP_SCALE + HALF_MAP_SCALE), ceil((location[0] + hit[i+1] * cos(hit[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((location[1] + hit[i+1] * sin(hit[i])) * MAP_SCALE+HALF_MAP_SCALE));
             }
         }
         // render window
