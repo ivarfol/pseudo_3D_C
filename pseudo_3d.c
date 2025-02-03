@@ -5,8 +5,8 @@
 #include <string.h>
 
 #define PI 3.1415926535
-#define LENGTH 960
-#define H 480
+#define LENGTH 1600 
+#define H 800
 #define SCALE 1.0
 #define FOV 0.5 * PI
 #define SHIFT FOV / 2
@@ -56,7 +56,7 @@ int main(void)
                                               {1, 0, 0, 0, 1, 1, 0, 0, 0, 1},
                                               {1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
                                               {1, 0, 1, 0, 1, 0, 0, 0, 0, 1},
-                                              {1, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+                                              {1, 1, 0, 0, 1, 0, 0, 0, 0, 1},
                                               {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                               {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                               {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -160,6 +160,7 @@ int main(void)
  
         // ray casting
         angle = rad_ch(direction + SHIFT);
+        int h_position;
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
         for (i = 0; i < LENGTH * 2; i+=2) {
@@ -201,8 +202,7 @@ int main(void)
 
             hit[i] = rad_ch(2.0 * PI - angle);
             hit[i+1] = (disH);
-//            float ca = direction;
-//            ca = rad_ch(ca -angle); disH=disH*cos(ca);                            //fix fisheye
+            disH=disH*cos(direction - angle);                            //fix fisheye
             angle = rad_ch(angle - STEP);
                         // vertical lines for the screen output created
             start = 0;
@@ -220,9 +220,13 @@ int main(void)
             color = round(242 -8.066666 * disH);
             if (side == 1) { color += 10; }
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
-            for (j=0; j<SCALE; j++) {
-                SDL_RenderDrawLine(renderer, i / 2 * SCALE + j, start, i / 2 * SCALE + j, end);
-            }
+            h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH);
+            if (h_position < 0) { h_position = LENGTH - h_position; }
+//            printf("%d\n", h_position);
+            SDL_RenderDrawLine(renderer, h_position, start, h_position, end);
+//            for (j=0; j<SCALE; j++) {
+//                SDL_RenderDrawLine(renderer, i / 2 * SCALE + j, start, i / 2 * SCALE + j, end);
+//            }
         }
 //        break;
 
