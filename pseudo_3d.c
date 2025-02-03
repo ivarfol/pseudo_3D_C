@@ -162,36 +162,39 @@ int main(void)
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
         for (i = 0; i < LENGTH * 2; i+=2) {
-            int r,mx,my,mp,dof,side; float vx,vy,rx,ry,xo,yo,disV,disH;
-            dof=0; side=1; disV=100000;
-            float Tan=tan(angle);
-            if(cos(angle)> 0.001){ rx=(int)px+1;      ry=(px-rx)*Tan+py; xo= 1; yo=-xo*Tan;}//looking left
-            else if(cos(angle)<-0.001){ rx=(int)px -0.0001; ry=(px-rx)*Tan+py; xo=-1; yo=-xo*Tan;}//looking right
-            else { rx=px; ry=py; dof=30;}                                                  //looking up or down. no hit
-
-            while(dof<30)
-            {
-            mx=(int)(rx); my=(int)(ry); mp = my * MAP_W + mx;
-            if(mp>-1 && mp<MAP_H*MAP_W && map_arr[my][mx]==1){ dof=30; disV=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
-            else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
-            }
-            vx=rx; vy=ry;
+            int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,rxv,ryv,xov,yov,rxh,ryh,xoh,yoh,disV,disH;
+            float Cos = cos(angle);
+            float Sin = sin(angle);
+            dofv=0; side=1; disV=100000;
+            float TanV=tan(angle);
+            if(Cos> 0.001){ rxv=(int)px+1;      ryv=(px-rxv)*TanV+py; xov= 1; yov=-xov*TanV;}//looking left
+            else if(Cos<-0.001){ rxv=(int)px -0.0001; ryv=(px-rxv)*TanV+py; xov=-1; yov=-xov*TanV;}//looking right
+            else { rxv=px; ryv=py; dofv=30;}                                                  //looking up or down. no hit
 
             //---Horizontal---
-            dof=0; disH=100000;
-            Tan=1.0/Tan;
-            if(sin(angle)> 0.001){ ry=(int)py -0.0001; rx=(py-ry)*Tan+px; yo=-1; xo=-yo*Tan;}//looking up
-            else if(sin(angle)<-0.001){ ry=(int)py+1;      rx=(py-ry)*Tan+px; yo= 1; xo=-yo*Tan;}//looking down
-            else{ rx=px; ry=py; dof=30;}                                                   //looking straight left or right
+            dofh=0; disH=100000;
+            float TanH=1.0/TanV;
+            if(Sin> 0.001){ ryh=(int)py -0.0001; rxh=(py-ryh)*TanH+px; yoh=-1; xoh=-yoh*TanH;}//looking up
+            else if(Sin<-0.001){ ryh=(int)py+1;      rxh=(py-ryh)*TanH+px; yoh= 1; xoh=-yoh*TanH;}//looking down
+            else{ rxh=px; ryh=py; dofh=30;}                                                   //looking straight left or right
 
-            while(dof<30)
+            while(dofh<30 || dofv<30)
             {
-            mx=(int)(rx); my=(int)(ry); mp = my * MAP_W + mx;
-            if(mp>-1 && mp<MAP_H*MAP_W && map_arr[my][mx]==1){ dof=30; disH=cos(angle)*(rx-px)-sin(angle)*(ry-py);}//hit
-            else{ rx+=xo; ry+=yo; dof+=1;}                                               //check next horizontal
+                if (dofh < dofv && dofh < 30) {
+                    mxh=(int)(rxh); myh=(int)(ryh); mph = myh * MAP_W + mxh;
+                    if(mph>-1 && mph<MAP_H*MAP_W && map_arr[myh][mxh]==1){ dofh=30; disH=Cos*(rxh-px)-Sin*(ryh-py);}//hit
+                    else{ rxh+=xoh; ryh+=yoh; dofh+=1;}                                               //check next horizontal
+                }
+                else {
+                    if (dofv < 30) {
+                        mxv=(int)(rxv); myv=(int)(ryv); mpv = myv * MAP_W + mxv;
+                        if(mpv>-1 && mpv<MAP_H*MAP_W && map_arr[myv][mxv]==1){ dofv=30; disV=Cos*(rxv-px)-Sin*(ryv-py);}//hit
+                        else{ rxv+=xov; ryv+=yov; dofv+=1;}                                               //check next horizontal
+                    }
+                }
             }
 
-            if(disV<disH){ rx=vx; ry=vy; disH=disV; side=0; }                  //horizontal hit first
+            if(disV<disH){ rxh=rxv; ryh=ryv; disH=disV; side=0; }                  //horizontal hit first
 
             hit[i] = rad_ch(2.0 * PI - angle);
             hit[i+1] = (disH);
