@@ -28,10 +28,10 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
     }
     else {
         if (sin(angle) < 0) {
-            location[1] = round(y) + 0.5001;
+            location[1] = round(y) + 0.51;
         }
         else {
-            location[1] = round(y) - 0.5001;
+            location[1] = round(y) - 0.51;
         }
     }
     if (map_arr[(int)round(location[1])][(int)round(x)] == 0) {
@@ -39,10 +39,10 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
     }
     else {
         if (cos(angle) < 0) {
-            location[0] = round(x) + 0.5001;
+            location[0] = round(x) + 0.51;
         }
         else {
-            location[0] = round(x) - 0.5001;
+            location[0] = round(x) - 0.51;
         }
     }
 }
