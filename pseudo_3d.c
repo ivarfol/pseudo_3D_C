@@ -11,6 +11,7 @@
 #define FOV 0.5 * PI
 #define SHIFT FOV / 2
 #define STEP FOV / LENGTH
+#define RATIO LENGTH * SCALE / H
 #define MAP_W 10
 #define MAP_H 13
 #define MAP_SCALE 20
@@ -207,8 +208,8 @@ int main(void)
             start = 0;
             end = H - 1;
             if(disH != 0) {
-                start = H / 2 * (1 - 1/disH);
-                end = H / 2 * (1 + 1/disH);
+                start = H / 2 * (1 - 0.5/disH * RATIO);
+                end = H / 2 * (1 + 0.5/disH * RATIO);
             }
             if(start<0) {
                 start = 0;
