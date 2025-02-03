@@ -220,13 +220,14 @@ int main(void)
             color = round(242 -8.066666 * disH);
             if (side == 1) { color += 10; }
             SDL_SetRenderDrawColor(renderer, color, color, color, 255);
-            h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH);
-            if (h_position < 0) { h_position = LENGTH - h_position; }
+            h_position = round((0.5 -tan(rad_ch(rad_ch(angle + STEP) - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH);
+            int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH);
+//            if (h_position < 0) { h_position = LENGTH - h_position; }
 //            printf("%d\n", h_position);
             SDL_RenderDrawLine(renderer, h_position, start, h_position, end);
-//            for (j=0; j<SCALE; j++) {
-//                SDL_RenderDrawLine(renderer, i / 2 * SCALE + j, start, i / 2 * SCALE + j, end);
-//            }
+            for (j=1; j<-h_position + next_h_position; j++) {
+                SDL_RenderDrawLine(renderer, h_position + j, start, h_position + j, end);
+            }
         }
 //        break;
 
