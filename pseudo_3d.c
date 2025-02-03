@@ -169,13 +169,13 @@ int main(void)
             dofv=0; side=1; disV=100000;
             float TanV=tan(angle);
             if(Cos> 0.001){ rxv=(int)px+1;      ryv=(px-rxv)*TanV+py; xov= 1; yov=-xov*TanV;}//looking left
-            else if(Cos<-0.001){ rxv=(int)px -0.0001; ryv=(px-rxv)*TanV+py; xov=-1; yov=-xov*TanV;}//looking right
+            else if(Cos<-0.001){ rxv=(int)px -0.000001; ryv=(px-rxv)*TanV+py; xov=-1; yov=-xov*TanV;}//looking right
             else { rxv=px; ryv=py; dofv=30;}                                                  //looking up or down. no hit
 
             //---Horizontal---
             dofh=0; disH=100000;
             float TanH=1.0/TanV;
-            if(Sin> 0.001){ ryh=(int)py -0.0001; rxh=(py-ryh)*TanH+px; yoh=-1; xoh=-yoh*TanH;}//looking up
+            if(Sin> 0.001){ ryh=(int)py -0.000001; rxh=(py-ryh)*TanH+px; yoh=-1; xoh=-yoh*TanH;}//looking up
             else if(Sin<-0.001){ ryh=(int)py+1;      rxh=(py-ryh)*TanH+px; yoh= 1; xoh=-yoh*TanH;}//looking down
             else{ rxh=px; ryh=py; dofh=30;}                                                   //looking straight left or right
 
