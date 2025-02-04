@@ -8,15 +8,16 @@
 #define LENGTH 800 
 #define H 800
 #define SCALE 2.0
-#define FOV 0.5 * PI
+#define NO_PI_FOV 0.5
+#define FOV NO_PI_FOV * PI
 #define SHIFT FOV / 2
 #define STEP FOV / LENGTH
-#define RATIO LENGTH * SCALE / H
+#define RATIO LENGTH * SCALE / H / NO_PI_FOV / 2
 #define MAP_W 10
 #define MAP_H 13
 #define MAP_SCALE 20
 #define HALF_MAP_SCALE 10
-#define TARGET_FPS 60
+#define TARGET_FPS 80
 #define top_l(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x+ 8, y + 2)
 #define bottom_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x_offset + 8, y + 18)
 #define middle_l(r, x, y) SDL_RenderDrawLine(r, x, y + 9, x + 8, y + 9)
@@ -174,8 +175,8 @@ int main(void)
  
     while (!quit) {
         delta = ticks - old_ticks;
-        if (delta < 1000.0/TARGET_FPS) {
-            SDL_Delay(1000.0/TARGET_FPS - delta);
+        if (delta < 1000/TARGET_FPS) {
+            SDL_Delay(1000/TARGET_FPS - delta);
         }
         ticks = SDL_GetTicks();
         if (ticks >= frame_tick + 1000) {
