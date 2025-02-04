@@ -16,6 +16,7 @@
 #define MAP_H 13
 #define MAP_SCALE 20
 #define HALF_MAP_SCALE 10
+#define TARGET_FPS 60
 #define rad_ch(a) fmod(2.0 * PI + fmod(a, 2.0 * PI), 2.0 * PI)
 
 void move_f( const short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip)
@@ -93,8 +94,8 @@ int main(void)
  
     while (!quit) {
         delta = ticks - old_ticks;
-        if (delta < 1000.0/60) {
-            SDL_Delay(1000.0/60 - delta);
+        if (delta < 1000.0/TARGET_FPS) {
+            SDL_Delay(1000.0/TARGET_FPS - delta);
         }
         ticks = SDL_GetTicks();
 //        if (ticks >= frame_tick + 1000) {
@@ -180,6 +181,7 @@ int main(void)
         angle = rad_ch(direction + SHIFT);
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
+        int h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
         for (i = 0; i < LENGTH * 2; i+=2) {
             int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,rxv,ryv,xov,yov,rxh,ryh,xoh,yoh,disV,disH;
             float Cos = cos(angle);
@@ -245,7 +247,6 @@ int main(void)
                 else { SDL_SetRenderDrawColor(renderer, color, color, 0, 255); }
             }
 //            SDL_SetRenderDrawColor(renderer, color, color, color, 255);
-            int h_position = round((0.5 -tan(rad_ch(rad_ch(angle + STEP) - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
             int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001);
 //            if (h_position < 0) { h_position = LENGTH - h_position; }
 //            printf("%d\n", h_position);
@@ -253,6 +254,7 @@ int main(void)
             for (j=1; j<-h_position + next_h_position; j++) {
                 SDL_RenderDrawLine(renderer, h_position + j, start, h_position + j, end);
             }
+            h_position = next_h_position;
         }
 //        break;
 
