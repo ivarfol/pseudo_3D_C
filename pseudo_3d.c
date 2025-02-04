@@ -75,6 +75,7 @@ int main(void)
     bool OLD_KEYS[322];
     unsigned int ticks, old_ticks;
     int delta = 0;
+    ticks = 1000;
     old_ticks = 16.6;
 //    int frames = 0;
 //    unsigned int frame_tick = 0;
@@ -91,16 +92,16 @@ int main(void)
     // handle events
  
     while (!quit) {
-        ticks = SDL_GetTicks();
         delta = ticks - old_ticks;
-//        if (ticks >= frame_tick + 1000) {
-//            frame_tick = ticks;
-//            printf("%d %f %f\n", frames, 1000.0/30, delta);
-//            frames = 0;
-//        }
         if (delta < 1000.0/60) {
             SDL_Delay(1000.0/60 - delta);
         }
+        ticks = SDL_GetTicks();
+//        if (ticks >= frame_tick + 1000) {
+//            frame_tick = ticks;
+//            printf("%d\n", frames);
+//            frames = 0;
+//        }
         for (i=0;i<322;i++) { OLD_KEYS[i] = KEYS[i]; }
  
 //        frames++;
