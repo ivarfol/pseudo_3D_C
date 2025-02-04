@@ -74,8 +74,10 @@ int main(void)
     bool KEYS[322];
     bool OLD_KEYS[322];
     unsigned int ticks, old_ticks;
-    double delta = 0;
+    int delta = 0;
     old_ticks = 16.6;
+//    int frames = 0;
+//    unsigned int frame_tick = 0;
     show_map = noclip = quit = false;
     for (i=0;i<322;i++) { KEYS[i] = false; }
  
@@ -91,12 +93,18 @@ int main(void)
     while (!quit) {
         ticks = SDL_GetTicks();
         delta = ticks - old_ticks;
-//        printf("%f\n", 1000.0 / delta);
-        if (delta < 1000/60.0) {
-            SDL_Delay(1000.0/60.0 - delta);
+//        if (ticks >= frame_tick + 1000) {
+//            frame_tick = ticks;
+//            printf("%d %f %f\n", frames, 1000.0/30, delta);
+//            frames = 0;
+//        }
+        if (delta < 1000.0/60) {
+            SDL_Delay(1000.0/60 - delta);
         }
         for (i=0;i<322;i++) { OLD_KEYS[i] = KEYS[i]; }
  
+//        frames++;
+
 //        if (event.type == SDL_QUIT) {
 //            quit = true;
 //            break;
