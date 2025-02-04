@@ -17,6 +17,15 @@
 #define MAP_SCALE 20
 #define HALF_MAP_SCALE 10
 #define TARGET_FPS 60
+#define top_l(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x+ 8, y + 2)
+#define bottom_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x_offset + 8, y + 18)
+#define middle_l(r, x, y) SDL_RenderDrawLine(r, x, y + 9, x + 8, y + 9)
+#define left_l(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x, y + 18)
+#define right_l(r, x, y) SDL_RenderDrawLine(r, x + 8, y + 2, x + 8, y + 18)
+#define left_top_l(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x, y + 9)
+#define right_bottom_l(r, x, y) SDL_RenderDrawLine(r, x + 8, y + 9, x + 8, y + 18)
+#define left_bottom_l(r, x, y) SDL_RenderDrawLine(r, x, y + 9, x, y + 18)
+#define right_top_l(r, x, y) SDL_RenderDrawLine(r, x + 8, y + 2, x + 8, y + 9)
 #define rad_ch(a) fmod(2.0 * PI + fmod(a, 2.0 * PI), 2.0 * PI)
 
 void move_f( const short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip)
@@ -49,6 +58,76 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
     }
 }
 
+void print_number(int number, int x_offset, int y_offset, SDL_Renderer* renderer)
+{
+    // _
+    //| |
+    // -
+    //| |
+    // -
+    switch (number) {
+        case 0:
+            top_l(renderer, x_offset, y_offset);
+            bottom_l(renderer, x_offset, y_offset);
+            left_l(renderer, x_offset, y_offset);
+            right_l(renderer, x_offset, y_offset);
+            break;
+        case 1:
+            right_l(renderer, x_offset, y_offset);
+            break;
+        case 2:
+            top_l(renderer, x_offset, y_offset);
+            bottom_l(renderer, x_offset, y_offset);
+            middle_l(renderer, x_offset, y_offset);
+            left_bottom_l(renderer, x_offset, y_offset);
+            right_top_l(renderer, x_offset, y_offset);
+            break;
+        case 3:
+            top_l(renderer, x_offset, y_offset);
+            bottom_l(renderer, x_offset, y_offset);
+            middle_l(renderer, x_offset, y_offset);
+            right_l(renderer, x_offset, y_offset);
+            break;
+        case 4:
+            right_l(renderer, x_offset, y_offset);
+            left_top_l(renderer, x_offset, y_offset);
+            middle_l(renderer, x_offset, y_offset);
+            break;
+        case 5:
+            top_l(renderer, x_offset, y_offset);
+            left_top_l(renderer, x_offset, y_offset);
+            middle_l(renderer, x_offset, y_offset);
+            right_bottom_l(renderer, x_offset, y_offset);
+            bottom_l(renderer, x_offset, y_offset);
+            break;
+        case 6:
+            top_l(renderer, x_offset, y_offset);
+            left_l(renderer, x_offset, y_offset);
+            middle_l(renderer, x_offset, y_offset);
+            bottom_l(renderer, x_offset, y_offset);
+            right_bottom_l(renderer, x_offset, y_offset);
+            break;
+        case 7:
+            top_l(renderer, x_offset, y_offset);
+            right_l(renderer, x_offset, y_offset);
+            break;
+        case 8:
+            top_l(renderer, x_offset, y_offset);
+            right_l(renderer, x_offset, y_offset);
+            left_l(renderer, x_offset, y_offset);
+            middle_l(renderer, x_offset, y_offset);
+            bottom_l(renderer, x_offset, y_offset);
+            break;
+        case 9:
+            top_l(renderer, x_offset, y_offset);
+            middle_l(renderer, x_offset, y_offset);
+            bottom_l(renderer, x_offset, y_offset);
+            right_l(renderer, x_offset, y_offset);
+            left_top_l(renderer, x_offset, y_offset);
+            break;
+    }
+}
+
 int main(void)
 {
     const short int map_arr[MAP_H][MAP_W] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -66,7 +145,7 @@ int main(void)
                                               {1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
     float location[2] = {2, 2};
     float direction = 1.5 * PI;
-    bool show_map, noclip, quit;
+    bool show_map, noclip, show_fps, quit;
     float mod = 1.0;
     short int move_tic = 1;
     int color, start, end, i, j, wall_hit;
@@ -78,9 +157,10 @@ int main(void)
     int delta = 0;
     ticks = 1000;
     old_ticks = 16.6;
-//    int frames = 0;
-//    unsigned int frame_tick = 0;
-    show_map = noclip = quit = false;
+    int frames = 0;
+    unsigned int frame_tick = 0;
+    int fps[3];
+    show_map = noclip = show_fps = quit = false;
     for (i=0;i<322;i++) { KEYS[i] = false; }
  
     // init SDL
@@ -98,14 +178,21 @@ int main(void)
             SDL_Delay(1000.0/TARGET_FPS - delta);
         }
         ticks = SDL_GetTicks();
-//        if (ticks >= frame_tick + 1000) {
-//            frame_tick = ticks;
-//            printf("%d\n", frames);
-//            frames = 0;
-//        }
+        if (ticks >= frame_tick + 1000) {
+            fps[0] = fps[1] = fps[2] = 0;
+            frame_tick = ticks;
+            if (frames > 999) {
+                frames = 999;
+            }
+            fps[2] = frames % 10;
+            fps[1] = frames % 100 / 10;
+            fps[0] = frames / 100;
+//            printf("%d%d%d\n", fps[0], fps[1], fps[2]);
+            frames = 0;
+        }
         for (i=0;i<322;i++) { OLD_KEYS[i] = KEYS[i]; }
  
-//        frames++;
+        frames++;
 
 //        if (event.type == SDL_QUIT) {
 //            quit = true;
@@ -155,8 +242,10 @@ int main(void)
             direction = rad_ch(direction - 0.01 * PI * mod);
         }
         if (!OLD_KEYS[SDL_SCANCODE_M] && KEYS[SDL_SCANCODE_M]) {
-            if (show_map) { show_map = false; }
-            else { show_map = true; }
+            show_map -= 1;
+        }
+        if (!OLD_KEYS[SDL_SCANCODE_F] && KEYS[SDL_SCANCODE_F]) {
+            show_fps -= 1;
         }
         if (move_direction_h > 0) {
             if (move_direction_v >= 0) {
@@ -282,6 +371,16 @@ int main(void)
             for (i=0; i<LENGTH * 2; i+=2) {
                 SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round(location[1]*MAP_SCALE + HALF_MAP_SCALE), ceil((location[0] + hit[i+1] * cos(hit[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((location[1] + hit[i+1] * sin(hit[i])) * MAP_SCALE+HALF_MAP_SCALE));
             }
+        }
+        SDL_SetRenderDrawColor( renderer, 242, 242, 242, 255 );
+        if (show_fps) {
+            int x_offset = MAP_W * MAP_SCALE + 10;
+            if (fps[0] > 0) {
+                print_number(fps[0], x_offset, 0, renderer);
+                x_offset += 12;
+            }
+            print_number(fps[1], x_offset, 0, renderer);
+            print_number(fps[2], x_offset + 12, 0, renderer);
         }
         // render window
  
