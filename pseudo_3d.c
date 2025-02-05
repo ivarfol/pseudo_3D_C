@@ -373,15 +373,22 @@ int main(void)
                 SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round(location[1]*MAP_SCALE + HALF_MAP_SCALE), ceil((location[0] + hit[i+1] * cos(hit[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((location[1] + hit[i+1] * sin(hit[i])) * MAP_SCALE+HALF_MAP_SCALE));
             }
         }
-        SDL_SetRenderDrawColor( renderer, 242, 242, 242, 255 );
         if (show_fps) {
             int x_offset = MAP_W * MAP_SCALE + 10;
+            SDL_SetRenderDrawColor( renderer, 0, 0, 0, 127 );
+            SDL_Rect r;
+            r.x = x_offset;
+            r.y = 0;
+            r.w = 36;
+            r.h = 20;
+            SDL_RenderFillRect(renderer, &r);
+            SDL_SetRenderDrawColor( renderer, 242, 242, 242, 255 );
             if (fps[0] > 0) {
                 print_number(fps[0], x_offset, 0, renderer);
                 x_offset += 12;
             }
-            print_number(fps[1], x_offset, 0, renderer);
-            print_number(fps[2], x_offset + 12, 0, renderer);
+            print_number(fps[1], x_offset + 12, 0, renderer);
+            print_number(fps[2], x_offset + 24, 0, renderer);
         }
         // render window
  
