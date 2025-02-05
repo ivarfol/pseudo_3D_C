@@ -27,7 +27,19 @@
 #define right_bottom_l(r, x, y) SDL_RenderDrawLine(r, x + 8, y + 9, x + 8, y + 18)
 #define left_bottom_l(r, x, y) SDL_RenderDrawLine(r, x, y + 9, x, y + 18)
 #define right_top_l(r, x, y) SDL_RenderDrawLine(r, x + 8, y + 2, x + 8, y + 9)
-#define rad_ch(a) fmod(2.0 * PI + fmod(a, 2.0 * PI), 2.0 * PI)
+
+float rad_ch(float a)
+{
+    if (a > 2 * PI) {
+        a -= 2 * PI;
+    }
+    else {
+        if (a < 2 * PI) {
+            a += 2 * PI;
+        }
+    }
+    return a;
+}
 
 void move_f( const short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip)
 {
