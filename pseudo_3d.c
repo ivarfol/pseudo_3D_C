@@ -195,10 +195,6 @@ int main(void)
  
         frames++;
 
-//        if (event.type == SDL_QUIT) {
-//            quit = true;
-//            break;
-//        }
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT:
@@ -349,11 +345,17 @@ int main(void)
 //        break;
 
         if (show_map) {
+            SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 );
+            SDL_Rect r;
+            r.x = 0;
+            r.y = 0;
+            r.w = MAP_W * MAP_SCALE;
+            r.h = MAP_H * MAP_SCALE;
+            SDL_RenderFillRect(renderer, &r);
             SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
             for (i=0; i<MAP_H; i++) {
                 for (j=0; j<MAP_W; j++) {
                     if (map_arr[i][j] == 1) {
-                        SDL_Rect r;
                         r.x = j * MAP_SCALE;
                         r.y = i * MAP_SCALE;
                         r.w = MAP_SCALE;
@@ -363,7 +365,6 @@ int main(void)
                 }
             }
             SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 );
-            SDL_Rect r;
             r.x = round(location[0] * MAP_SCALE)+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
             r.y = round(location[1] * MAP_SCALE)+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
             r.w = (int)HALF_MAP_SCALE/2;
@@ -375,7 +376,7 @@ int main(void)
         }
         if (show_fps) {
             int x_offset = MAP_W * MAP_SCALE + 10;
-            SDL_SetRenderDrawColor( renderer, 0, 0, 0, 127 );
+            SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 );
             SDL_Rect r;
             r.x = x_offset;
             r.y = 0;
