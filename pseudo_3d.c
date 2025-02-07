@@ -211,14 +211,14 @@ int main(void)
     int door_location[DOOR_NUM][2] = {{5, 10},
                                       {6, 9}};
     int door_type[DOOR_NUM] = {2, 3}; // 2 is - (horizontal), 3 is | (vertical)
-    float door_extencion[DOOR_NUM] = {1, 1};
+    float door_extencion[DOOR_NUM] = {0.25, 0.25};
     float door_ext_rate[DOOR_NUM] = {0, 0};
     float location[2] = {1, 2};
     float direction = 1.5 * PI;
     bool show_map, noclip, show_fps, quit, try_door;
     float mod = 1.0;
     short int move_tic = 1;
-    int color, start, end, i, j, wall_hit;
+    int color, start, end, i, j, k, wall_hit;
     float angle, move_direction_h, move_direction_v;
     float hit[LENGTH * 2] = {};
     bool KEYS[322];
@@ -369,6 +369,7 @@ int main(void)
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
         int h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
+        int door_index;
         for (i = 0; i < LENGTH * 2; i+=2) {
             int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
             float Cos = cos(angle);
@@ -391,7 +392,16 @@ int main(void)
             {
                 if (dofh < dofv && dofh < 30) {
                     mxh=(int)(rxh); myh=(int)(ryh); mph = myh * MAP_W + mxh;
-                    if(mph>-1 && mph<MAP_H*MAP_W && (map_arr[myh][mxh]==1 || map_arr[myh][mxh] == 2)){ //hit
+                    if (mph>-1 && mph<MAP_H*MAP_W && map_arr[myh][mxh] == 2) {
+                        for(k=0; k<DOOR_NUM; k++) {
+                            if (door_location[k][0] == mxh && door_location[k][1] == myh) {
+                                door_index = k;
+                                break;
+                            }
+                        }
+//                        printf("%f %f\n", door_location[door_index][0] + 0.25, rxh + 0.5 * xoh);
+                    }
+                    if(mph>-1 && mph<MAP_H*MAP_W && (map_arr[myh][mxh]==1 || (map_arr[myh][mxh] == 2 && (door_location[door_index][0] + door_extencion[door_index] < rxh + 0.5 * xoh)))){ //hit
                         dofh=30; disH=Cos*(rxh-px)-Sin*(ryh-py);
                         if (map_arr[myh][mxh] == 2) {
                             disH += Sin*(-0.5 * yoh) + Cos*(0.5 * xoh);
@@ -402,7 +412,23 @@ int main(void)
                 else {
                     if (dofv < 30) {
                         mxv=(int)(rxv); myv=(int)(ryv); mpv = myv * MAP_W + mxv;
-                        if(mpv>-1 && mpv<MAP_H*MAP_W && (map_arr[myv][mxv]==1 || map_arr[myv][mxv] == 3)){ //hit
+                        if (mpv>-1 && mpv<MAP_H*MAP_W && map_arr[myv][mxv] == 3) {
+                            for(k=0; k<DOOR_NUM; k++) {
+                                if (door_location[k][0] == mxv && door_location[k][1] == myv) {
+                                    door_index = k;
+                                    break;
+                                }
+                            }
+                        }
+//                        if (map_arr[myv][mxv] == 3) {
+//                            for(k=0; k<DOOR_NUM; k++) {
+//                                if (door_location[k][0] == mxv && door_location[k][1] == myv) {
+//                                    door_index = k;
+//                                    break;
+//                                }
+//                            }
+//                        }
+                        if(mpv>-1 && mpv<MAP_H*MAP_W && (map_arr[myv][mxv]==1 || (map_arr[myv][mxv] == 3 && (door_location[door_index][1] + door_extencion[door_index] < ryv + 0.5 * yov)))){ //hit
                             dofv=30; disV=Cos*(rxv-px)-Sin*(ryv-py);
                             if (map_arr[myv][mxv] == 3) {
                                 disV += Cos*(0.5 * xov) + Sin*(-0.5 * yov);
