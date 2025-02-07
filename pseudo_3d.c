@@ -48,7 +48,7 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
     angle = rad_ch(angle + rot);
     float x = location[0] + 0.125 * cos(angle) * mod;
     float y = location [1] + 0.125 * sin(angle) * mod;
-    if (map_arr[(int)round(y)][(int)round(location[0])] == 0) {
+    if (map_arr[(int)round(y)][(int)round(location[0])] != 1) {
         location[1] = y - 0.0625 * sin(angle) * mod;
     }
     else {
@@ -59,7 +59,7 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
             location[1] = round(y) - 0.51;
         }
     }
-    if (map_arr[(int)round(location[1])][(int)round(x)] == 0) {
+    if (map_arr[(int)round(location[1])][(int)round(x)] != 1) {
         location[0] = x - 0.0625 * cos(angle) * mod;
     }
     else {
@@ -211,8 +211,9 @@ int main(void)
     int door_location[DOOR_NUM][2] = {{5, 10},
                                       {6, 9}};
     int door_type[DOOR_NUM] = {2, 3}; // 2 is - (horizontal), 3 is | (vertical)
-    float door_extencion[DOOR_NUM] = {0.25, 0.25};
+    float door_extencion[DOOR_NUM] = {0.0, 0.0};
     float door_ext_rate[DOOR_NUM] = {0, 0};
+    int door_wait[DOOR_NUM] = {0, 0};
     float location[2] = {1, 2};
     float direction = 1.5 * PI;
     bool show_map, noclip, show_fps, quit, try_door;
@@ -346,8 +347,9 @@ int main(void)
                 if (tile == 2 || tile == 3) {
                     for (j=0;j<DOOR_NUM;j++) {
                         if (door_location[j][0] = tile_x && door_location[j][1] == tile_y) {
+                            printf("%dx %dy %dt %f\n", tile_x, tile_y, tile, door_ext_rate[j]);
                             if (door_ext_rate[j] == 0) {
-                                door_ext_rate[j] = -0.01;
+                                door_ext_rate[j] = 0.01;
                             }
                             break;
                         }
@@ -481,7 +483,32 @@ int main(void)
             }
             h_position = next_h_position;
         }
-//        break;
+
+        for (i=0; i<DOOR_NUM; i++) {
+            printf("%f %f\n", door_extencion[i], door_ext_rate[i]);
+            if (door_ext_rate[i] > 0) {
+                door_extencion[i] += door_ext_rate[i];
+                if (door_extencion[i] > 1 || door_extencion[i] < 0) {
+                    door_ext_rate[i] = -0.01;
+                    if (door_extencion[i] > 1) { door_extencion[i] = 1; }
+                    if (door_extencion[i] < 0) { door_extencion[i] = 0; }
+                    door_wait[i] = 300;
+                }
+            }
+            else {
+                if (door_wait[i] > 0) {
+                    door_wait[i] -= 1;
+                }
+                else {
+                    door_extencion[i] += door_ext_rate[i];
+                    if (door_extencion[i] > 1 || door_extencion[i] < 0) {
+                        door_ext_rate[i] = 0.0;
+                        if (door_extencion[i] > 1) { door_extencion[i] = 1; }
+                        if (door_extencion[i] < 0) { door_extencion[i] = 0; }
+                    }
+                }
+            }
+        }
 
         if (show_map) {
             SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 );
