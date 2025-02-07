@@ -42,13 +42,23 @@ float rad_ch(float a)
     return a;
 }
 
-void move_f( const short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip)
+void move_f( const short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip, int door_location[][2], float door_extencion[])
 {
     float angle = -direction;
     angle = rad_ch(angle + rot);
     float x = location[0] + 0.125 * cos(angle) * mod;
     float y = location [1] + 0.125 * sin(angle) * mod;
-    if (map_arr[(int)round(y)][(int)round(location[0])] != 1) {
+    int i, door_ext_x, door_ext_y;
+    door_ext_x = door_ext_x = 0;
+    for (i=0; i<DOOR_NUM; i++) {
+        if (door_location[i][1] == (int)round(y) && door_location[i][0] == (int)round(location[0])) {
+            door_ext_y = (int)round(door_extencion[i]);
+        }
+        if (door_location[i][1] == (int)round(location[1]) && door_location[i][0] == (int)round(x)) {
+            door_ext_x = (int)round(door_extencion[i]);
+        }
+    }
+    if (map_arr[(int)round(y)][(int)round(location[0])] == 0 || (map_arr[(int)round(y)][(int)round(location[0])] != 1 && (door_ext_y == 1 || door_ext_x == 1))) {
         location[1] = y - 0.0625 * sin(angle) * mod;
     }
     else {
@@ -59,7 +69,8 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
             location[1] = round(y) - 0.51;
         }
     }
-    if (map_arr[(int)round(location[1])][(int)round(x)] != 1) {
+    printf("%d %d\n", map_arr[(int)round(y)][(int)round(location[0])], map_arr[(int)round(location[1])][(int)round(x)]);
+    if (map_arr[(int)round(location[1])][(int)round(x)] == 0 || (map_arr[(int)round(location[1])][(int)round(x)] != 1 && (door_ext_y == 1 || door_ext_x == 1))) {
         location[0] = x - 0.0625 * cos(angle) * mod;
     }
     else {
@@ -324,11 +335,11 @@ int main(void)
                     move_direction_h = 1.75;
                 }
             }
-            move_f(map_arr, location, direction, rad_ch(move_direction_h * PI), mod, false);
+            move_f(map_arr, location, direction, rad_ch(move_direction_h * PI), mod, false, door_location, door_extencion);
         }
         else {
             if (move_direction_v >=0) {
-                move_f(map_arr, location, direction, move_direction_v * PI, mod, false);
+                move_f(map_arr, location, direction, move_direction_v * PI, mod, false, door_location, door_extencion);
             }
         }
        // clear window
@@ -491,7 +502,7 @@ int main(void)
                 door_extencion[i] += door_ext_rate[i];
                 if (door_extencion[i] > 1) {
                     door_ext_rate[i] = -0.01;
-                    door_extencion[i] = 1;
+                    door_extencion[i] = 1.0;
                     door_wait[i] = 300;
                 }
             }
@@ -503,7 +514,7 @@ int main(void)
                     door_extencion[i] += door_ext_rate[i];
                     if (door_extencion[i] < 0) {
                         door_ext_rate[i] = 0.0;
-                        door_extencion[i] = 0;
+                        door_extencion[i] = 0.0;
                     }
                 }
             }
