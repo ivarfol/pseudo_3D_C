@@ -346,9 +346,9 @@ int main(void)
                 short int tile = map_arr[tile_y][tile_x];
                 if (tile == 2 || tile == 3) {
                     for (j=0;j<DOOR_NUM;j++) {
-                        if (door_location[j][0] = tile_x && door_location[j][1] == tile_y) {
-                            printf("%dx %dy %dt %f\n", tile_x, tile_y, tile, door_ext_rate[j]);
-                            if (door_ext_rate[j] == 0) {
+                        if (door_location[j][0] == tile_x && door_location[j][1] == tile_y) {
+//                            printf("%dx %dy %dt %f\n", tile_x, tile_y, tile, door_ext_rate[j]);
+                            if (door_ext_rate[j] == 0.0) {
                                 door_ext_rate[j] = 0.01;
                             }
                             break;
@@ -401,7 +401,7 @@ int main(void)
                                 break;
                             }
                         }
-//                        printf("%f %f\n", door_location[door_index][0] + 0.25, rxh + 0.5 * xoh);
+//                        printf("%f %f h\n", door_location[door_index][0] + door_extencion[door_index], rxh + 0.5 * xoh);
                     }
                     if(mph>-1 && mph<MAP_H*MAP_W && (map_arr[myh][mxh]==1 || (map_arr[myh][mxh] == 2 && (door_location[door_index][0] + door_extencion[door_index] < rxh + 0.5 * xoh)))){ //hit
                         dofh=30; disH=Cos*(rxh-px)-Sin*(ryh-py);
@@ -421,6 +421,7 @@ int main(void)
                                     break;
                                 }
                             }
+//                            printf("%f %f v\n", door_location[door_index][0] + 0.25, ryv - 0.5 * yov);
                         }
 //                        if (map_arr[myv][mxv] == 3) {
 //                            for(k=0; k<DOOR_NUM; k++) {
@@ -485,13 +486,12 @@ int main(void)
         }
 
         for (i=0; i<DOOR_NUM; i++) {
-            printf("%f %f\n", door_extencion[i], door_ext_rate[i]);
+//            printf("%f %f\n", door_extencion[i], door_ext_rate[i]);
             if (door_ext_rate[i] > 0) {
                 door_extencion[i] += door_ext_rate[i];
-                if (door_extencion[i] > 1 || door_extencion[i] < 0) {
+                if (door_extencion[i] > 1) {
                     door_ext_rate[i] = -0.01;
-                    if (door_extencion[i] > 1) { door_extencion[i] = 1; }
-                    if (door_extencion[i] < 0) { door_extencion[i] = 0; }
+                    door_extencion[i] = 1;
                     door_wait[i] = 300;
                 }
             }
@@ -501,10 +501,9 @@ int main(void)
                 }
                 else {
                     door_extencion[i] += door_ext_rate[i];
-                    if (door_extencion[i] > 1 || door_extencion[i] < 0) {
+                    if (door_extencion[i] < 0) {
                         door_ext_rate[i] = 0.0;
-                        if (door_extencion[i] > 1) { door_extencion[i] = 1; }
-                        if (door_extencion[i] < 0) { door_extencion[i] = 0; }
+                        door_extencion[i] = 0;
                     }
                 }
             }
