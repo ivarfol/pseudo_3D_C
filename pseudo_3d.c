@@ -42,7 +42,7 @@ float rad_ch(float a)
     return a;
 }
 
-void move_f( const short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip, int door_location[][2], float door_extencion[])
+void move_f( const short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip, int door_location[][2], float door_extencion[], int door_num)
 {
     float angle = -direction;
     angle = rad_ch(angle + rot);
@@ -50,7 +50,7 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
     float y = location [1] + 0.125 * sin(angle) * mod;
     int i, door_ext_x, door_ext_y;
     door_ext_x = door_ext_x = 0;
-    for (i=0; i<DOOR_NUM; i++) {
+    for (i=0; i<door_num; i++) {
         if (door_location[i][1] == (int)round(y) && door_location[i][0] == (int)round(location[0])) {
             door_ext_y = (int)round(door_extencion[i]);
         }
@@ -218,12 +218,6 @@ int main(void)
                                               {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
                                               {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                               {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
-    int door_location[DOOR_NUM][2] = {{5, 10},
-                                      {6, 9}};
-    int door_type[DOOR_NUM] = {2, 3}; // 2 is - (horizontal), 3 is | (vertical)
-    float door_extencion[DOOR_NUM] = {0.0, 0.0};
-    float door_ext_rate[DOOR_NUM] = {0, 0};
-    int door_wait[DOOR_NUM] = {0, 0};
     float location[2] = {1, 2};
     float direction = 1.5 * PI;
     bool show_map, noclip, show_fps, quit, try_door;
@@ -241,9 +235,35 @@ int main(void)
     int frames = 0;
     unsigned int frame_tick = 0;
     int fps[3];
+    int door_num = 0;
     show_map = noclip = show_fps = quit = try_door = false;
-    for (i=0;i<322;i++) { KEYS[i] = false; }
- 
+    for (i=0; i<MAP_H; i++) {
+        for (j=0; j<MAP_W; j++) {
+            if (map_arr[i][j] == 2 || map_arr[i][j] == 3) { // 2 - horizontal, 3 - vertical
+                door_num++;
+            }
+        }
+    }
+   for (i=0;i<322;i++) { KEYS[i] = false; }
+    int door_location[door_num][2];
+    int door_wait[door_num];
+    float door_extencion[door_num];
+    float door_ext_rate[door_num];
+    door_num = 0;
+    for (i=0; i<MAP_H; i++) {
+        for (j=0; j<MAP_W; j++) {
+            if (map_arr[i][j] == 2 || map_arr[i][j] == 3) { // 2 - horizontal, 3 - vertical
+                door_location[door_num][0] = j;
+                door_location[door_num][1] = i;
+                door_extencion[door_num] = 0.0;
+                door_ext_rate[door_num] = 0.0;
+                door_wait[door_num] = 0;
+                door_num++;
+            }
+        }
+    }
+    printf("%dx %dy %dx %dy\n", door_location[0][0], door_location[0][1], door_location[1][0], door_location[1][1]);
+
     // init SDL
  
     SDL_Init(SDL_INIT_VIDEO);
@@ -312,10 +332,10 @@ int main(void)
                 move_direction_v = 1.0;
             }
         }
-        if (KEYS[SDL_SCANCODE_Q]) {
+        if (KEYS[SDL_SCANCODE_Q] || KEYS[SDL_SCANCODE_LEFT]) {
             direction = rad_ch(direction + 0.01 * PI * mod);
         }
-        if (KEYS[SDL_SCANCODE_E]) {
+        if (KEYS[SDL_SCANCODE_E] || KEYS[SDL_SCANCODE_RIGHT]) {
             direction = rad_ch(direction - 0.01 * PI * mod);
         }
         if (!OLD_KEYS[SDL_SCANCODE_M] && KEYS[SDL_SCANCODE_M]) {
@@ -334,11 +354,11 @@ int main(void)
                     move_direction_h = 1.75;
                 }
             }
-            move_f(map_arr, location, direction, rad_ch(move_direction_h * PI), mod, false, door_location, door_extencion);
+            move_f(map_arr, location, direction, rad_ch(move_direction_h * PI), mod, false, door_location, door_extencion, door_num);
         }
         else {
             if (move_direction_v >=0) {
-                move_f(map_arr, location, direction, move_direction_v * PI, mod, false, door_location, door_extencion);
+                move_f(map_arr, location, direction, move_direction_v * PI, mod, false, door_location, door_extencion, door_num);
             }
         }
        // clear window
@@ -355,7 +375,7 @@ int main(void)
                 int tile_y = (int)round(location[1] - dist * sin(direction));
                 short int tile = map_arr[tile_y][tile_x];
                 if (tile == 2 || tile == 3) {
-                    for (j=0;j<DOOR_NUM;j++) {
+                    for (j=0;j<door_num;j++) {
                         if (door_location[j][0] == tile_x && door_location[j][1] == tile_y) {
 //                            printf("%dx %dy %dt %f\n", tile_x, tile_y, tile, door_ext_rate[j]);
                             if (door_ext_rate[j] == 0.0) {
@@ -405,7 +425,7 @@ int main(void)
                 if (dofh < dofv && dofh < 30) {
                     mxh=(int)(rxh); myh=(int)(ryh); mph = myh * MAP_W + mxh;
                     if (mph>-1 && mph<MAP_H*MAP_W && map_arr[myh][mxh] == 2) {
-                        for(k=0; k<DOOR_NUM; k++) {
+                        for(k=0; k<door_num; k++) {
                             if (door_location[k][0] == mxh && door_location[k][1] == myh) {
                                 door_index = k;
                                 break;
@@ -425,7 +445,7 @@ int main(void)
                     if (dofv < 30) {
                         mxv=(int)(rxv); myv=(int)(ryv); mpv = myv * MAP_W + mxv;
                         if (mpv>-1 && mpv<MAP_H*MAP_W && map_arr[myv][mxv] == 3) {
-                            for(k=0; k<DOOR_NUM; k++) {
+                            for(k=0; k<door_num; k++) {
                                 if (door_location[k][0] == mxv && door_location[k][1] == myv) {
                                     door_index = k;
                                     break;
@@ -495,7 +515,7 @@ int main(void)
             h_position = next_h_position;
         }
 
-        for (i=0; i<DOOR_NUM; i++) {
+        for (i=0; i<door_num; i++) {
 //            printf("%f %f\n", door_extencion[i], door_ext_rate[i]);
             if (door_ext_rate[i] > 0) {
                 door_extencion[i] += door_ext_rate[i];
