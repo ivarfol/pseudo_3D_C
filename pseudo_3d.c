@@ -28,6 +28,10 @@
 #define right_bottom_l(r, x, y) SDL_RenderDrawLine(r, x + 8, y + 9, x + 8, y + 18)
 #define left_bottom_l(r, x, y) SDL_RenderDrawLine(r, x, y + 9, x, y + 18)
 #define right_top_l(r, x, y) SDL_RenderDrawLine(r, x + 8, y + 2, x + 8, y + 9)
+#define top_l_bot_r(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x + 8, y + 18)
+#define top_r_bot_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x + 8, y + 2)
+#define y_left_top(r, x, y) SDL_RenderDrawLine(r, x + 4, y + 9, x, y + 2)
+
 
 float rad_ch(float a)
 {
@@ -597,8 +601,12 @@ int main(void)
             print_number(fps[2], x_offset + 24, 0, renderer);
             print_number((int)round(location[0]) / 10, x_offset, 25, renderer);
             print_number((int)round(location[0]) % 10, x_offset + 12, 25, renderer);
+            top_l_bot_r(renderer, x_offset + 24, 25);
+            top_r_bot_l(renderer, x_offset + 24, 25);
             print_number((int)round(location[1]) / 10, x_offset, 50, renderer);
             print_number((int)round(location[1]) % 10, x_offset + 12, 50, renderer);
+            top_r_bot_l(renderer, x_offset + 24, 50);
+            y_left_top(renderer, x_offset + 24, 50);
         }
         // render window
  
