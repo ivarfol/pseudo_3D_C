@@ -69,7 +69,6 @@ void move_f( const short int map_arr[][MAP_W], float location[], float direction
             location[1] = round(y) - 0.51;
         }
     }
-    printf("%d %d\n", map_arr[(int)round(y)][(int)round(location[0])], map_arr[(int)round(location[1])][(int)round(x)]);
     if (map_arr[(int)round(location[1])][(int)round(x)] == 0 || (map_arr[(int)round(location[1])][(int)round(x)] != 1 && (door_ext_y == 1 || door_ext_x == 1))) {
         location[0] = x - 0.0625 * cos(angle) * mod;
     }
@@ -325,7 +324,7 @@ int main(void)
         if (!OLD_KEYS[SDL_SCANCODE_F] && KEYS[SDL_SCANCODE_F]) {
             show_fps -= 1;
         }
-        if (!OLD_KEYS[SDL_SCANCODE_O] && KEYS[SDL_SCANCODE_O]) {
+        if (!OLD_KEYS[SDL_SCANCODE_SPACE] && KEYS[SDL_SCANCODE_SPACE]) {
             try_door -= 1;
         }
         if (move_direction_h > 0) {
