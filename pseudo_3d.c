@@ -391,13 +391,23 @@ int main(void)
             {
                 if (dofh < dofv && dofh < 30) {
                     mxh=(int)(rxh); myh=(int)(ryh); mph = myh * MAP_W + mxh;
-                    if(mph>-1 && mph<MAP_H*MAP_W && map_arr[myh][mxh]==1){ dofh=30; disH=Cos*(rxh-px)-Sin*(ryh-py);}//hit
+                    if(mph>-1 && mph<MAP_H*MAP_W && (map_arr[myh][mxh]==1 || map_arr[myh][mxh] == 2)){ //hit
+                        dofh=30; disH=Cos*(rxh-px)-Sin*(ryh-py);
+                        if (map_arr[myh][mxh] == 2) {
+                            disH += Sin*(-0.5 * yoh);
+                        }
+                    }
                     else{ rxh+=xoh; ryh+=yoh; dofh+=1;}                                               //check next horizontal
                 }
                 else {
                     if (dofv < 30) {
                         mxv=(int)(rxv); myv=(int)(ryv); mpv = myv * MAP_W + mxv;
-                        if(mpv>-1 && mpv<MAP_H*MAP_W && map_arr[myv][mxv]==1){ dofv=30; disV=Cos*(rxv-px)-Sin*(ryv-py);}//hit
+                        if(mpv>-1 && mpv<MAP_H*MAP_W && (map_arr[myv][mxv]==1 || map_arr[myv][mxv] == 3)){ //hit
+                            dofv=30; disV=Cos*(rxv-px)-Sin*(ryv-py);
+                            if (map_arr[myv][mxv] == 3) {
+                                disV += Cos*(0.5 * xov);
+                            }
+                        }
                         else{ rxv+=xov; ryv+=yov; dofv+=1;}                                               //check next horizontal
                     }
                 }
