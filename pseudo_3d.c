@@ -58,26 +58,30 @@ void move_f( short int map_arr[][MAP_W], float location[], float direction, floa
             door_ext_x = (int)round(door_extencion[i]);
         }
     }
-    if (map_arr[(int)round(y)][(int)round(location[0])] == 0 || (map_arr[(int)round(y)][(int)round(location[0])] != 1 && (door_ext_y == 1 || door_ext_x == 1))) {
+    if (map_arr[(int)round(y)][(int)round(location[0])] == 0 || (map_arr[(int)round(y)][(int)round(location[0])] != 1 && door_ext_y == 1)) {
         location[1] = y - 0.0625 * sin(angle) * mod;
     }
     else {
-        if (sin(angle) < 0) {
-            location[1] = round(y) + 0.51;
-        }
-        else {
-            location[1] = round(y) - 0.51;
+        if (map_arr[(int)round(y)][(int)round(location[0])] != 2 && map_arr[(int)round(y)][(int)round(location[0])] != 3) {
+            if (sin(angle) < 0) {
+                location[1] = round(y) + 0.51;
+            }
+            else {
+                location[1] = round(y) - 0.51;
+            }
         }
     }
-    if (map_arr[(int)round(location[1])][(int)round(x)] == 0 || (map_arr[(int)round(location[1])][(int)round(x)] != 1 && (door_ext_y == 1 || door_ext_x == 1))) {
+    if (map_arr[(int)round(location[1])][(int)round(x)] == 0 || (map_arr[(int)round(location[1])][(int)round(x)] != 1 && door_ext_x == 1)) {
         location[0] = x - 0.0625 * cos(angle) * mod;
     }
     else {
-        if (cos(angle) < 0) {
-            location[0] = round(x) + 0.51;
-        }
-        else {
-            location[0] = round(x) - 0.51;
+        if (map_arr[(int)round(location[1])][(int)round(x)] != 2 && map_arr[(int)round(location[1])][(int)round(x)] != 3) {
+            if (cos(angle) < 0) {
+                location[0] = round(x) + 0.51;
+            }
+            else {
+                location[0] = round(x) - 0.51;
+            }
         }
     }
 }
@@ -215,8 +219,8 @@ int main(void)
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
     float direction = 1.5 * PI;
     bool show_map, noclip, show_fps, quit, try_door;
@@ -439,7 +443,7 @@ int main(void)
                         }
 //                        printf("%f %f h\n", door_location[door_index][0] + door_extencion[door_index], rxh + 0.5 * xoh);
                     }
-                    if(mph>-1 && mph<MAP_H*MAP_W && (map_arr[myh][mxh]==1 || (map_arr[myh][mxh] == 2 && (door_location[door_index][0] + door_extencion[door_index] < rxh + 0.5 * xoh)))){ //hit
+                    if(mph>-1 && mph<MAP_H*MAP_W && (map_arr[myh][mxh]==1 || (map_arr[myh][mxh] == 2 && (door_location[door_index][0] + door_extencion[door_index] <= rxh + 0.5 * xoh)))){ //hit
                         dofh=30; disH=Cos*(rxh-px)-Sin*(ryh-py);
                         if (map_arr[myh][mxh] == 2) {
                             disH += Sin*(-0.5 * yoh) + Cos*(0.5 * xoh);
@@ -467,7 +471,7 @@ int main(void)
 //                                }
 //                            }
 //                        }
-                        if(mpv>-1 && mpv<MAP_H*MAP_W && (map_arr[myv][mxv]==1 || (map_arr[myv][mxv] == 3 && (door_location[door_index][1] + door_extencion[door_index] < ryv + 0.5 * yov)))){ //hit
+                        if(mpv>-1 && mpv<MAP_H*MAP_W && (map_arr[myv][mxv]==1 || (map_arr[myv][mxv] == 3 && (door_location[door_index][1] + door_extencion[door_index] <= ryv + 0.5 * yov)))){ //hit
                             dofv=30; disV=Cos*(rxv-px)-Sin*(ryv-py);
                             if (map_arr[myv][mxv] == 3) {
                                 disV += Cos*(0.5 * xov) + Sin*(-0.5 * yov);
