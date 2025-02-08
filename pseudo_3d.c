@@ -419,9 +419,11 @@ int main(void)
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
         int h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
-        int door_index;
+        int door_indexH, door_indexV;
         for (i = 0; i < LENGTH * 2; i+=2) {
             int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
+            bool is_doorV = false;
+            bool is_doorH = false;
             float Cos = cos(angle);
             float Sin = sin(angle);
             //---Vertical---
@@ -445,18 +447,19 @@ int main(void)
                     if (mph>-1 && mph<MAP_H*MAP_W && map_arr[myh][mxh] == 2) {
                         for(k=0; k<door_num; k++) {
                             if (door_location[k][0] == mxh && door_location[k][1] == myh) {
-                                door_index = k;
+                                door_indexH = k;
                                 break;
                             }
                         }
 //                        printf("%f %f h\n", door_location[door_index][0] + door_extencion[door_index], rxh + 0.5 * xoh);
                     }
-                    if(mph>-1 && mph<MAP_H*MAP_W && (map_arr[myh][mxh]==1 || (map_arr[myh][mxh] == 2 && (door_location[door_index][0] + door_extencion[door_index] < rxh + 0.5 * xoh)))){ //hit
+                    if(mph>-1 && mph<MAP_H*MAP_W && (map_arr[myh][mxh]==1 || (map_arr[myh][mxh] == 2 && (door_location[door_indexH][0] + door_extencion[door_indexH] < rxh + 0.5 * xoh)))){ //hit
                         dofh=DOF; disH=Cos*(rxh-px)-Sin*(ryh-py);
                         if (map_arr[myh][mxh] == 2) {
                             disH += Sin*(-0.5 * yoh) + Cos*(0.5 * xoh);
                             rxh += 0.5 * xoh;
                             ryh += 0.5 * yoh;
+                            is_doorH = true;
                         }
                     }
                     else{ rxh+=xoh; ryh+=yoh; dofh+=1;}                                               //check next horizontal
@@ -467,7 +470,7 @@ int main(void)
                         if (mpv>-1 && mpv<MAP_H*MAP_W && map_arr[myv][mxv] == 3) {
                             for(k=0; k<door_num; k++) {
                                 if (door_location[k][0] == mxv && door_location[k][1] == myv) {
-                                    door_index = k;
+                                    door_indexV = k;
                                     break;
                                 }
                             }
@@ -481,12 +484,13 @@ int main(void)
 //                                }
 //                            }
 //                        }
-                        if(mpv>-1 && mpv<MAP_H*MAP_W && (map_arr[myv][mxv]==1 || (map_arr[myv][mxv] == 3 && (door_location[door_index][1] + door_extencion[door_index] < ryv + 0.5 * yov)))){ //hit
+                        if(mpv>-1 && mpv<MAP_H*MAP_W && (map_arr[myv][mxv]==1 || (map_arr[myv][mxv] == 3 && (door_location[door_indexV][1] + door_extencion[door_indexV] < ryv + 0.5 * yov)))){ //hit
                             dofv=DOF; disV=Cos*(rxv-px)-Sin*(ryv-py);
                             if (map_arr[myv][mxv] == 3) {
                                 disV += Cos*(0.5 * xov) + Sin*(-0.5 * yov);
                                 rxv += 0.5 * xov;
                                 ryv += 0.5 * yov;
+                                is_doorV = true;
                             }
                         }
                         else{ rxv+=xov; ryv+=yov; dofv+=1;}                                               //check next horizontal
@@ -496,7 +500,7 @@ int main(void)
 //            printf("ang %f ryh %f rxh %f yoh %f xoh %f disH %f\n", angle / PI, ryh, rxh, yoh, xoh,  disH);
 //            printf("ang %f ryv %f rxv %f yov %f xov %f disV %f\n", angle / PI, ryv, rxv, yov, xov, disV);
 
-            if(disV<disH){ rxh=rxv; ryh=ryv; disH=disV; side=0; }                  //horizontal hit first
+            if(disV<disH){ rxh=rxv; ryh=ryv; disH=disV; side=0; is_doorH = is_doorV; door_indexH = door_indexV;}                  //horizontal hit first
 
             hit[i] = rad_ch(2.0 * PI - angle);
             hit[i+1] = (disH);
@@ -536,11 +540,21 @@ int main(void)
             r.w = next_h_position - h_position;
             r.h = end - start;
             SDL_Rect texture_rect;
-            if (side == 1) {
-                texture_rect.x = (int)((rxh - (int)rxh) * 1000);
+            if (!is_doorH) {
+                if (side == 1) {
+                    texture_rect.x = (int)((rxh - (int)rxh) * 1000);
+                }
+                else {
+                    texture_rect.x = (int)((ryh - (int)ryh) * 1000);
+                }
             }
             else {
-                texture_rect.x = (int)((ryh - (int)ryh) * 1000);
+                if (side == 1) {
+                    texture_rect.x = (int)((rxh - (int)rxh - door_extencion[door_indexH]) * 1000);
+                }
+                else {
+                    texture_rect.x = (int)((ryh - (int)ryh - door_extencion[door_indexH]) * 1000);
+                }
             }
             texture_rect.y = 0;
             texture_rect.w = 1;
