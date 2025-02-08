@@ -175,9 +175,9 @@ int main(void)
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 1, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 1, 0, 1, 2, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -270,12 +270,10 @@ int main(void)
                 door_wait[door_num] = 0;
                 door_num++;
             }
-            else {
-                if (map_arr[i][j] == 9) {
-                    location[0] = j;
-                    location[1] = i;
-                    map_arr[i][j] = 0;
-                }
+            else if (map_arr[i][j] == 9) {
+                location[0] = j;
+                location[1] = i;
+                map_arr[i][j] = 0;
             }
         }
     }
@@ -289,10 +287,41 @@ int main(void)
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_Event event;
     IMG_Init(IMG_INIT_PNG);
-    SDL_Texture* wall_texture = IMG_LoadTexture(renderer, "wall.png");
-    SDL_Texture* door_texture = IMG_LoadTexture(renderer, "door.png");
+
+    SDL_Texture* wall_texture;
+    if (fopen("wall.png", "r")!=NULL) { wall_texture = IMG_LoadTexture(renderer, "wall.png"); }
+    else { wall_texture = IMG_LoadTexture(renderer, "missing.png"); }
     SDL_SetTextureBlendMode(wall_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* door_texture;
+    if (fopen("door.png", "r")!=NULL) { door_texture = IMG_LoadTexture(renderer, "door.png"); }
+    else { door_texture = IMG_LoadTexture(renderer, "missing.png"); }
     SDL_SetTextureBlendMode(door_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* four_texture;
+    if (fopen("texture4.png", "r")!=NULL) { four_texture = IMG_LoadTexture(renderer, "texture4.png"); }
+    else { four_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    SDL_SetTextureBlendMode(four_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* five_texture;
+    if (fopen("texture5.png", "r")!=NULL) { five_texture = IMG_LoadTexture(renderer, "texture5.png"); }
+    else { five_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    SDL_SetTextureBlendMode(five_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* six_texture;
+    if (fopen("texture6.png", "r")!=NULL) { six_texture = IMG_LoadTexture(renderer, "texture5.png"); }
+    else { six_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    SDL_SetTextureBlendMode(six_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* seven_texture;
+    if (fopen("texture7.png", "r")!=NULL) { seven_texture = IMG_LoadTexture(renderer, "texture5.png"); }
+    else { seven_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    SDL_SetTextureBlendMode(seven_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* eight_texture;
+    if (fopen("texture8.png", "r")!=NULL) { eight_texture = IMG_LoadTexture(renderer, "texture5.png"); }
+    else { eight_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    SDL_SetTextureBlendMode(eight_texture, SDL_BLENDMODE_BLEND);
     // handle events
  
     while (!quit) {
@@ -435,6 +464,8 @@ int main(void)
             int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
             bool is_doorV = false;
             bool is_doorH = false;
+            int symbolV = 9;
+            int symbolH = 9;
             float Cos = cos(angle);
             float Sin = sin(angle);
             //---Vertical---
@@ -464,9 +495,10 @@ int main(void)
                         }
 //                        printf("%f %f h\n", door_location[door_index][0] + door_extencion[door_index], rxh + 0.5 * xoh);
                     }
-                    if(mph>-1 && mph<MAP_H*MAP_W && (map_arr[myh][mxh]==1 || (map_arr[myh][mxh] == 2 && (door_location[door_indexH][0] + door_extencion[door_indexH] < rxh + 0.5 * xoh)))){ //hit
+                    if(mph>-1 && mph<MAP_H*MAP_W && ((map_arr[myh][mxh]!=0 && map_arr[myh][mxh]!=2 && map_arr[myh][mxh]!=3) || (map_arr[myh][mxh] == 2 && (door_location[door_indexH][0] + door_extencion[door_indexH] < rxh + 0.5 * xoh)))){ //hit
                         dofh=DOF; disH=Cos*(rxh-px)-Sin*(ryh-py);
-                        if (map_arr[myh][mxh] == 2) {
+                        symbolH = map_arr[myh][mxh];
+                        if (symbolH == 2) {
                             disH += Sin*(-0.5 * yoh) + Cos*(0.5 * xoh);
                             rxh += 0.5 * xoh;
                             ryh += 0.5 * yoh;
@@ -495,9 +527,10 @@ int main(void)
 //                                }
 //                            }
 //                        }
-                        if(mpv>-1 && mpv<MAP_H*MAP_W && (map_arr[myv][mxv]==1 || (map_arr[myv][mxv] == 3 && (door_location[door_indexV][1] + door_extencion[door_indexV] < ryv + 0.5 * yov)))){ //hit
+                        if(mpv>-1 && mpv<MAP_H*MAP_W && ((map_arr[myv][mxv]!=0 && map_arr[myv][mxv]!=2 && map_arr[myv][mxv]!=3) || (map_arr[myv][mxv] == 3 && (door_location[door_indexV][1] + door_extencion[door_indexV] < ryv + 0.5 * yov)))){ //hit
                             dofv=DOF; disV=Cos*(rxv-px)-Sin*(ryv-py);
-                            if (map_arr[myv][mxv] == 3) {
+                            symbolV = map_arr[myv][mxv];
+                            if (symbolV == 3) {
                                 disV += Cos*(0.5 * xov) + Sin*(-0.5 * yov);
                                 rxv += 0.5 * xov;
                                 ryv += 0.5 * yov;
@@ -511,8 +544,7 @@ int main(void)
 //            printf("ang %f ryh %f rxh %f yoh %f xoh %f disH %f\n", angle / PI, ryh, rxh, yoh, xoh,  disH);
 //            printf("ang %f ryv %f rxv %f yov %f xov %f disV %f\n", angle / PI, ryv, rxv, yov, xov, disV);
 
-            if(disV<disH){ rxh=rxv; ryh=ryv; disH=disV; side=0; is_doorH = is_doorV; door_indexH = door_indexV;}                  //horizontal hit first
-
+            if(disV<disH){ rxh=rxv; ryh=ryv; disH=disV; side=0; is_doorH = is_doorV; door_indexH = door_indexV; symbolH = symbolV; }                  //horizontal hit first
             hit[i] = rad_ch(2.0 * PI - angle);
             hit[i+1] = (disH);
             disH=disH*cos(direction - angle);                            //fix fisheye
@@ -543,7 +575,24 @@ int main(void)
             r.h = end - start;
             SDL_Rect texture_rect;
             if (!is_doorH) {
-                SDL_SetTextureAlphaMod(wall_texture, color);
+                if (symbolH == 1) {
+                    SDL_SetTextureAlphaMod(wall_texture, color);
+                }
+                else if (symbolH == 4) {
+                    SDL_SetTextureAlphaMod(four_texture, color);
+                }
+                else if (symbolH == 5) {
+                    SDL_SetTextureAlphaMod(five_texture, color);
+                }
+                else if (symbolH == 6) {
+                    SDL_SetTextureAlphaMod(six_texture, color);
+                }
+                else if (symbolH == 7) {
+                    SDL_SetTextureAlphaMod(seven_texture, color);
+                }
+                else if (symbolH == 8) {
+                    SDL_SetTextureAlphaMod(eight_texture, color);
+                }
                 //SDL_SetTextureColorMod(wall_texture, color, color, color);
                 if (side == 1) {
                     if (Sin > 0) {
@@ -579,7 +628,12 @@ int main(void)
                 SDL_RenderCopy(renderer, door_texture, &texture_rect, &r);
             }
             else {
-                SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
+                if (symbolH == 1) SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
+                else if (symbolH == 4) SDL_RenderCopy(renderer, four_texture, &texture_rect, &r);
+                else if (symbolH == 5) SDL_RenderCopy(renderer, five_texture, &texture_rect, &r);
+                else if (symbolH == 6) SDL_RenderCopy(renderer, six_texture, &texture_rect, &r);
+                else if (symbolH == 7) SDL_RenderCopy(renderer, seven_texture, &texture_rect, &r);
+                else if (symbolH == 8) SDL_RenderCopy(renderer, eight_texture, &texture_rect, &r);
             }
 //            SDL_RenderFillRect(renderer, &r);
             h_position = next_h_position;
@@ -674,6 +728,11 @@ int main(void)
  
     SDL_DestroyTexture(wall_texture);
     SDL_DestroyTexture(door_texture);
+    SDL_DestroyTexture(four_texture);
+    SDL_DestroyTexture(five_texture);
+    SDL_DestroyTexture(six_texture);
+    SDL_DestroyTexture(seven_texture);
+    SDL_DestroyTexture(eight_texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
