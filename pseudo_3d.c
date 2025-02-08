@@ -654,6 +654,8 @@ int main(void)
  
     // cleanup SDL
  
+    SDL_DestroyTexture(wall_texture);
+    SDL_DestroyTexture(door_texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
