@@ -9,7 +9,7 @@
 #define LENGTH 600 
 #define H 600
 #define SCALE 2.0
-#define DOF 91
+#define DOF 60
 #define NO_PI_FOV 0.5
 #define FOV NO_PI_FOV * PI
 #define SHIFT FOV / 2
@@ -382,11 +382,11 @@ int main(void)
         }
        // clear window
  
-        SDL_SetRenderDrawColor(renderer, 0, 220, 240, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 240, 240, 255);
         SDL_RenderClear(renderer);
         SDL_Rect r;
         r.x = 0;
-        r.y = H / 2;
+        r.y = H / 2 * (1 + 0.5 / 52 * RATIO);
         r.w = LENGTH * SCALE;
         r.h = H / 2;
         SDL_SetRenderDrawColor(renderer, 0, 220, 0, 255);
@@ -527,8 +527,9 @@ int main(void)
 //            if(end>H) {
 //                end = H - 1;
 //            }
-            color = round(240 -8 * hit[i+1]);
+            color = (int)round(765 -12.75 * hit[i+1]);
             if (color < 0) {color = 0;}
+            if (color > 255) {color = 255;}
             int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001);
 //            if (h_position < 0) { h_position = LENGTH - h_position; }
 //            printf("%d\n", h_position);
@@ -539,6 +540,9 @@ int main(void)
             r.h = end - start;
             SDL_Rect texture_rect;
             if (!is_doorH) {
+                SDL_SetTextureBlendMode(wall_texture, SDL_BLENDMODE_BLEND);
+                SDL_SetTextureAlphaMod(wall_texture, color);
+                //SDL_SetTextureColorMod(wall_texture, color, color, color);
                 if (side == 1) {
                     if (Sin > 0) {
                         texture_rect.x = (int)((rxh - (int)rxh) * 1000);
@@ -557,6 +561,9 @@ int main(void)
                 }
             }
             else {
+                SDL_SetTextureBlendMode(door_texture, SDL_BLENDMODE_BLEND);
+                SDL_SetTextureAlphaMod(door_texture, color);
+                //SDL_SetTextureColorMod(door_texture, color, color, color);
                 if (side == 1) {
                     texture_rect.x = (int)((rxh - (int)rxh - door_extencion[door_indexH]) * 1000);
                 }
