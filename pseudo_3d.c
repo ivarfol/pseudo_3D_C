@@ -291,6 +291,8 @@ int main(void)
     IMG_Init(IMG_INIT_PNG);
     SDL_Texture* wall_texture = IMG_LoadTexture(renderer, "wall.png");
     SDL_Texture* door_texture = IMG_LoadTexture(renderer, "door.png");
+    SDL_SetTextureBlendMode(wall_texture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(door_texture, SDL_BLENDMODE_BLEND);
     // handle events
  
     while (!quit) {
@@ -541,7 +543,6 @@ int main(void)
             r.h = end - start;
             SDL_Rect texture_rect;
             if (!is_doorH) {
-                SDL_SetTextureBlendMode(wall_texture, SDL_BLENDMODE_BLEND);
                 SDL_SetTextureAlphaMod(wall_texture, color);
                 //SDL_SetTextureColorMod(wall_texture, color, color, color);
                 if (side == 1) {
@@ -562,7 +563,6 @@ int main(void)
                 }
             }
             else {
-                SDL_SetTextureBlendMode(door_texture, SDL_BLENDMODE_BLEND);
                 SDL_SetTextureAlphaMod(door_texture, color);
                 //SDL_SetTextureColorMod(door_texture, color, color, color);
                 if (side == 1) {
