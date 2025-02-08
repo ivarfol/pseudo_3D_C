@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <string.h>
+#include <SDL2/SDL_image.h>
 
 #define PI 3.1415926535
 #define LENGTH 600 
@@ -285,6 +286,8 @@ int main(void)
     SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LENGTH*SCALE, H, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_Event event;
+    IMG_Init(IMG_INIT_PNG);
+    SDL_Texture* wall_texture = IMG_LoadTexture(renderer, "wall.png");
     // handle events
  
     while (!quit) {
@@ -527,7 +530,8 @@ int main(void)
             r.y = start;
             r.w = next_h_position - h_position;
             r.h = end - start;
-            SDL_RenderFillRect(renderer, &r);
+            SDL_RenderCopy(renderer, wall_texture, NULL, &r);
+//            SDL_RenderFillRect(renderer, &r);
             h_position = next_h_position;
         }
 
