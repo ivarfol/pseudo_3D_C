@@ -9,6 +9,7 @@
 #define LENGTH 600 
 #define H 600
 #define SCALE 2.0
+#define DOF 91
 #define NO_PI_FOV 0.5
 #define FOV NO_PI_FOV * PI
 #define SHIFT FOV / 2
@@ -424,22 +425,22 @@ int main(void)
             float Cos = cos(angle);
             float Sin = sin(angle);
             //---Vertical---
-            dofv=0; side=1; disV=30;
+            dofv=0; side=1; disV=DOF;
             float TanV=tan(angle);
             if(Cos> 0.001){ rxv=(int)px+1;      ryv=(px-rxv)*TanV+py; xov= 1; yov=-xov*TanV;}//looking left
             else if(Cos<-0.001){ rxv=(int)px -0.00001; ryv=(px-rxv)*TanV+py; xov=-1; yov=-xov*TanV;}//looking right
-            else { rxv=px; ryv=py; dofv=30;}                                                  //looking up or down. no hit
+            else { rxv=px; ryv=py; dofv=DOF;}                                                  //looking up or down. no hit
 
             //---Horizontal---
-            dofh=0; disH=30;
+            dofh=0; disH=DOF;
             float TanH=1.0/TanV;
             if(Sin> 0.001){ ryh=(int)py -0.00001; rxh=(py-ryh)*TanH+px; yoh=-1; xoh=-yoh*TanH;}//looking up
             else if(Sin<-0.001){ ryh=(int)py+1;      rxh=(py-ryh)*TanH+px; yoh= 1; xoh=-yoh*TanH;}//looking down
-            else{ rxh=px; ryh=py; dofh=30;}                                                   //looking straight left or right
+            else{ rxh=px; ryh=py; dofh=DOF;}                                                   //looking straight left or right
 
-            while(dofh<30 || dofv<30)
+            while(dofh<DOF || dofv<DOF)
             {
-                if (dofh < dofv && dofh < 30) {
+                if (dofh < dofv && dofh < DOF) {
                     mxh=(int)(rxh); myh=(int)(ryh); mph = myh * MAP_W + mxh;
                     if (mph>-1 && mph<MAP_H*MAP_W && map_arr[myh][mxh] == 2) {
                         for(k=0; k<door_num; k++) {
@@ -451,7 +452,7 @@ int main(void)
 //                        printf("%f %f h\n", door_location[door_index][0] + door_extencion[door_index], rxh + 0.5 * xoh);
                     }
                     if(mph>-1 && mph<MAP_H*MAP_W && (map_arr[myh][mxh]==1 || (map_arr[myh][mxh] == 2 && (door_location[door_index][0] + door_extencion[door_index] < rxh + 0.5 * xoh)))){ //hit
-                        dofh=30; disH=Cos*(rxh-px)-Sin*(ryh-py);
+                        dofh=DOF; disH=Cos*(rxh-px)-Sin*(ryh-py);
                         if (map_arr[myh][mxh] == 2) {
                             disH += Sin*(-0.5 * yoh) + Cos*(0.5 * xoh);
                             rxh += 0.5 * xoh;
@@ -461,7 +462,7 @@ int main(void)
                     else{ rxh+=xoh; ryh+=yoh; dofh+=1;}                                               //check next horizontal
                 }
                 else {
-                    if (dofv < 30) {
+                    if (dofv < DOF) {
                         mxv=(int)(rxv); myv=(int)(ryv); mpv = myv * MAP_W + mxv;
                         if (mpv>-1 && mpv<MAP_H*MAP_W && map_arr[myv][mxv] == 3) {
                             for(k=0; k<door_num; k++) {
@@ -481,7 +482,7 @@ int main(void)
 //                            }
 //                        }
                         if(mpv>-1 && mpv<MAP_H*MAP_W && (map_arr[myv][mxv]==1 || (map_arr[myv][mxv] == 3 && (door_location[door_index][1] + door_extencion[door_index] < ryv + 0.5 * yov)))){ //hit
-                            dofv=30; disV=Cos*(rxv-px)-Sin*(ryv-py);
+                            dofv=DOF; disV=Cos*(rxv-px)-Sin*(ryv-py);
                             if (map_arr[myv][mxv] == 3) {
                                 disV += Cos*(0.5 * xov) + Sin*(-0.5 * yov);
                                 rxv += 0.5 * xov;
