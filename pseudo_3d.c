@@ -530,7 +530,17 @@ int main(void)
             r.y = start;
             r.w = next_h_position - h_position;
             r.h = end - start;
-            SDL_RenderCopy(renderer, wall_texture, NULL, &r);
+            SDL_Rect texture_rect;
+            if (side == 1) {
+                texture_rect.x = (int)((rxh - (int)rxh) * 100);
+            }
+            else {
+                texture_rect.x = (int)((ryh - (int)ryh) * 100);
+            }
+            texture_rect.y = 0;
+            texture_rect.w = 2;
+            texture_rect.h = 100;
+            SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
 //            SDL_RenderFillRect(renderer, &r);
             h_position = next_h_position;
         }
