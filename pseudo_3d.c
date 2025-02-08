@@ -382,8 +382,15 @@ int main(void)
         }
        // clear window
  
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 220, 240, 255);
         SDL_RenderClear(renderer);
+        SDL_Rect r;
+        r.x = 0;
+        r.y = H / 2;
+        r.w = LENGTH * SCALE;
+        r.h = H / 2;
+        SDL_SetRenderDrawColor(renderer, 0, 220, 0, 255);
+        SDL_RenderFillRect(renderer, &r);
  
 
         //toggle door
