@@ -454,6 +454,8 @@ int main(void)
                         dofh=30; disH=Cos*(rxh-px)-Sin*(ryh-py);
                         if (map_arr[myh][mxh] == 2) {
                             disH += Sin*(-0.5 * yoh) + Cos*(0.5 * xoh);
+                            rxh += 0.5 * xoh;
+                            ryh += 0.5 * yoh;
                         }
                     }
                     else{ rxh+=xoh; ryh+=yoh; dofh+=1;}                                               //check next horizontal
@@ -482,6 +484,8 @@ int main(void)
                             dofv=30; disV=Cos*(rxv-px)-Sin*(ryv-py);
                             if (map_arr[myv][mxv] == 3) {
                                 disV += Cos*(0.5 * xov) + Sin*(-0.5 * yov);
+                                rxv += 0.5 * xov;
+                                ryv += 0.5 * yov;
                             }
                         }
                         else{ rxv+=xov; ryv+=yov; dofv+=1;}                                               //check next horizontal
