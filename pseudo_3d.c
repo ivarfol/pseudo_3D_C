@@ -529,16 +529,6 @@ int main(void)
 //            }
             color = round(240 -8 * hit[i+1]);
             if (color < 0) {color = 0;}
-//            if (side == 1) { color += 10; }
-            if (side == 1) {
-                if (Sin > 0) { SDL_SetRenderDrawColor(renderer, 0, color, color, 255); }
-                else { SDL_SetRenderDrawColor(renderer, 0, color, 0, 255); }
-            }
-            else {
-                if (Cos > 0) { SDL_SetRenderDrawColor(renderer, color, 0, color, 255); }
-                else { SDL_SetRenderDrawColor(renderer, color, color, 0, 255); }
-            }
-//            SDL_SetRenderDrawColor(renderer, color, color, color, 255);
             int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001);
 //            if (h_position < 0) { h_position = LENGTH - h_position; }
 //            printf("%d\n", h_position);
