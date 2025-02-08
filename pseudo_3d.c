@@ -532,14 +532,14 @@ int main(void)
             r.h = end - start;
             SDL_Rect texture_rect;
             if (side == 1) {
-                texture_rect.x = (int)((rxh - (int)rxh) * 100);
+                texture_rect.x = (int)((rxh - (int)rxh) * 1000);
             }
             else {
-                texture_rect.x = (int)((ryh - (int)ryh) * 100);
+                texture_rect.x = (int)((ryh - (int)ryh) * 1000);
             }
             texture_rect.y = 0;
-            texture_rect.w = 2;
-            texture_rect.h = 100;
+            texture_rect.w = 1;
+            texture_rect.h = 1000;
             SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
 //            SDL_RenderFillRect(renderer, &r);
             h_position = next_h_position;
