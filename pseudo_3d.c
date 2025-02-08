@@ -540,10 +540,20 @@ int main(void)
             SDL_Rect texture_rect;
             if (!is_doorH) {
                 if (side == 1) {
-                    texture_rect.x = (int)((rxh - (int)rxh) * 1000);
+                    if (Sin > 0) {
+                        texture_rect.x = (int)((rxh - (int)rxh) * 1000);
+                    }
+                    else {
+                        texture_rect.x = (int)((1 - rxh + (int)rxh) * 1000);
+                    }
                 }
                 else {
-                    texture_rect.x = (int)((ryh - (int)ryh) * 1000);
+                    if (Cos > 0) {
+                        texture_rect.x = (int)((ryh - (int)ryh) * 1000);
+                    }
+                    else {
+                        texture_rect.x = (int)((1 - ryh + (int)ryh) * 1000);
+                    }
                 }
             }
             else {
