@@ -289,6 +289,7 @@ int main(void)
     SDL_Event event;
     IMG_Init(IMG_INIT_PNG);
     SDL_Texture* wall_texture = IMG_LoadTexture(renderer, "wall.png");
+    SDL_Texture* door_texture = IMG_LoadTexture(renderer, "door.png");
     // handle events
  
     while (!quit) {
@@ -559,7 +560,12 @@ int main(void)
             texture_rect.y = 0;
             texture_rect.w = 1;
             texture_rect.h = 1000;
-            SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
+            if (is_doorH) {
+                SDL_RenderCopy(renderer, door_texture, &texture_rect, &r);
+            }
+            else {
+                SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
+            }
 //            SDL_RenderFillRect(renderer, &r);
             h_position = next_h_position;
         }

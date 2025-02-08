@@ -4,3 +4,4 @@
 !binaries/
 !binaries/*.zip
 !Makefile
+!*.png
