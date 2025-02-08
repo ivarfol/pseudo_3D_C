@@ -504,12 +504,12 @@ int main(void)
                 start = H / 2 * (1 - 0.5/disH * RATIO);
                 end = H / 2 * (1 + 0.5/disH * RATIO);
             }
-            if(start<0) {
-                start = 0;
-            }
-            if(end>H) {
-                end = H - 1;
-            }
+//            if(start<0) {
+//                start = 0;
+//            }
+//            if(end>H) {
+//                end = H - 1;
+//            }
             color = round(240 -8 * hit[i+1]);
             if (color < 0) {color = 0;}
 //            if (side == 1) { color += 10; }
