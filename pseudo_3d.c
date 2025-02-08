@@ -10,6 +10,7 @@
 #define H 600
 #define SCALE 2.0
 #define DOF 60
+#define FADE 40
 #define NO_PI_FOV 0.5
 #define FOV NO_PI_FOV * PI
 #define SHIFT FOV / 2
@@ -386,7 +387,7 @@ int main(void)
         SDL_RenderClear(renderer);
         SDL_Rect r;
         r.x = 0;
-        r.y = H / 2 * (1 + 0.5 / 52 * RATIO);
+        r.y = H / 2 * (1 + 0.5 / (DOF - FADE + 8) / 2 * RATIO);
         r.w = LENGTH * SCALE;
         r.h = H / 2;
         SDL_SetRenderDrawColor(renderer, 0, 220, 0, 255);
@@ -527,7 +528,7 @@ int main(void)
 //            if(end>H) {
 //                end = H - 1;
 //            }
-            color = (int)round(765 -12.75 * hit[i+1]);
+            color = (int)round(255 * (FADE / (DOF - FADE) + 1) - 255.0 / (DOF - FADE) * hit[i+1]);
             if (color < 0) {color = 0;}
             if (color > 255) {color = 255;}
             int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001);
