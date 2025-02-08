@@ -566,10 +566,10 @@ int main(void)
                 SDL_SetTextureAlphaMod(door_texture, color);
                 //SDL_SetTextureColorMod(door_texture, color, color, color);
                 if (side == 1) {
-                    texture_rect.x = (int)((rxh - (int)rxh - door_extencion[door_indexH]) * 1000);
+                    texture_rect.x = (int)((1 - rxh + (int)rxh + door_extencion[door_indexH]) * 1000);
                 }
                 else {
-                    texture_rect.x = (int)((ryh - (int)ryh - door_extencion[door_indexH]) * 1000);
+                    texture_rect.x = (int)((1 - ryh + (int)ryh + door_extencion[door_indexH]) * 1000);
                 }
             }
             texture_rect.y = 0;
