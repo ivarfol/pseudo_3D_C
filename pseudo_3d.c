@@ -596,7 +596,7 @@ int main(void)
                     offset = (int)((1 - ryh + (int)ryh + door_extencion[door_indexH]) * 1000);
                 }
             }
-            texture_rect.x = offset;
+            texture_rect.x = last_offset;
             texture_rect.y = 0;
             if (offset - last_offset + 1 > 0 && side == last_side && !is_doorH) {
                 texture_rect.w = offset - last_offset + 1;
