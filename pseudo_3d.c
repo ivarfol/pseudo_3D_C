@@ -451,6 +451,9 @@ int main(void)
         float py = location[1] + 0.5;
         int h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
         int door_indexH, door_indexV;
+        int last_offset, last_side;
+        int offset = 0;
+        last_offset = last_side = 0;
         for (i = 0; i < LENGTH * 2; i+=2) {
             int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
             bool is_doorV = false;
@@ -569,32 +572,43 @@ int main(void)
                 // the texture part to be used for the column
                 if (side == 1) {
                     if (Sin > 0) {
-                        texture_rect.x = (int)((rxh - (int)rxh) * 1000); // offset from the side * 1000 (1000 is the picture resolution)
+                        offset = (int)((rxh - (int)rxh) * 1000); // offset from the side * 1000 (1000 is the picture resolution)
                     }
                     else {
-                        texture_rect.x = (int)((1 - rxh + (int)rxh) * 1000);
+                        offset = (int)((1 - rxh + (int)rxh) * 1000);
                     }
                 }
                 else {
                     if (Cos > 0) {
-                        texture_rect.x = (int)((ryh - (int)ryh) * 1000);
+                        offset = (int)((ryh - (int)ryh) * 1000);
                     }
                     else {
-                        texture_rect.x = (int)((1 - ryh + (int)ryh) * 1000);
+                        offset = (int)((1 - ryh + (int)ryh) * 1000);
                     }
                 }
             }
             else {
                 SDL_SetTextureAlphaMod(door_texture, color); // same, but for doors
                 if (side == 1) { // offset from the doors end (the "moving" part)
-                    texture_rect.x = (int)((1 - rxh + (int)rxh + door_extencion[door_indexH]) * 1000);
+                    offset = (int)((1 - rxh + (int)rxh + door_extencion[door_indexH]) * 1000);
                 }
                 else {
-                    texture_rect.x = (int)((1 - ryh + (int)ryh + door_extencion[door_indexH]) * 1000);
+                    offset = (int)((1 - ryh + (int)ryh + door_extencion[door_indexH]) * 1000);
                 }
             }
+            texture_rect.x = offset;
             texture_rect.y = 0;
-            texture_rect.w = 1;
+            if (offset - last_offset + 1 > 0 && side == last_side && !is_doorH) {
+                texture_rect.w = offset - last_offset + 1;
+            }
+            else {
+                if (!is_doorH) {
+                    texture_rect.w = 1000 - last_offset;
+                }
+                else {
+                    texture_rect.w = 1;
+                }
+            }
             texture_rect.h = 1000;
             if (is_doorH) {
                 SDL_RenderCopy(renderer, door_texture, &texture_rect, &r);
@@ -608,6 +622,8 @@ int main(void)
                 else if (symbolH == 8) SDL_RenderCopy(renderer, eight_texture, &texture_rect, &r);
             }
             h_position = next_h_position;
+            last_side = side;
+            last_offset = offset;
         }
 
         for (i=0; i<door_num; i++) { // handle the door movement
