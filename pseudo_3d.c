@@ -604,6 +604,7 @@ int main(void)
             else {
                 if (!is_doorH) {
                     texture_rect.w = 1000 - last_offset;
+                    offset = 0;
                 }
                 else {
                     texture_rect.w = 1;
