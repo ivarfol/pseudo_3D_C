@@ -42,7 +42,7 @@ float rad_ch(float a) // stops the a from going over 2 * PI (radians)
         a -= 2 * PI;
     }
     else {
-        if (a < 2 * PI) {
+        if (a < 0) {
             a += 2 * PI;
         }
     }
@@ -165,9 +165,9 @@ int main(void)
                                         {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 1, 0, 1, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 2, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -241,21 +241,31 @@ int main(void)
     int frames = 0; // num of frames for the fps
     int fps[3]; // fps as an array of numbers, used to output the fps with print_num()
     int door_num = 0; // number of doors
+    int sprite_num = 0;
     show_map = noclip = show_fps = quit = try_door = false;
+
     for (i=0; i<MAP_H; i++) {
         for (j=0; j<MAP_W; j++) {
-            if (map_arr[i][j] == 2 || map_arr[i][j] == 3) { // 2 - horizontal door, 3 - vertical door
-                door_num++;
-            }
+            if (map_arr[i][j] == 2 || map_arr[i][j] == 3) door_num++; // 2 - horizontal door, 3 - vertical door
+            else if (map_arr[i][j] == 4) sprite_num++;
         }
     }
-   for (i=0;i<322;i++) { KEYS[i] = false; }
+
+    for (i=0;i<322;i++) { KEYS[i] = false; }
+
     int door_location[door_num][2];
     int door_wait[door_num];
     float door_extencion[door_num];
     float door_ext_rate[door_num];
+
     float location[2]; // player position
-    door_num = 0;
+
+    float sprite_location[sprite_num][2];
+    float sprite_dist[sprite_num];
+    float sprite_angle[sprite_num];
+    for (i=0; i<sprite_num; i++) sprite_dist[i] = sprite_angle[i] = -1;
+
+    door_num = sprite_num = 0;
     for (i=0; i<MAP_H; i++) {
         for (j=0; j<MAP_W; j++) {
             if (map_arr[i][j] == 2 || map_arr[i][j] == 3) { // 2 - horizontal door, 3 - vertical door
@@ -270,6 +280,12 @@ int main(void)
                 location[0] = j;
                 location[1] = i;
                 map_arr[i][j] = 0;
+            }
+            else if (map_arr[i][j] == 4) {
+                sprite_location[sprite_num][0] = j;
+                sprite_location[sprite_num][1] = i;
+                map_arr[i][j] = 0;
+                sprite_num++;
             }
         }
     }
@@ -294,10 +310,10 @@ int main(void)
     else { door_texture = IMG_LoadTexture(renderer, "missing.png"); }
     SDL_SetTextureBlendMode(door_texture, SDL_BLENDMODE_BLEND);
 
-    SDL_Texture* four_texture;
-    if (fopen("texture4.png", "r")!=NULL) { four_texture = IMG_LoadTexture(renderer, "texture4.png"); }
-    else { four_texture = IMG_LoadTexture(renderer, "missing.png"); }
-    SDL_SetTextureBlendMode(four_texture, SDL_BLENDMODE_BLEND);
+    SDL_Texture* sprite_texture;
+    if (fopen("sprite.png", "r")!=NULL) { sprite_texture = IMG_LoadTexture(renderer, "sprite.png"); }
+    else { sprite_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    SDL_SetTextureBlendMode(sprite_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* five_texture;
     if (fopen("texture5.png", "r")!=NULL) { five_texture = IMG_LoadTexture(renderer, "texture5.png"); }
@@ -555,9 +571,6 @@ int main(void)
                 if (symbolH == 1) {
                     SDL_SetTextureAlphaMod(wall_texture, color);
                 }
-                else if (symbolH == 4) {
-                    SDL_SetTextureAlphaMod(four_texture, color);
-                }
                 else if (symbolH == 5) {
                     SDL_SetTextureAlphaMod(five_texture, color);
                 }
@@ -617,7 +630,6 @@ int main(void)
             }
             else {
                 if (symbolH == 1) SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
-                else if (symbolH == 4) SDL_RenderCopy(renderer, four_texture, &texture_rect, &r);
                 else if (symbolH == 5) SDL_RenderCopy(renderer, five_texture, &texture_rect, &r);
                 else if (symbolH == 6) SDL_RenderCopy(renderer, six_texture, &texture_rect, &r);
                 else if (symbolH == 7) SDL_RenderCopy(renderer, seven_texture, &texture_rect, &r);
@@ -644,6 +656,47 @@ int main(void)
                     door_ext_rate[i] = 0.0;
                     door_extencion[i] = 0.0;
                 }
+            }
+        }
+
+        for (i=0; i<sprite_num; i++) {
+            float tmp_x, tmp_y;
+            tmp_x = sprite_location[i][0] - location[0];
+            tmp_y = - sprite_location[i][1] + location[1];
+            if (tmp_x == 0) tmp_x = 0.00001;
+            if (tmp_y == 0) tmp_y = - 0.00001;
+            float Tan_inv = rad_ch(atan(tmp_y / tmp_x));
+            if (tmp_x < 0) Tan_inv = rad_ch(Tan_inv + PI);
+            bool rad_skip = false;
+
+            float border_one = direction + SHIFT;
+            if (border_one < 0 || border_one > 2 * PI) {
+                border_one = rad_ch(border_one);
+                rad_skip = true;
+            }
+
+            float border_two = direction - SHIFT;
+            if (border_two < 0 || border_two > 2 * PI) {
+                border_two = rad_ch(border_two);
+                rad_skip = true;
+            }
+
+            printf("%d %f %f %f\n", rad_skip, border_one, border_two, Tan_inv);
+            if ((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) {
+                sprite_dist[i] = sqrt(tmp_x * tmp_x + tmp_y * tmp_y);
+                sprite_angle[i] = Tan_inv;
+                int h_position = round((0.5 -tan(rad_ch(Tan_inv - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001); // calculate next column postion, corrects fisheye effect
+                SDL_Rect r;
+                int dimention = H / 2 * (1 / sprite_dist[i] * RATIO);
+                r.x = h_position - dimention / 2;
+                r.y= H / 2 * (1 - 0.5 / sprite_dist[i] * RATIO);
+                r.w = dimention;
+                r.h = dimention;
+                SDL_RenderCopy(renderer, sprite_texture, NULL, &r);
+            }
+            else {
+                sprite_dist[i] = -1;
+                sprite_angle[i] = -1;
             }
         }
 
@@ -711,7 +764,7 @@ int main(void)
     // cleanup SDL
     SDL_DestroyTexture(wall_texture);
     SDL_DestroyTexture(door_texture);
-    SDL_DestroyTexture(four_texture);
+    SDL_DestroyTexture(sprite_texture);
     SDL_DestroyTexture(five_texture);
     SDL_DestroyTexture(six_texture);
     SDL_DestroyTexture(seven_texture);
