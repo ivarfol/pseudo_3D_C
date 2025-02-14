@@ -229,7 +229,8 @@ int main(void)
     float mod = 1.0; // variable for speeding up the player movement if shift is pressed
     int color, start, end, i, j, k, wall_hit;
     float angle, move_direction_h, move_direction_v;
-    float hit[LENGTH * 2];
+    float hit_len[LENGTH];
+    float hit_ang[LENGTH];
     bool KEYS[322]; //keys that are currently pressed
     bool OLD_KEYS[322]; //keys that were pressed on the previous frame
     unsigned int ticks, old_ticks, frame_tick;
@@ -454,7 +455,7 @@ int main(void)
         int last_offset, last_side;
         int offset = 0;
         last_offset = last_side = 0;
-        for (i = 0; i < LENGTH * 2; i+=2) {
+        for (i = 0; i < LENGTH; i++) {
             int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
             bool is_doorV = false;
             bool is_doorH = false;
@@ -528,8 +529,8 @@ int main(void)
             }
 
             if(disV<disH){ rxh=rxv; ryh=ryv; disH=disV; side=0; is_doorH = is_doorV; door_indexH = door_indexV; symbolH = symbolV; } // the horizontal is set to the shortest ray
-            hit[i] = rad_ch(2.0 * PI - angle);
-            hit[i+1] = (disH);
+            hit_len[i] = rad_ch(2.0 * PI - angle);
+            hit_ang[i] = (disH);
             disH=disH*cos(direction - angle); //fix fisheye
             angle = rad_ch(angle - STEP);
 
@@ -540,7 +541,7 @@ int main(void)
                 start = H / 2 * (1 - 0.5/disH * RATIO);
                 end = H / 2 * (1 + 0.5/disH * RATIO);
             }
-            color = (int)round(255 * (FADE / (DOF - FADE) + 1) - 255.0 / (DOF - FADE) * hit[i+1]); // make the tiles fade between FADE and DOF, with DOF being transparent
+            color = (int)round(255 * (FADE / (DOF - FADE) + 1) - 255.0 / (DOF - FADE) * hit_ang[i]); // make the tiles fade between FADE and DOF, with DOF being transparent
             if (color < 0) {color = 0;}
             if (color > 255) {color = 255;}
             int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001); // calculate next column postion, corrects fisheye effect
@@ -672,8 +673,8 @@ int main(void)
             r.w = (int)HALF_MAP_SCALE/2;
             r.h = (int)HALF_MAP_SCALE/2;
             SDL_RenderDrawRect( renderer, &r );
-            for (i=0; i<LENGTH * 2; i+=2) { // shows the rays on the map
-                SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round(location[1]*MAP_SCALE + HALF_MAP_SCALE), ceil((location[0] + hit[i+1] * cos(hit[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((location[1] + hit[i+1] * sin(hit[i])) * MAP_SCALE+HALF_MAP_SCALE));
+            for (i=0; i<LENGTH; i++) { // shows the rays on the map
+                SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round(location[1]*MAP_SCALE + HALF_MAP_SCALE), ceil((location[0] + hit_ang[i] * cos(hit_len[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((location[1] + hit_ang[i] * sin(hit_len[i])) * MAP_SCALE+HALF_MAP_SCALE));
             }
         }
         if (show_fps) { // show fps and player position
