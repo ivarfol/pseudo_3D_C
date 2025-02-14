@@ -681,9 +681,8 @@ int main(void)
                 rad_skip = true;
             }
 
-            printf("%d %f %f %f\n", rad_skip, border_one, border_two, Tan_inv);
             if ((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) {
-                sprite_dist[i] = sqrt(tmp_x * tmp_x + tmp_y * tmp_y);
+                sprite_dist[i] = sqrt(tmp_x * tmp_x + tmp_y * tmp_y) * cos(rad_ch(direction - Tan_inv));
                 sprite_angle[i] = Tan_inv;
                 int h_position = round((0.5 -tan(rad_ch(Tan_inv - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001); // calculate next column postion, corrects fisheye effect
                 SDL_Rect r;
