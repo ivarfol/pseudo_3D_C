@@ -659,46 +659,46 @@ int main(void)
             }
         }
 
-        for (i=0; i<sprite_num; i++) {
-            float tmp_x, tmp_y;
-            tmp_x = sprite_location[i][0] - location[0];
-            tmp_y = - sprite_location[i][1] + location[1];
-            if (tmp_x == 0) tmp_x = 0.00001;
-            if (tmp_y == 0) tmp_y = - 0.00001;
-            float Tan_inv = rad_ch(atan(tmp_y / tmp_x));
-            if (tmp_x < 0) Tan_inv = rad_ch(Tan_inv + PI);
-            bool rad_skip = false;
-
-            float border_one = direction + SHIFT;
-            if (border_one < 0 || border_one > 2 * PI) {
-                border_one = rad_ch(border_one);
-                rad_skip = true;
-            }
-
-            float border_two = direction - SHIFT;
-            if (border_two < 0 || border_two > 2 * PI) {
-                border_two = rad_ch(border_two);
-                rad_skip = true;
-            }
-
-            int h_position = round((0.5 -tan(rad_ch(Tan_inv - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001);
-            float tmp_dist = sqrt(tmp_x * tmp_x + tmp_y * tmp_y) * cos(rad_ch(direction - Tan_inv));
-            int dimention = H / 2 * (1 / tmp_dist) * RATIO;
-            if (((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) || (h_position - dimention / 2 < LENGTH * SCALE && h_position + dimention / 2 > 0)) {
-                sprite_dist[i] = tmp_dist;
-                sprite_angle[i] = Tan_inv;
-                SDL_Rect r;
-                r.x = h_position - dimention / 2;
-                r.y= H / 2 * (1 - 0.5 / sprite_dist[i] * RATIO);
-                r.w = dimention;
-                r.h = dimention;
-                SDL_RenderCopy(renderer, sprite_texture, NULL, &r);
-            }
-            else {
-                sprite_dist[i] = -1;
-                sprite_angle[i] = -1;
-            }
-        }
+//        for (i=0; i<sprite_num; i++) {
+//            float tmp_x, tmp_y;
+//            tmp_x = sprite_location[i][0] - location[0];
+//            tmp_y = - sprite_location[i][1] + location[1];
+//            if (tmp_x == 0) tmp_x = 0.00001;
+//            if (tmp_y == 0) tmp_y = - 0.00001;
+//            float Tan_inv = rad_ch(atan(tmp_y / tmp_x));
+//            if (tmp_x < 0) Tan_inv = rad_ch(Tan_inv + PI);
+//            bool rad_skip = false;
+//
+//            float border_one = direction + SHIFT;
+//            if (border_one < 0 || border_one > 2 * PI) {
+//                border_one = rad_ch(border_one);
+//                rad_skip = true;
+//            }
+//
+//            float border_two = direction - SHIFT;
+//            if (border_two < 0 || border_two > 2 * PI) {
+//                border_two = rad_ch(border_two);
+//                rad_skip = true;
+//            }
+//
+//            int h_position = round((0.5 -tan(rad_ch(Tan_inv - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001);
+//            float tmp_dist = sqrt(tmp_x * tmp_x + tmp_y * tmp_y) * cos(rad_ch(direction - Tan_inv));
+//            int dimention = H / 2 * (1 / tmp_dist) * RATIO;
+//            if (((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) || (h_position - dimention / 2 < LENGTH * SCALE && h_position + dimention / 2 > 0)) {
+//                sprite_dist[i] = tmp_dist;
+//                sprite_angle[i] = Tan_inv;
+//                SDL_Rect r;
+//                r.x = h_position - dimention / 2;
+//                r.y= H / 2 * (1 - 0.5 / sprite_dist[i] * RATIO);
+//                r.w = dimention;
+//                r.h = dimention;
+//                SDL_RenderCopy(renderer, sprite_texture, NULL, &r);
+//            }
+//            else {
+//                sprite_dist[i] = -1;
+//                sprite_angle[i] = -1;
+//            }
+//        }
 
         if (show_map) { // render the map
             SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 ); // a background
