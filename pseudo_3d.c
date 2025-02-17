@@ -586,28 +586,28 @@ int main(void)
                 // the texture part to be used for the column
                 if (side == 1) {
                     if (Sin > 0) {
-                        offset = (int)((rxh - (int)rxh) * 128); // offset from the side * 128 (128 is the picture resolution)
+                        offset = (int)((rxh - (int)rxh) * 1024); // offset from the side * 1024 (1024 is the picture resolution)
                     }
                     else {
-                        offset = (int)((1 - rxh + (int)rxh) * 128);
+                        offset = (int)((1 - rxh + (int)rxh) * 1024);
                     }
                 }
                 else {
                     if (Cos > 0) {
-                        offset = (int)((ryh - (int)ryh) * 128);
+                        offset = (int)((ryh - (int)ryh) * 1024);
                     }
                     else {
-                        offset = (int)((1 - ryh + (int)ryh) * 128);
+                        offset = (int)((1 - ryh + (int)ryh) * 1024);
                     }
                 }
             }
             else {
                 SDL_SetTextureAlphaMod(door_texture, color); // same, but for doors
                 if (side == 1) { // offset from the doors end (the "moving" part)
-                    offset = (int)((1 - rxh + (int)rxh + door_extencion[door_indexH]) * 128);
+                    offset = (int)((1 - rxh + (int)rxh + door_extencion[door_indexH]) * 1024);
                 }
                 else {
-                    offset = (int)((1 - ryh + (int)ryh + door_extencion[door_indexH]) * 128);
+                    offset = (int)((1 - ryh + (int)ryh + door_extencion[door_indexH]) * 1024);
                 }
             }
             texture_rect.x = last_offset;
@@ -617,14 +617,14 @@ int main(void)
             }
             else {
                 if (!is_doorH) {
-                    texture_rect.w = 128 - last_offset;
+                    texture_rect.w = 1024 - last_offset;
                     offset = 0;
                 }
                 else {
                     texture_rect.w = 1;
                 }
             }
-            texture_rect.h = 128;
+            texture_rect.h = 1024;
             if (is_doorH) {
                 SDL_RenderCopy(renderer, door_texture, &texture_rect, &r);
             }
