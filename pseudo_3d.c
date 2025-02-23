@@ -229,8 +229,8 @@ int main(void)
     float mod = 1.0; // variable for speeding up the player movement if shift is pressed
     int color, start, end, i, j, k, wall_hit;
     float angle, move_direction_h, move_direction_v;
-    float hit_len[LENGTH];
-    float hit_ang[LENGTH];
+    float hit_len[LENGTH + 3];
+    float hit_ang[LENGTH + 3];
     bool KEYS[322]; //keys that are currently pressed
     bool OLD_KEYS[322]; //keys that were pressed on the previous frame
     unsigned int ticks, old_ticks, frame_tick;
@@ -463,7 +463,7 @@ int main(void)
         }
 
         // ray casting DDA
-        angle = rad_ch(direction + SHIFT); // ray direction
+        angle = rad_ch(direction + SHIFT + 3 * STEP); // ray direction
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
         int h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
@@ -472,7 +472,7 @@ int main(void)
         int offset = 0;
         last_offset = last_side = 0;
         int last_symbolH = 0;
-        for (i = 0; i < LENGTH; i++) {
+        for (i = 0; i < LENGTH + 3; i++) {
             int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
             bool is_doorV = false;
             bool is_doorH = false;
@@ -633,15 +633,17 @@ int main(void)
                 }
             }
             texture_rect.h = 1024;
-            if (is_doorH) {
-                SDL_RenderCopy(renderer, door_texture, &texture_rect, &r);
-            }
-            else {
-                if (symbolH == 1) SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
-                else if (symbolH == 5) SDL_RenderCopy(renderer, five_texture, &texture_rect, &r);
-                else if (symbolH == 6) SDL_RenderCopy(renderer, six_texture, &texture_rect, &r);
-                else if (symbolH == 7) SDL_RenderCopy(renderer, seven_texture, &texture_rect, &r);
-                else if (symbolH == 8) SDL_RenderCopy(renderer, eight_texture, &texture_rect, &r);
+            if (i > 2) {
+                if (is_doorH) {
+                    SDL_RenderCopy(renderer, door_texture, &texture_rect, &r);
+                }
+                else {
+                    if (symbolH == 1) SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
+                    else if (symbolH == 5) SDL_RenderCopy(renderer, five_texture, &texture_rect, &r);
+                    else if (symbolH == 6) SDL_RenderCopy(renderer, six_texture, &texture_rect, &r);
+                    else if (symbolH == 7) SDL_RenderCopy(renderer, seven_texture, &texture_rect, &r);
+                    else if (symbolH == 8) SDL_RenderCopy(renderer, eight_texture, &texture_rect, &r);
+                }
             }
             h_position = next_h_position;
             last_side = side;
@@ -735,7 +737,7 @@ int main(void)
             r.w = (int)HALF_MAP_SCALE/2;
             r.h = (int)HALF_MAP_SCALE/2;
             SDL_RenderDrawRect( renderer, &r );
-            for (i=0; i<LENGTH; i++) { // shows the rays on the map
+            for (i=2; i<LENGTH + 3; i++) { // shows the rays on the map
                 SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round(location[1]*MAP_SCALE + HALF_MAP_SCALE), ceil((location[0] + hit_ang[i] * cos(hit_len[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((location[1] + hit_ang[i] * sin(hit_len[i])) * MAP_SCALE+HALF_MAP_SCALE));
             }
         }
