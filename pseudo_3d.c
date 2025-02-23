@@ -471,6 +471,7 @@ int main(void)
         int last_offset, last_side;
         int offset = 0;
         last_offset = last_side = 0;
+        int last_symbolH = 0;
         for (i = 0; i < LENGTH; i++) {
             int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
             bool is_doorV = false;
@@ -617,8 +618,15 @@ int main(void)
             }
             else {
                 if (!is_doorH) {
-                    texture_rect.w = 1024 - last_offset;
-                    offset = 0;
+                    if (last_symbolH != symbolH) {
+                        offset = 512;
+                        texture_rect.x = offset;
+                        texture_rect.w = 1;
+                    }
+                    else {
+                        offset = 0;
+                        texture_rect.w = 1024 - last_offset;
+                    }
                 }
                 else {
                     texture_rect.w = 1;
@@ -638,6 +646,7 @@ int main(void)
             h_position = next_h_position;
             last_side = side;
             last_offset = offset;
+            last_symbolH = symbolH;
         }
 
         for (i=0; i<door_num; i++) { // handle the door movement
