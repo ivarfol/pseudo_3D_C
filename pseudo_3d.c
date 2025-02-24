@@ -468,6 +468,7 @@ int main(void)
         float py = location[1] + 0.5;
         int h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
         int door_indexH, door_indexV;
+        door_indexH = door_indexV = 0;
         int last_offset, last_side;
         int offset = 0;
         last_offset = last_side = 0;
