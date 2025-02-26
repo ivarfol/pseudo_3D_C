@@ -335,6 +335,8 @@ int main(void)
     else { eight_texture = IMG_LoadTexture(renderer, "missing.png"); }
     SDL_SetTextureBlendMode(eight_texture, SDL_BLENDMODE_BLEND);
  
+    float base_angles = rad_ch(0.5 * PI - SHIFT);
+    float side_len = LENGTH * sin(base_angles) / sin(FOV);
     // the main loop
     while (!quit) {
         delta = ticks - old_ticks; // time for the last frame in ms.
@@ -463,10 +465,10 @@ int main(void)
         }
 
         // ray casting DDA
-        angle = rad_ch(direction + SHIFT + 3 * STEP); // ray direction
+        float _angle = rad_ch(direction + SHIFT); // ray direction
+        float angle;
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
-        int h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE);
         int door_indexH, door_indexV;
         door_indexH = door_indexV = 0;
         int last_offset, last_side;
@@ -474,6 +476,7 @@ int main(void)
         last_offset = last_side = 0;
         int last_symbolH = 0;
         for (i = 0; i < LENGTH + 3; i++) {
+            angle = rad_ch(_angle - acos((side_len - (i - 3) * cos(base_angles)) / sqrt(side_len * side_len + (i - 3) * (i - 3) - 2 * side_len * (i - 3) * cos(base_angles))));
             int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
             bool is_doorV = false;
             bool is_doorH = false;
@@ -550,7 +553,6 @@ int main(void)
             hit_len[i] = rad_ch(2.0 * PI - angle);
             hit_ang[i] = (disH);
             disH=disH*cos(direction - angle); //fix fisheye
-            angle = rad_ch(angle - STEP);
 
             // vertical lines for the screen output
             start = 0;
@@ -562,11 +564,10 @@ int main(void)
             color = (int)round(255 * (FADE / (DOF - FADE) + 1) - 255.0 / (DOF - FADE) * hit_ang[i]); // make the tiles fade between FADE and DOF, with DOF being transparent
             if (color < 0) {color = 0;}
             if (color > 255) {color = 255;}
-            int next_h_position = round((0.5 -tan(rad_ch(angle - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001); // calculate next column postion, corrects fisheye effect
             SDL_Rect r; // the column on the screen
-            r.x = h_position;
+            r.x = (i - 3) * SCALE;
             r.y = start;
-            r.w = next_h_position - h_position;
+            r.w = SCALE;
             r.h = end - start;
             SDL_Rect texture_rect;
             if (!is_doorH) {
@@ -646,7 +647,6 @@ int main(void)
                     else if (symbolH == 8) SDL_RenderCopy(renderer, eight_texture, &texture_rect, &r);
                 }
             }
-            h_position = next_h_position;
             last_side = side;
             last_offset = offset;
             last_symbolH = symbolH;
