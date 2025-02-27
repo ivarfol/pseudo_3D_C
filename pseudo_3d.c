@@ -21,7 +21,7 @@
 #define MAP_H 64
 #define MAP_SCALE 6
 #define HALF_MAP_SCALE 3
-#define TARGET_FPS 80
+#define TARGET_FPS 60.0
 #define top_l(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x+ 8, y + 2)
 #define bottom_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x_offset + 8, y + 18)
 #define middle_l(r, x, y) SDL_RenderDrawLine(r, x, y + 9, x + 8, y + 9)
@@ -338,11 +338,12 @@ int main(void)
     float base_angles = rad_ch(0.5 * PI - SHIFT);
     float side_len = LENGTH * sin(base_angles) / sin(FOV);
     float dist_to_screen = sin(base_angles) * LENGTH / 2 / sin(SHIFT);
+    const float target_fps = 1000.0 / TARGET_FPS;
     // the main loop
     while (!quit) {
-        delta = ticks - old_ticks; // time for the last frame in ms.
-        if (delta < 1000/TARGET_FPS) {
-            SDL_Delay(1000/TARGET_FPS - delta); // cap the fps
+        delta = SDL_GetTicks() - old_ticks; // time for the last frame in ms.
+        if (delta < target_fps) {
+            SDL_Delay((int)(target_fps) - delta); // cap the fps
         }
         ticks = SDL_GetTicks();
         if (ticks >= frame_tick + 1000) { // get the fps
