@@ -337,10 +337,13 @@ int main(void)
     else { eight_texture = IMG_LoadTexture(renderer, "missing.png"); }
     SDL_SetTextureBlendMode(eight_texture, SDL_BLENDMODE_BLEND);
  
-    float base_angles = rad_ch(0.5 * PI - SHIFT);
-    float side_len = LENGTH * sin(base_angles) / sin(FOV);
-    float dist_to_screen = sin(base_angles) * LENGTH / 2 / sin(SHIFT);
+    const float base_angles = rad_ch(0.5 * PI - SHIFT);
+    const float side_len = LENGTH * sin(base_angles) / sin(FOV);
+    const float floor_ray_temp = sin(base_angles) * LENGTH / 4 / sin(SHIFT) * SCALE; // sin(base_angles) * LENGTH / 2 / sin(SHIFT) is the distance to trhe screen
     const float target_fps = 1000.0 / TARGET_FPS;
+    const float base_angles_cos = cos(base_angles);
+    const float side_len_squared = side_len * side_len;
+    const float denom_temp = 2 * side_len * base_angles_cos;
     // the main loop
     while (!quit) {
         SDL_SetRenderTarget(renderer, buffer);
@@ -480,9 +483,9 @@ int main(void)
         last_offset = last_side = 0;
         int last_symbolH = 0;
         float floor_x, floor_y;
+        int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
         for (i = 0; i < LENGTH + 3; i++) {
-            angle = rad_ch(_angle - acos((side_len - (i - 3) * cos(base_angles)) / sqrt(side_len * side_len + (i - 3) * (i - 3) - 2 * side_len * (i - 3) * cos(base_angles))));
-            int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
+            angle = rad_ch(_angle - acos((side_len - (i - 3) * base_angles_cos) / sqrt(side_len_squared + (i - 3) * (i - 3 - denom_temp))));
             bool is_doorV = false;
             bool is_doorH = false;
             int symbolV = 9; // tile type of the tile that was hit by the ray from the map_arr
@@ -657,10 +660,10 @@ int main(void)
             texture_rect.w = SCALE;
             texture_rect.h = FLOOR_H_SCALE;
             for (j=end; j<H; j += FLOOR_H_SCALE) {
-                float floor_ray = dist_to_screen / (j - H / 2) / fisheye_correction * SCALE / 2;
-                floor_x = floor_ray * Cos + location[0] + 0.5;
-                floor_y = - floor_ray * Sin + location[1] + 0.5;
-                if (floor_x > 0 && floor_x < MAP_W && floor_y > 0 && floor_y < MAP_H) {
+                float floor_ray = floor_ray_temp / (j - H / 2) / fisheye_correction;
+                floor_x = floor_ray * Cos + px;
+                floor_y = - floor_ray * Sin + py;
+//                if (floor_x > 0 && floor_x < MAP_W && floor_y > 0 && floor_y < MAP_H) { // check if tile is in the map
                     color = (int)round(255 * (FADE / (DOF - FADE) + 1) - 255.0 / (DOF - FADE) * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
                     if (color < 0) {color = 0;}
                     if (color > 255) {color = 255;}
@@ -669,8 +672,6 @@ int main(void)
                     texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
                     texture_rect.y = (int)((floor_y - (int)floor_y) * 1024);
                     SDL_RenderCopy(renderer, floor_texture, &texture_rect, &r);
-                }
-                else continue;
             }
         }
 
