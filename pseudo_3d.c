@@ -265,6 +265,7 @@ int main(void)
     float floor_x, floor_y;
     float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
     int last_offset, last_side;
+    last_offset = last_side = 0;
     int door_indexH, door_indexV;
     int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side;
 
@@ -488,7 +489,6 @@ int main(void)
         float py = location[1] + 0.5;
         door_indexH = door_indexV = 0;
         int offset = 0;
-        last_offset = last_side = 0;
         int last_symbolH = 0;
         for (i = 0; i < LENGTH + 3; i++) {
             angle = rad_ch(_angle - acos((side_len - (i - 3) * base_angles_cos) / sqrt(side_len_squared + (i - 3) * (i - 3 - denom_temp))));
@@ -626,22 +626,20 @@ int main(void)
                     offset = (int)((1 - ryh + (int)ryh + door_extencion[door_indexH]) * 1024);
                 }
             }
-            texture_rect.x = last_offset;
+            texture_rect.x = offset;
             texture_rect.y = 0;
             if (offset - last_offset + 1 > 0 && side == last_side && !is_doorH) {
                 texture_rect.w = offset - last_offset + 1;
             }
             else {
                 if (!is_doorH) {
-                    if (last_symbolH != symbolH) {
-                        offset = 512;
-                        texture_rect.x = offset;
-                        texture_rect.w = 1;
-                    }
-                    else {
+                    if (last_symbolH != 2 && last_symbolH != 3) {
                         offset = 0;
-                        texture_rect.w = 1024 - last_offset;
+                        texture_rect.w = 1024 - offset;
                     }
+                }
+                else {
+                    texture_rect.w = 1;
                 }
             }
             texture_rect.h = 1024;
