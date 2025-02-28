@@ -6,9 +6,9 @@
 #include <SDL2/SDL_image.h>
 
 #define PI 3.1415926535
-#define LENGTH 600 
+#define LENGTH 300 
 #define H 600
-#define SCALE 2.0
+#define SCALE 4.0
 #define FLOOR_H_SCALE 2.0
 #define DOF 15
 #define FADE 10
@@ -23,6 +23,7 @@
 #define MAP_SCALE 6
 #define HALF_MAP_SCALE 3
 #define TARGET_FPS 60.0
+
 #define top_l(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x+ 8, y + 2)
 #define bottom_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x_offset + 8, y + 18)
 #define middle_l(r, x, y) SDL_RenderDrawLine(r, x, y + 9, x + 8, y + 9)
@@ -230,8 +231,8 @@ int main(void)
     float mod = 1.0; // variable for speeding up the player movement if shift is pressed
     int color, start, end, i, j, k, wall_hit;
     float angle, move_direction_h, move_direction_v;
-    float hit_len[LENGTH + 3];
     float hit_ang[LENGTH + 3];
+    float hit_len[LENGTH + 3];
     bool KEYS[322]; //keys that are currently pressed
     bool OLD_KEYS[322]; //keys that were pressed on the previous frame
     unsigned int ticks, old_ticks, frame_tick;
@@ -260,6 +261,12 @@ int main(void)
     float door_ext_rate[door_num];
 
     float location[2]; // player position
+
+    float floor_x, floor_y;
+    float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
+    int last_offset, last_side;
+    int door_indexH, door_indexV;
+    int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side;
 
     float sprite_location[sprite_num][2];
     float sprite_dist[sprite_num];
@@ -344,6 +351,10 @@ int main(void)
     const float base_angles_cos = cos(base_angles);
     const float side_len_squared = side_len * side_len;
     const float denom_temp = 2 * side_len * base_angles_cos;
+    const short int delta_fade = DOF - FADE;
+    const float color_intercept = 255 * (FADE / (delta_fade) + 1); // make the tiles fade between FADE and DOF, with DOF being transparent
+    const float ratio = RATIO;
+    const float half_h = H / 2;
     // the main loop
     while (!quit) {
         SDL_SetRenderTarget(renderer, buffer);
@@ -473,17 +484,12 @@ int main(void)
 
         // ray casting DDA
         float _angle = rad_ch(direction + SHIFT); // ray direction
-        float angle;
         float px = location[0] + 0.5;
         float py = location[1] + 0.5;
-        int door_indexH, door_indexV;
         door_indexH = door_indexV = 0;
-        int last_offset, last_side;
         int offset = 0;
         last_offset = last_side = 0;
         int last_symbolH = 0;
-        float floor_x, floor_y;
-        int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side; float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
         for (i = 0; i < LENGTH + 3; i++) {
             angle = rad_ch(_angle - acos((side_len - (i - 3) * base_angles_cos) / sqrt(side_len_squared + (i - 3) * (i - 3 - denom_temp))));
             bool is_doorV = false;
@@ -558,8 +564,8 @@ int main(void)
             }
 
             if(disV<disH){ rxh=rxv; ryh=ryv; disH=disV; side=0; is_doorH = is_doorV; door_indexH = door_indexV; symbolH = symbolV; } // the horizontal is set to the shortest ray
-            hit_len[i] = rad_ch(2.0 * PI - angle);
-            hit_ang[i] = (disH);
+            hit_ang[i] = rad_ch(2.0 * PI - angle);
+            hit_len[i] = (disH);
             float fisheye_correction = cos(direction - angle);
             disH=disH * fisheye_correction ; //fix fisheye
 
@@ -567,10 +573,11 @@ int main(void)
             start = 0;
             end = H - 1;
             if(disH != 0) {
-                start = H / 2 * (1 - 0.5/disH * RATIO);
-                end = H / 2 * (1 + 0.5/disH * RATIO);
+                float delta_h = 0.5 / disH * ratio;
+                start = half_h * (1 - delta_h);
+                end = half_h * (1 + delta_h);
             }
-            color = (int)round(255 * (FADE / (DOF - FADE) + 1) - 255.0 / (DOF - FADE) * hit_ang[i]); // make the tiles fade between FADE and DOF, with DOF being transparent
+            color = (int)round(color_intercept - 255.0 / delta_fade * hit_len[i]); // make the tiles fade between FADE and DOF, with DOF being transparent
             if (color < 0) {color = 0;}
             if (color > 255) {color = 255;}
             SDL_Rect r; // the column on the screen
@@ -636,9 +643,6 @@ int main(void)
                         texture_rect.w = 1024 - last_offset;
                     }
                 }
-                else {
-                    texture_rect.w = 1;
-                }
             }
             texture_rect.h = 1024;
             if (i > 2) {
@@ -664,7 +668,7 @@ int main(void)
                 floor_x = floor_ray * Cos + px;
                 floor_y = - floor_ray * Sin + py;
 //                if (floor_x > 0 && floor_x < MAP_W && floor_y > 0 && floor_y < MAP_H) { // check if tile is in the map
-                    color = (int)round(255 * (FADE / (DOF - FADE) + 1) - 255.0 / (DOF - FADE) * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
+                    color = (int)round(color_intercept - 255.0 / delta_fade * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
                     if (color < 0) {color = 0;}
                     if (color > 255) {color = 255;}
                     SDL_SetTextureAlphaMod(floor_texture, color);
@@ -762,7 +766,7 @@ int main(void)
             r.h = (int)HALF_MAP_SCALE/2;
             SDL_RenderDrawRect( renderer, &r );
             for (i=2; i<LENGTH + 3; i++) { // shows the rays on the map
-                SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round(location[1]*MAP_SCALE + HALF_MAP_SCALE), ceil((location[0] + hit_ang[i] * cos(hit_len[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((location[1] + hit_ang[i] * sin(hit_len[i])) * MAP_SCALE+HALF_MAP_SCALE));
+                SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round(location[1]*MAP_SCALE + HALF_MAP_SCALE), ceil((location[0] + hit_len[i] * cos(hit_ang[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((location[1] + hit_len[i] * sin(hit_ang[i])) * MAP_SCALE+HALF_MAP_SCALE));
             }
         }
         if (show_fps) { // show fps and player position
