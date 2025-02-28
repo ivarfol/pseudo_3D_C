@@ -9,6 +9,7 @@
 #define LENGTH 600 
 #define H 600
 #define SCALE 2.0
+#define FLOOR_H_SCALE 2.0
 #define DOF 15
 #define FADE 10
 #define NO_PI_FOV 0.5
@@ -651,11 +652,11 @@ int main(void)
             last_side = side;
             last_offset = offset;
             last_symbolH = symbolH;
-            r.h = 1;
+            r.h = FLOOR_H_SCALE;
             r.w = SCALE;
             texture_rect.w = SCALE;
-            texture_rect.h = 1;
-            for (j=end; j<H; j++) {
+            texture_rect.h = FLOOR_H_SCALE;
+            for (j=end; j<H; j += FLOOR_H_SCALE) {
                 float floor_ray = dist_to_screen / (j - H / 2) / fisheye_correction * SCALE / 2;
                 floor_x = floor_ray * Cos + location[0] + 0.5;
                 floor_y = - floor_ray * Sin + location[1] + 0.5;
