@@ -299,6 +299,7 @@ int main(void)
     SDL_Event event;
     IMG_Init(IMG_INIT_PNG);
 
+    SDL_Texture* buffer = SDL_CreateTexture(renderer, SDL_ISPIXELFORMAT_ALPHA(SDL_PIXELFORMAT_RGB332), SDL_TEXTUREACCESS_STREAMING, LENGTH * SCALE, H);
     // set the textures, if no texture with the name is found, set to missing.png
     SDL_Texture* wall_texture;
     if (fopen("wall.png", "r")!=NULL) { wall_texture = IMG_LoadTexture(renderer, "wall.png"); }
@@ -341,6 +342,7 @@ int main(void)
     const float target_fps = 1000.0 / TARGET_FPS;
     // the main loop
     while (!quit) {
+        SDL_SetRenderTarget(renderer, buffer);
         delta = SDL_GetTicks() - old_ticks; // time for the last frame in ms.
         if (delta < target_fps) {
             SDL_Delay((int)(target_fps) - delta); // cap the fps
@@ -786,6 +788,8 @@ int main(void)
         // render window
         SDL_RenderPresent(renderer);
         old_ticks = ticks;
+        SDL_SetRenderTarget(renderer, NULL);
+        SDL_RenderCopy(renderer, buffer, NULL, NULL);
     }
  
     // cleanup SDL
