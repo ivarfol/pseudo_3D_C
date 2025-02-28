@@ -628,21 +628,26 @@ int main(void)
             }
             texture_rect.x = offset;
             texture_rect.y = 0;
-            if (offset - last_offset + 1 > 0 && side == last_side && !is_doorH) {
-                texture_rect.w = offset - last_offset + 1;
+            texture_rect.h = 1024;
+            if ((offset - last_offset + 1 > 0 || last_offset == 0) && side == last_side && !is_doorH) {
+                if (last_offset == 0) {
+                    texture_rect.w = offset + 1;
+                }
+                else {
+                    texture_rect.w = offset - last_offset + 1;
+                }
             }
             else {
                 if (!is_doorH) {
                     if (last_symbolH != 2 && last_symbolH != 3) {
-                        offset = 0;
                         texture_rect.w = 1024 - offset;
+                        offset = 0;
                     }
                 }
                 else {
                     texture_rect.w = 1;
                 }
             }
-            texture_rect.h = 1024;
             if (i > 2) {
                 if (is_doorH) {
                     SDL_RenderCopy(renderer, door_texture, &texture_rect, &r);
@@ -665,10 +670,10 @@ int main(void)
                 float floor_ray = floor_ray_temp / (j - H / 2) / fisheye_correction;
                 floor_x = floor_ray * Cos + px;
                 floor_y = - floor_ray * Sin + py;
-//                if (floor_x > 0 && floor_x < MAP_W && floor_y > 0 && floor_y < MAP_H) { // check if tile is in the map
+//                if (floor_x > 0 && floor_x < MAP_W && floor_y > 0 && floor_y < MAP_H)  // check if tile is in the map
                     color = (int)round(color_intercept - 255.0 / delta_fade * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
-                    if (color < 0) {color = 0;}
-                    if (color > 255) {color = 255;}
+                    if (color < 0) color = 0;
+                    if (color > 255) color = 255;
                     SDL_SetTextureAlphaMod(floor_texture, color);
                     r.y = j;
                     texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
