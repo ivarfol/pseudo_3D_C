@@ -9,8 +9,8 @@
 #define LENGTH 600 
 #define H 600
 #define SCALE 2.0
-#define DOF 60
-#define FADE 40
+#define DOF 15
+#define FADE 10
 #define NO_PI_FOV 0.5
 #define FOV NO_PI_FOV * PI
 #define SHIFT FOV / 2
@@ -660,6 +660,10 @@ int main(void)
                 floor_x = floor_ray * Cos + location[0] + 0.5;
                 floor_y = - floor_ray * Sin + location[1] + 0.5;
                 if (floor_x > 0 && floor_x < MAP_W && floor_y > 0 && floor_y < MAP_H) {
+                    color = (int)round(255 * (FADE / (DOF - FADE) + 1) - 255.0 / (DOF - FADE) * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
+                    if (color < 0) {color = 0;}
+                    if (color > 255) {color = 255;}
+                    SDL_SetTextureAlphaMod(floor_texture, color);
                     r.y = j;
                     texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
                     texture_rect.y = (int)((floor_y - (int)floor_y) * 1024);
