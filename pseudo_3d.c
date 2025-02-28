@@ -656,7 +656,7 @@ int main(void)
             texture_rect.w = SCALE;
             texture_rect.h = 1;
             for (j=end; j<H; j++) {
-                float floor_ray = dist_to_screen / (j - H / 2) / fisheye_correction;
+                float floor_ray = dist_to_screen / (j - H / 2) / fisheye_correction * SCALE / 2;
                 floor_x = floor_ray * Cos + location[0] + 0.5;
                 floor_y = - floor_ray * Sin + location[1] + 0.5;
                 if (floor_x > 0 && floor_x < MAP_W && floor_y > 0 && floor_y < MAP_H) {
