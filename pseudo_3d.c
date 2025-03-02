@@ -67,30 +67,26 @@ void move_f( short int map_arr[][MAP_W], float location[], float direction, floa
             door_ext_x = (int)round(door_extencion[i]);
         }
     }
-    if (map_arr[(int)round(y)][(int)round(location[0])] == 0 || (map_arr[(int)round(y)][(int)round(location[0])] != 1 && door_ext_y == 1)) {
+    if (map_arr[(int)round(y)][(int)round(location[0])] == 0 || ((map_arr[(int)round(y)][(int)round(location[0])] == 2 || map_arr[(int)round(y)][(int)round(location[0])] == 3) && door_ext_y == 1)) {
         location[1] = y - 0.0625 * sin(angle) * mod;
     }
-    else {
-        if (map_arr[(int)round(y)][(int)round(location[0])] != 2 && map_arr[(int)round(y)][(int)round(location[0])] != 3) {
-            if (sin(angle) < 0) {
-                location[1] = round(y) + 0.51;
-            }
-            else {
-                location[1] = round(y) - 0.51;
-            }
+    else if (map_arr[(int)round(y)][(int)round(location[0])] != 2 && map_arr[(int)round(y)][(int)round(location[0])] != 3) {
+        if (sin(angle) < 0) {
+            location[1] = round(y) + 0.51;
+        }
+        else {
+            location[1] = round(y) - 0.51;
         }
     }
-    if (map_arr[(int)round(location[1])][(int)round(x)] == 0 || (map_arr[(int)round(location[1])][(int)round(x)] != 1 && door_ext_x == 1)) {
+    if (map_arr[(int)round(location[1])][(int)round(x)] == 0 || ((map_arr[(int)round(location[1])][(int)round(x)] == 2 || map_arr[(int)round(location[1])][(int)round(x)] == 3) && door_ext_x == 1)) {
         location[0] = x - 0.0625 * cos(angle) * mod;
     }
-    else {
-        if (map_arr[(int)round(location[1])][(int)round(x)] != 2 && map_arr[(int)round(location[1])][(int)round(x)] != 3) {
-            if (cos(angle) < 0) {
-                location[0] = round(x) + 0.51;
-            }
-            else {
-                location[0] = round(x) - 0.51;
-            }
+    else if (map_arr[(int)round(location[1])][(int)round(x)] != 2 && map_arr[(int)round(location[1])][(int)round(x)] != 3) {
+        if (cos(angle) < 0) {
+            location[0] = round(x) + 0.51;
+        }
+        else {
+            location[0] = round(x) - 0.51;
         }
     }
 }
@@ -196,8 +192,8 @@ int main(void)
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 7, 6, 1, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -226,7 +222,7 @@ int main(void)
                                         {1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
-    float direction = 1.5 * PI; //direction the player is facing
+    float direction = 1.6 * PI; //direction the player is facing
     bool show_map, noclip, show_fps, quit, try_door;
     float mod = 1.0; // variable for speeding up the player movement if shift is pressed
     int color, start, end, i, j, k, wall_hit;
@@ -308,7 +304,7 @@ int main(void)
     SDL_Event event;
     IMG_Init(IMG_INIT_PNG);
 
-    SDL_Texture* buffer = SDL_CreateTexture(renderer, SDL_ISPIXELFORMAT_ALPHA(SDL_PIXELFORMAT_RGB332), SDL_TEXTUREACCESS_STREAMING, LENGTH * SCALE, H);
+    SDL_Texture* buffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, LENGTH * SCALE, H);
     // set the textures, if no texture with the name is found, set to missing.png
     SDL_Texture* wall_texture;
     if (fopen("wall.png", "r")!=NULL) { wall_texture = IMG_LoadTexture(renderer, "wall.png"); }
@@ -629,24 +625,22 @@ int main(void)
             texture_rect.x = offset;
             texture_rect.y = 0;
             texture_rect.h = 1024;
-            if ((offset - last_offset + 1 > 0 || last_offset == 0) && side == last_side && !is_doorH) {
-                if (last_offset == 0) {
-                    texture_rect.w = offset + 1;
+            if (!is_doorH) {
+                if (offset - last_offset + 1 > 0 || last_offset == 0) {
+                    if (last_offset == 0) {
+                        texture_rect.w = 1;
+                    }
+                    else {
+                        texture_rect.w = offset - last_offset + 1;
+                    }
                 }
-                else {
-                    texture_rect.w = offset - last_offset + 1;
+                else if (last_symbolH != 2 && last_symbolH != 3) {
+                        texture_rect.w = 1025 + offset - last_offset;
+                        offset = 0;
                 }
             }
             else {
-                if (!is_doorH) {
-                    if (last_symbolH != 2 && last_symbolH != 3) {
-                        texture_rect.w = 1024 - offset;
-                        offset = 0;
-                    }
-                }
-                else {
-                    texture_rect.w = 1;
-                }
+                texture_rect.w = 1;
             }
             if (i > 2) {
                 if (is_doorH) {
@@ -820,6 +814,8 @@ int main(void)
     seven_texture = NULL;
     SDL_DestroyTexture(eight_texture);
     eight_texture = NULL;
+    SDL_DestroyTexture(buffer);
+    buffer = NULL;
     SDL_DestroyRenderer(renderer);
     renderer = NULL;
     SDL_DestroyWindow(window);
