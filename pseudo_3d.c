@@ -6,23 +6,18 @@
 #include <SDL2/SDL_image.h>
 
 #define PI 3.1415926535
-#define LENGTH 300 
-#define H 600
-#define SCALE 4.0
-#define FLOOR_H_SCALE 2.0
 #define DOF 15
 #define FADE 10
 #define NO_PI_FOV 0.5
 #define FOV NO_PI_FOV * PI
 #define SHIFT FOV / 2
-#define STEP FOV / LENGTH
-#define RATIO LENGTH * SCALE / H / NO_PI_FOV / 2
 #define DOOR_NUM 2
 #define MAP_W 64
 #define MAP_H 64
-#define MAP_SCALE 6
-#define HALF_MAP_SCALE 3
 #define TARGET_FPS 60.0
+#define MAXLENGTH 6
+#define COMMENTMAXLENGTH 80
+#define LINES 5
 
 #define top_l(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x+ 8, y + 2)
 #define bottom_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x_offset + 8, y + 18)
@@ -36,7 +31,6 @@
 #define top_l_bot_r(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x + 8, y + 18)
 #define top_r_bot_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x + 8, y + 2)
 #define y_left_top(r, x, y) SDL_RenderDrawLine(r, x + 4, y + 9, x, y + 2)
-
 
 float rad_ch(float a) // stops the a from going over 2 * PI (radians)
 {
@@ -223,12 +217,40 @@ int main(void)
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
     float direction = 1.6 * PI; //direction the player is facing
-    bool show_map, noclip, show_fps, quit, try_door;
-    float mod = 1.0; // variable for speeding up the player movement if shift is pressed
     int color, start, end, i, j, k, wall_hit;
+    bool show_map, noclip, show_fps, quit, try_door;
+    show_map = noclip = show_fps = quit = try_door = false;
+    FILE *fptr;
+    char contents[COMMENTMAXLENGTH];
+    int config[LINES];
+    fptr = fopen("conf", "r");
+    j = 1;
+    int length = 600;
+    int hight = 600;
+    float scale = 2;
+    float floor_scale = 2;
+    int map_scale = 6;
+    if (fptr != NULL) {
+        for (i=0;i<LINES && j>0;i++) {
+            fgets(contents, COMMENTMAXLENGTH, fptr);
+            config[i] = 0;
+            for (j=0; j<MAXLENGTH-1 && contents[j] != EOF && contents[j] >= '0' && contents[j] <= '9'; j++);
+            for (k=0; k<j; k++)
+                config[i] += (contents[k] - '0') * pow(10, j - k - 1);
+        }
+        if (i==LINES && config[0] > 0 && config[1] > 0 && config[2] > 0 && config[3] > 0 && config[4] > 0) {
+            length = config[0];
+            hight = config[1];
+            scale = config[2];
+            floor_scale = config[3];
+            map_scale = config[4];
+        }
+    }
+    float half_map_scale = map_scale / 2;
+    float mod = 1.0; // variable for speeding up the player movement if shift is pressed
     float angle, move_direction_h, move_direction_v;
-    float hit_ang[LENGTH + 3];
-    float hit_len[LENGTH + 3];
+    float hit_ang[length + 3];
+    float hit_len[length + 3];
     bool KEYS[322]; //keys that are currently pressed
     bool OLD_KEYS[322]; //keys that were pressed on the previous frame
     unsigned int ticks, old_ticks, frame_tick;
@@ -240,7 +262,6 @@ int main(void)
     int fps[3]; // fps as an array of numbers, used to output the fps with print_num()
     int door_num = 0; // number of doors
     int sprite_num = 0;
-    show_map = noclip = show_fps = quit = try_door = false;
 
     for (i=0; i<MAP_H; i++) {
         for (j=0; j<MAP_W; j++) {
@@ -299,12 +320,12 @@ int main(void)
  
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window * window = SDL_CreateWindow("Pseudo 3D",
-    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, LENGTH*SCALE, H, 0);
+    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, length * scale, hight, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_Event event;
     IMG_Init(IMG_INIT_PNG);
 
-    SDL_Texture* buffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, LENGTH * SCALE, H);
+    SDL_Texture* buffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, length * scale, length );
     // set the textures, if no texture with the name is found, set to missing.png
     SDL_Texture* wall_texture;
     if (fopen("wall.png", "r")!=NULL) { wall_texture = IMG_LoadTexture(renderer, "wall.png"); }
@@ -341,17 +362,17 @@ int main(void)
     else { eight_texture = IMG_LoadTexture(renderer, "missing.png"); }
     SDL_SetTextureBlendMode(eight_texture, SDL_BLENDMODE_BLEND);
  
-    const float base_angles = rad_ch(0.5 * PI - SHIFT);
-    const float side_len = LENGTH * sin(base_angles) / sin(FOV);
-    const float floor_ray_temp = sin(base_angles) * LENGTH / 4 / sin(SHIFT) * SCALE; // sin(base_angles) * LENGTH / 2 / sin(SHIFT) is the distance to trhe screen
+    const double base_angles = rad_ch(0.5 * PI - SHIFT);
+    const double side_len = length * sin(base_angles) / sin(FOV);
+    const float floor_ray_temp = sin(base_angles) * length / 4 / sin(SHIFT) * scale; // sin(base_angles) * length / 2 / sin(SHIFT) is the distance to trhe screen
     const float target_fps = 1000.0 / TARGET_FPS;
-    const float base_angles_cos = cos(base_angles);
-    const float side_len_squared = side_len * side_len;
-    const float denom_temp = 2 * side_len * base_angles_cos;
+    const double base_angles_cos = cos(base_angles);
+    const double side_len_squared = side_len * side_len;
+    const double denom_temp = 2 * side_len * base_angles_cos;
     const short int delta_fade = DOF - FADE;
     const float color_intercept = 255 * (FADE / (delta_fade) + 1); // make the tiles fade between FADE and DOF, with DOF being transparent
-    const float ratio = RATIO;
-    const float half_h = H / 2;
+    const float ratio = length * scale / hight / NO_PI_FOV / 2;
+    const float half_h = hight / 2;
     // the main loop
     while (!quit) {
         SDL_SetRenderTarget(renderer, buffer);
@@ -447,8 +468,8 @@ int main(void)
 //        SDL_Rect r; // draw the ground
 //        r.x = 0;
 //        r.y = 0;
-//        r.w = LENGTH * SCALE;                                   // less overdrawing
-//        r.h = H / 2 * (1 + 0.5 / (DOF - FADE + 8) / 2 * RATIO) + 2; // set the ground upper limit, to the lowwer limit of the fading tiles
+//        r.w = length * scale;                                   // less overdrawing
+//        r.h = hight / 2 * (1 + 0.5 / (DOF - FADE + 8) / 2 * RATIO) + 2; // set the ground upper limit, to the lowwer limit of the fading tiles
 //        SDL_RenderFillRect(renderer, &r);
 
         // toggles door if found in front
@@ -486,7 +507,7 @@ int main(void)
         door_indexH = door_indexV = 0;
         int offset = 0;
         int last_symbolH = 0;
-        for (i = 0; i < LENGTH + 3; i++) {
+        for (i = 0; i < length + 3; i++) {
             angle = rad_ch(_angle - acos((side_len - (i - 3) * base_angles_cos) / sqrt(side_len_squared + (i - 3) * (i - 3 - denom_temp))));
             bool is_doorV = false;
             bool is_doorH = false;
@@ -567,8 +588,8 @@ int main(void)
 
             // vertical lines for the screen output
             start = 0;
-            end = H - 1;
-            if(disH != 0) {
+            end = hight - 1;
+            if(disH != 0 && disH == disH) {
                 float delta_h = 0.5 / disH * ratio;
                 start = half_h * (1 - delta_h);
                 end = half_h * (1 + delta_h);
@@ -577,9 +598,9 @@ int main(void)
             if (color < 0) {color = 0;}
             if (color > 255) {color = 255;}
             SDL_Rect r; // the column on the screen
-            r.x = (i - 3) * SCALE;
+            r.x = (i - 3) * scale;
             r.y = start;
-            r.w = SCALE;
+            r.w = scale;
             r.h = end - start;
             SDL_Rect texture_rect;
             if (!is_doorH) {
@@ -656,23 +677,23 @@ int main(void)
             last_side = side;
             last_offset = offset;
             last_symbolH = symbolH;
-            r.h = FLOOR_H_SCALE;
-            r.w = SCALE;
-            texture_rect.w = SCALE;
-            texture_rect.h = FLOOR_H_SCALE;
-            for (j=end; j<H; j += FLOOR_H_SCALE) {
-                float floor_ray = floor_ray_temp / (j - H / 2) / fisheye_correction;
+            r.h = floor_scale;
+            r.w = scale;
+            texture_rect.w = scale;
+            texture_rect.h = floor_scale;
+            for (j=end; j<hight; j += floor_scale) {
+                float floor_ray = floor_ray_temp / (j - hight / 2) / fisheye_correction;
                 floor_x = floor_ray * Cos + px;
                 floor_y = - floor_ray * Sin + py;
 //                if (floor_x > 0 && floor_x < MAP_W && floor_y > 0 && floor_y < MAP_H)  // check if tile is in the map
-                    color = (int)round(color_intercept - 255.0 / delta_fade * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
-                    if (color < 0) color = 0;
-                    if (color > 255) color = 255;
-                    SDL_SetTextureAlphaMod(floor_texture, color);
-                    r.y = j;
-                    texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
-                    texture_rect.y = (int)((floor_y - (int)floor_y) * 1024);
-                    SDL_RenderCopy(renderer, floor_texture, &texture_rect, &r);
+                color = (int)round(color_intercept - 255.0 / delta_fade * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
+                if (color < 0) color = 0;
+                if (color > 255) color = 255;
+                SDL_SetTextureAlphaMod(floor_texture, color);
+                r.y = j;
+                texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
+                texture_rect.y = (int)((floor_y - (int)floor_y) * 1024);
+                SDL_RenderCopy(renderer, floor_texture, &texture_rect, &r);
             }
         }
 
@@ -717,15 +738,15 @@ int main(void)
 //                rad_skip = true;
 //            }
 //
-//            int h_position = round((0.5 -tan(rad_ch(Tan_inv - direction)) / tan(FOV / 2.0) / 2.0) * LENGTH * SCALE + 0.001);
+//            int h_position = round((0.5 -tan(rad_ch(Tan_inv - direction)) / tan(FOV / 2.0) / 2.0) * length * scale+ 0.001);
 //            float tmp_dist = sqrt(tmp_x * tmp_x + tmp_y * tmp_y) * cos(rad_ch(direction - Tan_inv));
-//            int dimention = H / 2 * (1 / tmp_dist) * RATIO;
-//            if (((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) || (h_position - dimention / 2 < LENGTH * SCALE && h_position + dimention / 2 > 0)) {
+//            int dimention = length / 2 * (1 / tmp_dist) * RATIO;
+//            if (((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) || (h_position - dimention / 2 < length * scale&& h_position + dimention / 2 > 0)) {
 //                sprite_dist[i] = tmp_dist;
 //                sprite_angle[i] = Tan_inv;
 //                SDL_Rect r;
 //                r.x = h_position - dimention / 2;
-//                r.y= H / 2 * (1 - 0.5 / sprite_dist[i] * RATIO);
+//                r.y= length / 2 * (1 - 0.5 / sprite_dist[i] * RATIO);
 //                r.w = dimention;
 //                r.h = dimention;
 //                SDL_RenderCopy(renderer, sprite_texture, NULL, &r);
@@ -741,33 +762,33 @@ int main(void)
             SDL_Rect r;
             r.x = 0;
             r.y = 0;
-            r.w = MAP_W * MAP_SCALE;
-            r.h = MAP_H * MAP_SCALE;
+            r.w = MAP_W * map_scale;
+            r.h = MAP_H * map_scale;
             SDL_RenderFillRect(renderer, &r);
             SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
             for (i=0; i<MAP_H; i++) {
                 for (j=0; j<MAP_W; j++) {
                     if (map_arr[i][j] != 0) {
-                        r.x = j * MAP_SCALE;
-                        r.y = i * MAP_SCALE;
-                        r.w = MAP_SCALE;
-                        r.h = MAP_SCALE;
+                        r.x = j * map_scale;
+                        r.y = i * map_scale;
+                        r.w = map_scale;
+                        r.h = map_scale;
                         SDL_RenderDrawRect( renderer, &r );
                     }
                 }
             }
             SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 ); // the player rectangle
-            r.x = round(location[0] * MAP_SCALE)+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
-            r.y = round(location[1] * MAP_SCALE)+HALF_MAP_SCALE - (int)HALF_MAP_SCALE/4;
-            r.w = (int)HALF_MAP_SCALE/2;
-            r.h = (int)HALF_MAP_SCALE/2;
+            r.x = round(location[0] * map_scale)+half_map_scale- (int)half_map_scale/4;
+            r.y = round(location[1] * map_scale)+half_map_scale- (int)half_map_scale/4;
+            r.w = (int)half_map_scale/2;
+            r.h = (int)half_map_scale/2;
             SDL_RenderDrawRect( renderer, &r );
-            for (i=2; i<LENGTH + 3; i++) { // shows the rays on the map
-                SDL_RenderDrawLine(renderer, round(location[0]*MAP_SCALE + HALF_MAP_SCALE), round(location[1]*MAP_SCALE + HALF_MAP_SCALE), ceil((location[0] + hit_len[i] * cos(hit_ang[i])) * MAP_SCALE+HALF_MAP_SCALE), ceil((location[1] + hit_len[i] * sin(hit_ang[i])) * MAP_SCALE+HALF_MAP_SCALE));
+            for (i=2; i<length + 3; i++) { // shows the rays on the map
+                SDL_RenderDrawLine(renderer, round(location[0]*map_scale+ half_map_scale), round(location[1]*map_scale+ half_map_scale), ceil((location[0] + hit_len[i] * cos(hit_ang[i])) * map_scale+half_map_scale), ceil((location[1] + hit_len[i] * sin(hit_ang[i])) * map_scale+half_map_scale));
             }
         }
         if (show_fps) { // show fps and player position
-            int x_offset = MAP_W * MAP_SCALE + 10;
+            int x_offset = MAP_W * map_scale+ 10;
             SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 ); // a background
             SDL_Rect r;
             r.x = x_offset;
