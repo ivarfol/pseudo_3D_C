@@ -708,10 +708,12 @@ int main(void)
             }
             else if (door_wait[i] > 0) door_wait[i] -= 1; //wait
             else {
-                door_extencion[i] += door_ext_rate[i]; // closes the doors
-                if (door_extencion[i] < 0) {
-                    door_ext_rate[i] = 0.0;
-                    door_extencion[i] = 0.0;
+                if (round(location[0]) != door_location[i][0] || round(location[1]) != door_location[i][1]) {
+                    door_extencion[i] += door_ext_rate[i]; // closes the doors
+                    if (door_extencion[i] < 0) {
+                        door_ext_rate[i] = 0.0;
+                        door_extencion[i] = 0.0;
+                    }
                 }
             }
         }
