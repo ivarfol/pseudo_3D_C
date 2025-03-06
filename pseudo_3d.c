@@ -187,7 +187,7 @@ int main(void)
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 7, 6, 1, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 1, 0, 8, 8, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -596,7 +596,7 @@ int main(void)
             }
             color = (int)round(color_intercept - 255.0 / delta_fade * hit_len[i]); // make the tiles fade between FADE and DOF, with DOF being transparent
             if (color < 0) {color = 0;}
-            if (color > 255) {color = 255;}
+            else if (color > 255) {color = 255;}
             SDL_Rect r; // the column on the screen
             r.x = (i - 3) * scale;
             r.y = start;
@@ -688,7 +688,7 @@ int main(void)
 //                if (floor_x > 0 && floor_x < MAP_W && floor_y > 0 && floor_y < MAP_H)  // check if tile is in the map
                 color = (int)round(color_intercept - 255.0 / delta_fade * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
                 if (color < 0) color = 0;
-                if (color > 255) color = 255;
+                else if (color > 255) color = 255;
                 SDL_SetTextureAlphaMod(floor_texture, color);
                 r.y = j;
                 texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
@@ -716,46 +716,72 @@ int main(void)
             }
         }
 
-//        for (i=0; i<sprite_num; i++) {
-//            float tmp_x, tmp_y;
-//            tmp_x = sprite_location[i][0] - location[0];
-//            tmp_y = - sprite_location[i][1] + location[1];
-//            if (tmp_x == 0) tmp_x = 0.00001;
-//            if (tmp_y == 0) tmp_y = - 0.00001;
-//            float Tan_inv = rad_ch(atan(tmp_y / tmp_x));
-//            if (tmp_x < 0) Tan_inv = rad_ch(Tan_inv + PI);
-//            bool rad_skip = false;
-//
-//            float border_one = direction + SHIFT;
-//            if (border_one < 0 || border_one > 2 * PI) {
-//                border_one = rad_ch(border_one);
-//                rad_skip = true;
-//            }
-//
-//            float border_two = direction - SHIFT;
-//            if (border_two < 0 || border_two > 2 * PI) {
-//                border_two = rad_ch(border_two);
-//                rad_skip = true;
-//            }
-//
-//            int h_position = round((0.5 -tan(rad_ch(Tan_inv - direction)) / tan(FOV / 2.0) / 2.0) * length * scale+ 0.001);
-//            float tmp_dist = sqrt(tmp_x * tmp_x + tmp_y * tmp_y) * cos(rad_ch(direction - Tan_inv));
-//            int dimention = length / 2 * (1 / tmp_dist) * RATIO;
-//            if (((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) || (h_position - dimention / 2 < length * scale&& h_position + dimention / 2 > 0)) {
-//                sprite_dist[i] = tmp_dist;
-//                sprite_angle[i] = Tan_inv;
-//                SDL_Rect r;
-//                r.x = h_position - dimention / 2;
-//                r.y= length / 2 * (1 - 0.5 / sprite_dist[i] * RATIO);
-//                r.w = dimention;
-//                r.h = dimention;
-//                SDL_RenderCopy(renderer, sprite_texture, NULL, &r);
-//            }
-//            else {
-//                sprite_dist[i] = -1;
-//                sprite_angle[i] = -1;
-//            }
-//        }
+        for (i=0; i<sprite_num; i++) {
+            float tmp_x, tmp_y;
+            tmp_x = sprite_location[i][0] - location[0];
+            tmp_y = - sprite_location[i][1] + location[1];
+            if (tmp_x == 0) tmp_x = 0.00001;
+            if (tmp_y == 0) tmp_y = - 0.00001;
+            float Tan_inv = rad_ch(atan(tmp_y / tmp_x));
+            if (tmp_x < 0) Tan_inv = rad_ch(Tan_inv + PI);
+            bool rad_skip = false;
+
+            float border_one = direction + SHIFT;
+            if (border_one < 0 || border_one > 2 * PI) {
+                border_one = rad_ch(border_one);
+                rad_skip = true;
+            }
+
+            float border_two = direction - SHIFT;
+            if (border_two < 0 || border_two > 2 * PI) {
+                border_two = rad_ch(border_two);
+                rad_skip = true;
+            }
+
+            int h_position = round((0.5 -tan(rad_ch(Tan_inv - direction)) / tan(FOV / 2.0) / 2.0) * length * scale+ 0.001);
+            float true_tmp_dist = sqrt(tmp_x * tmp_x + tmp_y * tmp_y);
+            float tmp_dist = true_tmp_dist * cos(rad_ch(direction - Tan_inv));
+            int dimention = hight / 2 * (1 / tmp_dist) * ratio;
+            if (true_tmp_dist < DOF && (((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) || (h_position - dimention / 2 < length * scale&& h_position + dimention / 2 > 0))) {
+                color = (int)round(color_intercept - 255.0 / delta_fade * true_tmp_dist); // make the tiles fade between FADE and DOF, with DOF being transparent
+                if (color < 0) color = 0;
+                else if (color > 255) color = 255;
+                SDL_SetTextureAlphaMod(sprite_texture, color);
+                sprite_dist[i] = tmp_dist;
+                sprite_angle[i] = Tan_inv;
+                int slices = ceil(dimention / scale);
+                int start_pos = h_position - dimention / 2;
+                int start_width = ceil(start_pos / scale) - start_pos;
+                SDL_Rect r;
+                r.x = start_pos;
+                r.y= hight / 2 * (1 - 0.5 / tmp_dist * ratio);
+                r.w = start_width;
+                r.h = dimention;
+                SDL_Rect texture_rect;
+                texture_rect.h = 0;
+                texture_rect.h = 1024;
+                texture_rect.x = 0;
+                texture_rect.w = 1;
+                SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
+                float texture_width = 1024 / (dimention - ceil(start_pos / scale) * scale + start_pos) * scale;
+                int column;
+                //float texture_width = 1024 / (dimention - ceil(start_pos / scale) * scale + start_pos) * scale;
+                r.w = scale;
+                texture_rect.w = texture_width;
+                for (j=0;j<slices;j++) {
+                    column = ceil(start_pos / scale) + j;
+                    if (column < length && true_tmp_dist < hit_len[column + 3]) {
+                        texture_rect.x = j * texture_width;
+                        r.x = scale * ceil(start_pos / scale + j);
+                        SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
+                    }
+                }
+            }
+            else {
+                sprite_dist[i] = -1;
+                sprite_angle[i] = -1;
+            }
+        }
 
         if (show_map) { // render the map
             SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 ); // a background
