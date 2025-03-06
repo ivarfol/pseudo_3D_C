@@ -768,13 +768,19 @@ int main(void)
                 //float texture_width = 1024 / (dimention - ceil(start_pos / scale) * scale + start_pos) * scale;
                 r.w = scale;
                 texture_rect.w = texture_width;
-                for (j=0;j<slices;j++) {
+                for (j=0;j<=slices;j++) {
                     column = ceil(start_pos / scale) + j;
                     if (column < length && true_tmp_dist < hit_len[column + 3]) {
                         texture_rect.x = j * texture_width;
                         r.x = scale * ceil(start_pos / scale + j);
-                        SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
+                        if (j < slices)
+                            SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
                     }
+                }
+                if (column < length && true_tmp_dist < hit_len[column + 3]) {
+                    r.w = h_position + dimention / 2 - scale * ceil(start_pos / scale + slices);
+                    texture_rect.w = 1024 - texture_rect.x;
+                    SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
                 }
             }
             else {
