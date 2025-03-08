@@ -760,7 +760,7 @@ int main(void)
                 r.w = start_width;
                 r.h = dimention;
                 SDL_Rect texture_rect;
-                texture_rect.h = 0;
+                texture_rect.y = 0;
                 texture_rect.h = 1024;
                 texture_rect.x = 0;
                 texture_rect.w = 1;
