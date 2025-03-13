@@ -32,13 +32,6 @@
 #define top_r_bot_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x + 8, y + 2)
 #define y_left_top(r, x, y) SDL_RenderDrawLine(r, x + 4, y + 9, x, y + 2)
 
-void swap(int* xp, int* yp)
-{
-    int temp = *xp;
-    *xp = *yp;
-    *yp = temp;
-}
-
 float rad_ch(float a) // stops the a from going over 2 * PI (radians)
 {
     if (a > 2 * PI) {
@@ -50,6 +43,72 @@ float rad_ch(float a) // stops the a from going over 2 * PI (radians)
         }
     }
     return a;
+}
+
+void draw_sprite(float direction, float sprite_angle[], int index, int length, int scale, int hight, float ratio, float sprite_dist[], float color_intercept, float delta_fade, float hit_len[], SDL_Texture* sprite_texture, SDL_Renderer* renderer)
+{
+    bool rad_skip = false;
+    float border_one = direction + SHIFT;
+    if (border_one < 0 || border_one > 2 * PI) {
+        border_one = rad_ch(border_one);
+        rad_skip = true;
+    }
+
+    float border_two = direction - SHIFT;
+    if (border_two < 0 || border_two > 2 * PI) {
+        border_two = rad_ch(border_two);
+        rad_skip = true;
+    }
+
+    int h_position = round((0.5 -tan(rad_ch(sprite_angle[index] - direction)) / tan(FOV / 2.0) / 2.0) * length * scale+ 0.001);
+    float tmp_dist = sprite_dist[index] * cos(rad_ch(direction - sprite_angle[index]));
+    int dimention = hight / 2 * (1 / tmp_dist) * ratio;
+    int j;
+    if (sprite_dist[index] < DOF && (((rad_skip && (sprite_angle[index] < border_one || sprite_angle[index] > border_two)) || (!rad_skip && sprite_angle[index] < border_one && sprite_angle[index] > border_two)) || (h_position - dimention / 2 < length * scale&& h_position + dimention / 2 > 0))) {
+        int color = round(color_intercept - 255.0 / delta_fade * sprite_dist[index]); // make the tiles fade between FADE and DOF, with DOF being transparent
+        if (color < 0) color = 0;
+        else if (color > 255) color = 255;
+        SDL_SetTextureAlphaMod(sprite_texture, color);
+        int slices = ceil(dimention / scale);
+        int start_pos = h_position - dimention / 2;
+        int start_width = ceil(start_pos / scale) - start_pos;
+        int column;
+        SDL_Rect r;
+        r.x = start_pos;
+        r.y= hight / 2 * (1 - 0.5 / tmp_dist * ratio);
+        r.w = start_width;
+        r.h = dimention;
+        SDL_Rect texture_rect;
+        texture_rect.y = 0;
+        texture_rect.h = 1024;
+        texture_rect.x = 0;
+        texture_rect.w = 1;
+        SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
+        float texture_width = 1024 / (dimention - ceil(start_pos / scale) * scale + start_pos) * scale;
+        r.w = scale;
+        texture_rect.w = texture_width;
+        for (j=0;j<=slices;j++) {
+            column = ceil(start_pos / scale) + j;
+            if (column < length - 1 && sprite_dist[index] < hit_len[column + 3]) {
+                texture_rect.x = j * texture_width;
+                r.x = scale * ceil(start_pos / scale + j);
+                if (j < slices)
+                    SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
+            }
+        }
+        if (column < length && sprite_dist[index] < hit_len[column + 3]) {
+            r.w = h_position + dimention / 2 - scale * ceil(start_pos / scale + slices);
+            texture_rect.w = 1024 - texture_rect.x;
+            SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
+        }
+    }
+}
+
+void swap(int* xp, int* yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
 }
 
 void move_f( short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip, int door_location[][2], float door_extencion[], int door_num)
@@ -223,7 +282,7 @@ int main(void)
                                         {1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
-    float direction = 1.6 * PI; //direction the player is facing
+    float direction = 1.5 * PI; //direction the player is facing
     int color, start, end, i, j, k, wall_hit;
     bool show_map, noclip, show_fps, quit, try_door;
     show_map = noclip = show_fps = quit = try_door = false;
@@ -673,8 +732,8 @@ int main(void)
             }
             else
                 texture_rect.w = 1;
-            if (texture_rect.x < 0 || texture_rect.x > 1023) {
-                texture_rect.x = 0;
+            if (texture_rect.x + texture_rect.w > 1023 || texture_rect.w < 1) {
+                texture_rect.x = 1023;
                 texture_rect.w = 1;
             }
             if (i > 2) {
@@ -760,63 +819,21 @@ int main(void)
                 break;
         }
 
-        for (i=0; i<sprite_num; i++) {
-            bool rad_skip = false;
-            float border_one = direction + SHIFT;
-            if (border_one < 0 || border_one > 2 * PI) {
-                border_one = rad_ch(border_one);
-                rad_skip = true;
-            }
+        for (i=0; i<sprite_num; i++)
+            draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, sprite_texture, renderer);
 
-            float border_two = direction - SHIFT;
-            if (border_two < 0 || border_two > 2 * PI) {
-                border_two = rad_ch(border_two);
-                rad_skip = true;
-            }
-
-            int h_position = round((0.5 -tan(rad_ch(sprite_angle[sprite_index[i]] - direction)) / tan(FOV / 2.0) / 2.0) * length * scale+ 0.001);
-            float tmp_dist = sprite_dist[sprite_index[i]] * cos(rad_ch(direction - sprite_angle[sprite_index[i]]));
-            int dimention = hight / 2 * (1 / tmp_dist) * ratio;
-            if (sprite_dist[sprite_index[i]] < DOF && (((rad_skip && (sprite_angle[sprite_index[i]] < border_one || sprite_angle[sprite_index[i]] > border_two)) || (!rad_skip && sprite_angle[sprite_index[i]] < border_one && sprite_angle[sprite_index[i]] > border_two)) || (h_position - dimention / 2 < length * scale&& h_position + dimention / 2 > 0))) {
-                color = (int)round(color_intercept - 255.0 / delta_fade * sprite_dist[sprite_index[i]]); // make the tiles fade between FADE and DOF, with DOF being transparent
-                if (color < 0) color = 0;
-                else if (color > 255) color = 255;
-                SDL_SetTextureAlphaMod(sprite_texture, color);
-                int slices = ceil(dimention / scale);
-                int start_pos = h_position - dimention / 2;
-                int start_width = ceil(start_pos / scale) - start_pos;
-                SDL_Rect r;
-                r.x = start_pos;
-                r.y= hight / 2 * (1 - 0.5 / tmp_dist * ratio);
-                r.w = start_width;
-                r.h = dimention;
-                SDL_Rect texture_rect;
-                texture_rect.y = 0;
-                texture_rect.h = 1024;
-                texture_rect.x = 0;
-                texture_rect.w = 1;
-                SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
-                float texture_width = 1024 / (dimention - ceil(start_pos / scale) * scale + start_pos) * scale;
-                int column;
-                //float texture_width = 1024 / (dimention - ceil(start_pos / scale) * scale + start_pos) * scale;
-                r.w = scale;
-                texture_rect.w = texture_width;
-                for (j=0;j<=slices;j++) {
-                    column = ceil(start_pos / scale) + j;
-                    if (column < length && sprite_dist[sprite_index[i]] < hit_len[column + 3]) {
-                        texture_rect.x = j * texture_width;
-                        r.x = scale * ceil(start_pos / scale + j);
-                        if (j < slices)
-                            SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
-                    }
-                }
-                if (column < length && sprite_dist[sprite_index[i]] < hit_len[column + 3]) {
-                    r.w = h_position + dimention / 2 - scale * ceil(start_pos / scale + slices);
-                    texture_rect.w = 1024 - texture_rect.x;
-                    SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
-                }
-            }
-        }
+        // move a sprite towards the player
+        if (sprite_location[0][1] < location[1])
+            if (sprite_location[0][0] > location[0])
+                move_direction_v = rad_ch(atan((sprite_location[0][1] - location[1]) / (- sprite_location[0][0] + location[0])) + PI);
+            else
+                move_direction_v = atan((sprite_location[0][1] - location[1]) / (- sprite_location[0][0] + location[0]));
+        else
+            if (sprite_location[0][0] > location[0])
+                move_direction_v = rad_ch(atan((sprite_location[0][1] - location[1]) / (- sprite_location[0][0] + location[0])) - PI);
+            else
+                move_direction_v = atan((sprite_location[0][1] - location[1]) / (- sprite_location[0][0] + location[0]));
+        move_f(map_arr, sprite_location[0], move_direction_v, 0, 0.25, false, door_location, door_extencion, door_num);
 
         if (show_map) { // render the map
             SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 ); // a background
