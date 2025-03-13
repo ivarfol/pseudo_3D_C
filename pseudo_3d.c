@@ -860,10 +860,23 @@ int main(void)
             r.y = round(location[1] * map_scale)+half_map_scale- (int)half_map_scale/4;
             r.w = (int)half_map_scale/2;
             r.h = (int)half_map_scale/2;
-            SDL_RenderDrawRect( renderer, &r );
+            SDL_RenderDrawRect(renderer, &r);
             for (i=2; i<length + 3; i++) { // shows the rays on the map
                 SDL_RenderDrawLine(renderer, round(location[0]*map_scale+ half_map_scale), round(location[1]*map_scale+ half_map_scale), ceil((location[0] + hit_len[i] * cos(hit_ang[i])) * map_scale+half_map_scale), ceil((location[1] + hit_len[i] * sin(hit_ang[i])) * map_scale+half_map_scale));
             }
+            for (i=0; i<sprite_num; i++) {
+                SDL_SetRenderDrawColor( renderer, 242, 0, 0, 255 ); // the player rectangle
+                r.x = round(sprite_location[i][0] * map_scale)+half_map_scale- (int)half_map_scale/4;
+                r.y = round(sprite_location[i][1] * map_scale)+half_map_scale- (int)half_map_scale/4;
+                r.w = (int)half_map_scale/2;
+                r.h = (int)half_map_scale/2;
+                SDL_RenderDrawRect(renderer, &r);
+            }
+            SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 ); // the player rectangle
+            r.x = round(location[0] * map_scale)+half_map_scale- (int)half_map_scale/4;
+            r.y = round(location[1] * map_scale)+half_map_scale- (int)half_map_scale/4;
+            r.w = (int)half_map_scale/2;
+            r.h = (int)half_map_scale/2;
         }
         if (show_fps) { // show fps and player position
             int x_offset = MAP_W * map_scale+ 10;
