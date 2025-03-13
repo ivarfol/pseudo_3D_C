@@ -194,9 +194,9 @@ int main(void)
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 7, 6, 1, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 1, 0, 8, 8, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1, 4, 1, 0, 8, 8, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -295,6 +295,7 @@ int main(void)
 
     float sprite_location[sprite_num][2];
     float sprite_dist[sprite_num];
+    float sprite_angle[sprite_num];
     int sprite_index[sprite_num];
     for (i=0; i<sprite_num; i++) {
         sprite_dist[i] = -1;
@@ -670,7 +671,10 @@ int main(void)
                         offset = 0;
                 }
             }
-            else {
+            else
+                texture_rect.w = 1;
+            if (texture_rect.x < 0 || texture_rect.x > 1023) {
+                texture_rect.x = 0;
                 texture_rect.w = 1;
             }
             if (i > 2) {
@@ -734,6 +738,13 @@ int main(void)
             tmp_x = sprite_location[i][0] - location[0];
             tmp_y = - sprite_location[i][1] + location[1];
             sprite_dist[i] = sqrt(tmp_x * tmp_x + tmp_y * tmp_y);
+            if (tmp_x == 0)
+                tmp_x = 0.00001;
+            if (tmp_y == 0)
+                tmp_y = - 0.00001;
+            sprite_angle[i] = rad_ch(atan(tmp_y / tmp_x));
+            if (tmp_x < 0)
+                sprite_angle[i] = rad_ch(sprite_angle[i] + PI);
         }
 
         bool swapped;
@@ -750,14 +761,7 @@ int main(void)
         }
 
         for (i=0; i<sprite_num; i++) {
-            tmp_x = sprite_location[sprite_index[i]][0] - location[0];
-            tmp_y = - sprite_location[sprite_index[i]][1] + location[1];
-            if (tmp_x == 0) tmp_x = 0.00001;
-            if (tmp_y == 0) tmp_y = - 0.00001;
-            float Tan_inv = rad_ch(atan(tmp_y / tmp_x));
-            if (tmp_x < 0) Tan_inv = rad_ch(Tan_inv + PI);
             bool rad_skip = false;
-
             float border_one = direction + SHIFT;
             if (border_one < 0 || border_one > 2 * PI) {
                 border_one = rad_ch(border_one);
@@ -770,10 +774,10 @@ int main(void)
                 rad_skip = true;
             }
 
-            int h_position = round((0.5 -tan(rad_ch(Tan_inv - direction)) / tan(FOV / 2.0) / 2.0) * length * scale+ 0.001);
-            float tmp_dist = sprite_dist[sprite_index[i]] * cos(rad_ch(direction - Tan_inv));
+            int h_position = round((0.5 -tan(rad_ch(sprite_angle[sprite_index[i]] - direction)) / tan(FOV / 2.0) / 2.0) * length * scale+ 0.001);
+            float tmp_dist = sprite_dist[sprite_index[i]] * cos(rad_ch(direction - sprite_angle[sprite_index[i]]));
             int dimention = hight / 2 * (1 / tmp_dist) * ratio;
-            if (sprite_dist[sprite_index[i]] < DOF && (((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) || (h_position - dimention / 2 < length * scale&& h_position + dimention / 2 > 0))) {
+            if (sprite_dist[sprite_index[i]] < DOF && (((rad_skip && (sprite_angle[sprite_index[i]] < border_one || sprite_angle[sprite_index[i]] > border_two)) || (!rad_skip && sprite_angle[sprite_index[i]] < border_one && sprite_angle[sprite_index[i]] > border_two)) || (h_position - dimention / 2 < length * scale&& h_position + dimention / 2 > 0))) {
                 color = (int)round(color_intercept - 255.0 / delta_fade * sprite_dist[sprite_index[i]]); // make the tiles fade between FADE and DOF, with DOF being transparent
                 if (color < 0) color = 0;
                 else if (color > 255) color = 255;
