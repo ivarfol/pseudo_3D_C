@@ -32,6 +32,13 @@
 #define top_r_bot_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x + 8, y + 2)
 #define y_left_top(r, x, y) SDL_RenderDrawLine(r, x + 4, y + 9, x, y + 2)
 
+void swap(int* xp, int* yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
 float rad_ch(float a) // stops the a from going over 2 * PI (radians)
 {
     if (a > 2 * PI) {
@@ -188,7 +195,7 @@ int main(void)
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 7, 6, 1, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 1, 0, 8, 8, 0, 0, 0, 0, 0, 0, 1},
-                                        {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                        {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -288,8 +295,11 @@ int main(void)
 
     float sprite_location[sprite_num][2];
     float sprite_dist[sprite_num];
-    float sprite_angle[sprite_num];
-    for (i=0; i<sprite_num; i++) sprite_dist[i] = sprite_angle[i] = -1;
+    int sprite_index[sprite_num];
+    for (i=0; i<sprite_num; i++) {
+        sprite_dist[i] = -1;
+        sprite_index[i] = i;
+    }
 
     door_num = sprite_num = 0;
     for (i=0; i<MAP_H; i++) {
@@ -718,10 +728,30 @@ int main(void)
             }
         }
 
+        float tmp_x, tmp_y;
+
         for (i=0; i<sprite_num; i++) {
-            float tmp_x, tmp_y;
             tmp_x = sprite_location[i][0] - location[0];
             tmp_y = - sprite_location[i][1] + location[1];
+            sprite_dist[i] = sqrt(tmp_x * tmp_x + tmp_y * tmp_y);
+        }
+
+        bool swapped;
+        for (i=0; i<sprite_num - 1; i++) {
+            swapped = false;
+            for (j=0; j< sprite_num - i - 1; j++) {
+                if (sprite_dist[sprite_index[j]] < sprite_dist[sprite_index[j + 1]]) {
+                    swap(&sprite_index[j], &sprite_index[j+1]);
+                    swapped = true;
+                }
+            }
+            if (swapped == false)
+                break;
+        }
+
+        for (i=0; i<sprite_num; i++) {
+            tmp_x = sprite_location[sprite_index[i]][0] - location[0];
+            tmp_y = - sprite_location[sprite_index[i]][1] + location[1];
             if (tmp_x == 0) tmp_x = 0.00001;
             if (tmp_y == 0) tmp_y = - 0.00001;
             float Tan_inv = rad_ch(atan(tmp_y / tmp_x));
@@ -741,16 +771,13 @@ int main(void)
             }
 
             int h_position = round((0.5 -tan(rad_ch(Tan_inv - direction)) / tan(FOV / 2.0) / 2.0) * length * scale+ 0.001);
-            float true_tmp_dist = sqrt(tmp_x * tmp_x + tmp_y * tmp_y);
-            float tmp_dist = true_tmp_dist * cos(rad_ch(direction - Tan_inv));
+            float tmp_dist = sprite_dist[sprite_index[i]] * cos(rad_ch(direction - Tan_inv));
             int dimention = hight / 2 * (1 / tmp_dist) * ratio;
-            if (true_tmp_dist < DOF && (((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) || (h_position - dimention / 2 < length * scale&& h_position + dimention / 2 > 0))) {
-                color = (int)round(color_intercept - 255.0 / delta_fade * true_tmp_dist); // make the tiles fade between FADE and DOF, with DOF being transparent
+            if (sprite_dist[sprite_index[i]] < DOF && (((rad_skip && (Tan_inv < border_one || Tan_inv > border_two)) || (!rad_skip && Tan_inv < border_one && Tan_inv > border_two)) || (h_position - dimention / 2 < length * scale&& h_position + dimention / 2 > 0))) {
+                color = (int)round(color_intercept - 255.0 / delta_fade * sprite_dist[sprite_index[i]]); // make the tiles fade between FADE and DOF, with DOF being transparent
                 if (color < 0) color = 0;
                 else if (color > 255) color = 255;
                 SDL_SetTextureAlphaMod(sprite_texture, color);
-                sprite_dist[i] = tmp_dist;
-                sprite_angle[i] = Tan_inv;
                 int slices = ceil(dimention / scale);
                 int start_pos = h_position - dimention / 2;
                 int start_width = ceil(start_pos / scale) - start_pos;
@@ -772,22 +799,18 @@ int main(void)
                 texture_rect.w = texture_width;
                 for (j=0;j<=slices;j++) {
                     column = ceil(start_pos / scale) + j;
-                    if (column < length && true_tmp_dist < hit_len[column + 3]) {
+                    if (column < length && sprite_dist[sprite_index[i]] < hit_len[column + 3]) {
                         texture_rect.x = j * texture_width;
                         r.x = scale * ceil(start_pos / scale + j);
                         if (j < slices)
                             SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
                     }
                 }
-                if (column < length && true_tmp_dist < hit_len[column + 3]) {
+                if (column < length && sprite_dist[sprite_index[i]] < hit_len[column + 3]) {
                     r.w = h_position + dimention / 2 - scale * ceil(start_pos / scale + slices);
                     texture_rect.w = 1024 - texture_rect.x;
                     SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
                 }
-            }
-            else {
-                sprite_dist[i] = -1;
-                sprite_angle[i] = -1;
             }
         }
 
