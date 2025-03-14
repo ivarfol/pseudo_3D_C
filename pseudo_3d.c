@@ -18,6 +18,8 @@
 #define MAXLENGTH 6
 #define COMMENTMAXLENGTH 80
 #define LINES 5
+#define ANIMATION_FRAME_LEN 1000
+#define ANIMATION_FRAMES 2
 
 #define top_l(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x+ 8, y + 2)
 #define bottom_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x_offset + 8, y + 18)
@@ -89,7 +91,7 @@ void draw_sprite(float direction, float sprite_angle[], int index, int length, i
         texture_rect.w = texture_width;
         for (j=0;j<=slices;j++) {
             column = ceil(start_pos / scale) + j;
-            if (column < length - 1 && sprite_dist[index] < hit_len[column + 3]) {
+            if (column < length && sprite_dist[index] < hit_len[column + 3]) {
                 texture_rect.x = j * texture_width;
                 r.x = scale * ceil(start_pos / scale + j);
                 if (j < slices)
@@ -216,7 +218,7 @@ void print_number(int number, int x_offset, int y_offset, SDL_Renderer* renderer
     }
 }
 
-int main(void)
+int WinMain(void)
 {
     short int map_arr[MAP_H][MAP_W] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -328,6 +330,8 @@ int main(void)
     int fps[3]; // fps as an array of numbers, used to output the fps with print_num()
     int door_num = 0; // number of doors
     int sprite_num = 0;
+    int animation_last_tick = 0;
+    int animation_cycle = 0;
 
     for (i=0; i<MAP_H; i++) {
         for (j=0; j<MAP_W; j++) {
@@ -356,10 +360,13 @@ int main(void)
     float sprite_dist[sprite_num];
     float sprite_angle[sprite_num];
     int sprite_index[sprite_num];
+    bool sprite_animated[sprite_num];
     for (i=0; i<sprite_num; i++) {
         sprite_dist[i] = -1;
         sprite_index[i] = i;
+        sprite_animated[i] = false;
     }
+    sprite_animated[0] = true;//tmp
 
     door_num = sprite_num = 0;
     for (i=0; i<MAP_H; i++) {
@@ -431,7 +438,22 @@ int main(void)
     if (fopen("texture8.png", "r")!=NULL) { eight_texture = IMG_LoadTexture(renderer, "texture8.png"); }
     else { eight_texture = IMG_LoadTexture(renderer, "missing.png"); }
     SDL_SetTextureBlendMode(eight_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* animation_list[ANIMATION_FRAMES];
+
+    if (fopen("animation1.png", "r")!=NULL)
+        animation_list[0] = IMG_LoadTexture(renderer, "animation1.png"); 
+    else
+        animation_list[0] = IMG_LoadTexture(renderer, "missing.png");
+    SDL_SetTextureBlendMode(animation_list[0], SDL_BLENDMODE_BLEND);
  
+    SDL_Texture* animation_texture_two;
+    if (fopen("animation2.png", "r")!=NULL)
+        animation_list[1] = IMG_LoadTexture(renderer, "animation2.png");
+    else
+        animation_list[1]= IMG_LoadTexture(renderer, "missing.png");
+    SDL_SetTextureBlendMode(animation_list[1], SDL_BLENDMODE_BLEND);
+
     const double base_angles = rad_ch(0.5 * PI - SHIFT);
     const double side_len = length * sin(base_angles) / sin(FOV);
     const float floor_ray_temp = sin(base_angles) * length / 4 / sin(SHIFT) * scale; // sin(base_angles) * length / 2 / sin(SHIFT) is the distance to trhe screen
@@ -820,7 +842,17 @@ int main(void)
         }
 
         for (i=0; i<sprite_num; i++)
-            draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, sprite_texture, renderer);
+            if (sprite_animated[sprite_index[i]]) {
+                if (ticks - animation_last_tick > ANIMATION_FRAME_LEN) {
+                    animation_last_tick = ticks;
+                    animation_cycle++;
+                    if (animation_cycle >= ANIMATION_FRAMES)
+                        animation_cycle = 0;
+                }
+                draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[animation_cycle], renderer);
+            }
+            else
+                draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, sprite_texture, renderer);
 
         // move a sprite towards the player
         if (sprite_location[0][1] < location[1])
@@ -926,6 +958,8 @@ int main(void)
     seven_texture = NULL;
     SDL_DestroyTexture(eight_texture);
     eight_texture = NULL;
+    SDL_DestroyTexture(animation_list[0]);
+    SDL_DestroyTexture(animation_list[1]);
     SDL_DestroyTexture(buffer);
     buffer = NULL;
     SDL_DestroyRenderer(renderer);
