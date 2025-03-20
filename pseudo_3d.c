@@ -21,6 +21,8 @@
 #define ANIMATION_FRAME_LEN 1000
 #define ANIMATION_FRAMES 2
 
+#define MOV_SPR 0
+
 #define top_l(r, x, y) SDL_RenderDrawLine(r, x, y + 2, x+ 8, y + 2)
 #define bottom_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x_offset + 8, y + 18)
 #define middle_l(r, x, y) SDL_RenderDrawLine(r, x, y + 9, x + 8, y + 9)
@@ -91,14 +93,14 @@ void draw_sprite(float direction, float sprite_angle[], int index, int length, i
         texture_rect.w = texture_width;
         for (j=0;j<=slices;j++) {
             column = ceil(start_pos / scale) + j;
-            if (column > 0 && column < length && sprite_dist[index] < hit_len[column + 3]) {
+            if (column >= 0 && column < length && sprite_dist[index] < hit_len[column + 3]) {
                 texture_rect.x = j * texture_width;
-                r.x = scale * column;
+                r.x = scale * ceil(start_pos / scale + j);
                 if (j < slices)
                     SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
             }
         }
-        if (column < length && sprite_dist[index] < hit_len[column + 3]) {
+        if (column >= 0 && column < length && sprite_dist[index] < hit_len[column + 3]) {
             r.w = h_position + dimention / 2 - scale * ceil(start_pos / scale + slices);
             texture_rect.w = 1024 - texture_rect.x;
             SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
@@ -356,17 +358,25 @@ int main(void)
     int door_indexH, door_indexV;
     int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side;
 
+    float sprite_side;
     float sprite_location[sprite_num][2];
     float sprite_dist[sprite_num];
     float sprite_angle[sprite_num];
+    float sprite_direction[sprite_num];
+    float sprite_angle_to_pl[sprite_num];
     int sprite_index[sprite_num];
     bool sprite_animated[sprite_num];
+    bool sprite_direction_dependant[sprite_num];
     for (i=0; i<sprite_num; i++) {
         sprite_dist[i] = -1;
         sprite_index[i] = i;
+        sprite_direction[i] = 0.0f;
+        sprite_angle_to_pl[i] = 0;
         sprite_animated[i] = false;
+        sprite_direction_dependant[i] = true;
     }
     sprite_animated[0] = true;//tmp
+    sprite_direction_dependant[0] = false;
 
     door_num = sprite_num = 0;
     for (i=0; i<MAP_H; i++) {
@@ -465,6 +475,11 @@ int main(void)
     const float color_intercept = 255 * (FADE / (delta_fade) + 1); // make the tiles fade between FADE and DOF, with DOF being transparent
     const float ratio = length * scale / hight / NO_PI_FOV / 2;
     const float half_h = hight / 2;
+
+    float angles[length+3];
+    for (i=0; i<length + 3; i++)
+        angles[i] = acos((side_len - (i - 3) * base_angles_cos) / sqrt(side_len_squared + (i - 3) * (i - 3 - denom_temp)));
+
     // the main loop
     while (!quit) {
         SDL_SetRenderTarget(renderer, buffer);
@@ -600,7 +615,7 @@ int main(void)
         int offset = 0;
         int last_symbolH = 0;
         for (i = 0; i < length + 3; i++) {
-            angle = rad_ch(_angle - acos((side_len - (i - 3) * base_angles_cos) / sqrt(side_len_squared + (i - 3) * (i - 3 - denom_temp))));
+            angle = rad_ch(_angle - angles[i]);
             bool is_doorV = false;
             bool is_doorH = false;
             int symbolV = 9; // tile type of the tile that was hit by the ray from the map_arr
@@ -819,14 +834,26 @@ int main(void)
             tmp_x = sprite_location[i][0] - location[0];
             tmp_y = - sprite_location[i][1] + location[1];
             sprite_dist[i] = sqrt(tmp_x * tmp_x + tmp_y * tmp_y);
-            if (sprite_dist[i] < DOF) {
-                if (tmp_x == 0)
-                    tmp_x = 0.00001;
-                if (tmp_y == 0)
-                    tmp_y = - 0.00001;
-                sprite_angle[i] = rad_ch(atan(tmp_y / tmp_x));
-                if (tmp_x < 0)
-                    sprite_angle[i] = rad_ch(sprite_angle[i] + PI);
+            if (tmp_x == 0)
+                tmp_x = 0.00001;
+            if (tmp_y == 0)
+                tmp_y = - 0.00001;
+            sprite_angle[i] = rad_ch(atan(tmp_y / tmp_x));
+            if (tmp_x < 0)
+                  sprite_angle[i] = rad_ch(sprite_angle[i] + PI);
+            if (sprite_direction_dependant[i] || i == MOV_SPR) {
+                if (sprite_location[i][1] < location[1])
+                    if (sprite_location[i][0] > location[0])
+                        sprite_angle_to_pl[i] = rad_ch(atan((sprite_location[i][1] - location[1]) / (- sprite_location[i][0] + location[0])) + PI);
+                    else
+                        sprite_angle_to_pl[i] = atan((sprite_location[i][1] - location[1]) / (- sprite_location[i][0] + location[0]));
+                else if (sprite_location[i][0] > location[0])
+                        sprite_angle_to_pl[i] = rad_ch(atan((sprite_location[i][1] - location[1]) / (- sprite_location[i][0] + location[0])) - PI);
+                    else
+                        sprite_angle_to_pl[i] = atan((sprite_location[i][1] - location[1]) / (- sprite_location[i][0] + location[0]));
+                if (sprite_angle_to_pl[i] != sprite_angle_to_pl[i])
+                    sprite_angle_to_pl[i] = 0;
+                sprite_angle_to_pl[i] = rad_ch(2 * PI + sprite_angle_to_pl[i]);
             }
         }
 
@@ -843,7 +870,7 @@ int main(void)
                 break;
         }
 
-        for (i=0; i<sprite_num; i++)
+        for (i=0; i<sprite_num; i++) {
             if (sprite_animated[sprite_index[i]]) {
                 if (ticks - animation_last_tick > ANIMATION_FRAME_LEN) {
                     animation_last_tick = ticks;
@@ -853,21 +880,27 @@ int main(void)
                 }
                 draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[animation_cycle], renderer);
             }
-            else
-                draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, sprite_texture, renderer);
+            else {
+                if (sprite_direction_dependant[sprite_index[i]]) {
+                    if (sprite_angle_to_pl[sprite_index[i]] > sprite_direction[sprite_index[i]])
+                        sprite_side = sprite_angle_to_pl[sprite_index[i]] - sprite_direction[sprite_index[i]];
+                    else
+                        sprite_side = sprite_direction[sprite_index[i]] - sprite_angle_to_pl[sprite_index[i]];
+                    if (sprite_side < PI)
+                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[0], renderer);
+                    else 
+                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[1], renderer);
+                }
+                else
+                    draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, sprite_texture, renderer);
+            }
+        }
 
         // move a sprite towards the player
-        if (sprite_location[0][1] < location[1])
-            if (sprite_location[0][0] > location[0])
-                move_direction_v = rad_ch(atan((sprite_location[0][1] - location[1]) / (- sprite_location[0][0] + location[0])) + PI);
-            else
-                move_direction_v = atan((sprite_location[0][1] - location[1]) / (- sprite_location[0][0] + location[0]));
+        if (sprite_dist[MOV_SPR] > 0.5)
+            move_f(map_arr, sprite_location[MOV_SPR], sprite_angle_to_pl[MOV_SPR], 0, 0.25, false, door_location, door_extencion, door_num);
         else
-            if (sprite_location[0][0] > location[0])
-                move_direction_v = rad_ch(atan((sprite_location[0][1] - location[1]) / (- sprite_location[0][0] + location[0])) - PI);
-            else
-                move_direction_v = atan((sprite_location[0][1] - location[1]) / (- sprite_location[0][0] + location[0]));
-        move_f(map_arr, sprite_location[0], move_direction_v, 0, 0.25, false, door_location, door_extencion, door_num);
+            move_f(map_arr, sprite_location[MOV_SPR], rad_ch(PI + sprite_angle_to_pl[MOV_SPR]), 0, 0.5 - sprite_dist[MOV_SPR], false, door_location, door_extencion, door_num);
 
         if (show_map) { // render the map
             SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 ); // a background
