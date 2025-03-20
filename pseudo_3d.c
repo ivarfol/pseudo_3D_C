@@ -91,9 +91,9 @@ void draw_sprite(float direction, float sprite_angle[], int index, int length, i
         texture_rect.w = texture_width;
         for (j=0;j<=slices;j++) {
             column = ceil(start_pos / scale) + j;
-            if (column < length && sprite_dist[index] < hit_len[column + 3]) {
+            if (column > 0 && column < length && sprite_dist[index] < hit_len[column + 3]) {
                 texture_rect.x = j * texture_width;
-                r.x = scale * ceil(start_pos / scale + j);
+                r.x = scale * column;
                 if (j < slices)
                     SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
             }
@@ -819,13 +819,15 @@ int main(void)
             tmp_x = sprite_location[i][0] - location[0];
             tmp_y = - sprite_location[i][1] + location[1];
             sprite_dist[i] = sqrt(tmp_x * tmp_x + tmp_y * tmp_y);
-            if (tmp_x == 0)
-                tmp_x = 0.00001;
-            if (tmp_y == 0)
-                tmp_y = - 0.00001;
-            sprite_angle[i] = rad_ch(atan(tmp_y / tmp_x));
-            if (tmp_x < 0)
-                sprite_angle[i] = rad_ch(sprite_angle[i] + PI);
+            if (sprite_dist[i] < DOF) {
+                if (tmp_x == 0)
+                    tmp_x = 0.00001;
+                if (tmp_y == 0)
+                    tmp_y = - 0.00001;
+                sprite_angle[i] = rad_ch(atan(tmp_y / tmp_x));
+                if (tmp_x < 0)
+                    sprite_angle[i] = rad_ch(sprite_angle[i] + PI);
+            }
         }
 
         bool swapped;
