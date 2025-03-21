@@ -6,8 +6,8 @@
 #include <SDL2/SDL_image.h>
 
 #define PI 3.1415926535
-#define DOF 15
-#define FADE 10
+#define DOF 8
+#define FADE 6
 #define NO_PI_FOV 0.5
 #define FOV NO_PI_FOV * PI
 #define SHIFT FOV / 2
@@ -38,14 +38,15 @@
 
 float rad_ch(float a) // stops the a from going over 2 * PI (radians)
 {
-    if (a > 2 * PI) {
+    if (a > 2 * PI)
         a -= 2 * PI;
-    }
     else {
         if (a < 0) {
             a += 2 * PI;
         }
     }
+    if (a < 0 || a > 2 * PI)
+        a = rad_ch(a);
     return a;
 }
 
@@ -70,8 +71,10 @@ void draw_sprite(float direction, float sprite_angle[], int index, int length, i
     int j;
     if (sprite_dist[index] < DOF && (((rad_skip && (sprite_angle[index] < border_one || sprite_angle[index] > border_two)) || (!rad_skip && sprite_angle[index] < border_one && sprite_angle[index] > border_two)) || (h_position - dimention / 2 < length * scale&& h_position + dimention / 2 > 0))) {
         int color = round(color_intercept - 255.0 / delta_fade * sprite_dist[index]); // make the tiles fade between FADE and DOF, with DOF being transparent
-        if (color < 0) color = 0;
-        else if (color > 255) color = 255;
+        if (color < 0)
+            color = 0;
+        else if (color > 255)
+            color = 255;
         SDL_SetTextureAlphaMod(sprite_texture, color);
         int slices = ceil(dimention / scale);
         int start_pos = h_position - dimention / 2;
@@ -124,34 +127,26 @@ void move_f( short int map_arr[][MAP_W], float location[], float direction, floa
     int i, door_ext_x, door_ext_y;
     door_ext_x = door_ext_x = 0;
     for (i=0; i<door_num; i++) { // get the door extencion, to let the player throught if it is open
-        if (door_location[i][1] == (int)round(y) && door_location[i][0] == (int)round(location[0])) {
+        if (door_location[i][1] == (int)round(y) && door_location[i][0] == (int)round(location[0]))
             door_ext_y = (int)round(door_extencion[i]);
-        }
-        if (door_location[i][1] == (int)round(location[1]) && door_location[i][0] == (int)round(x)) {
+        if (door_location[i][1] == (int)round(location[1]) && door_location[i][0] == (int)round(x))
             door_ext_x = (int)round(door_extencion[i]);
-        }
     }
-    if (map_arr[(int)round(y)][(int)round(location[0])] == 0 || ((map_arr[(int)round(y)][(int)round(location[0])] == 2 || map_arr[(int)round(y)][(int)round(location[0])] == 3) && door_ext_y == 1)) {
+    if (map_arr[(int)round(y)][(int)round(location[0])] == 0 || ((map_arr[(int)round(y)][(int)round(location[0])] == 2 || map_arr[(int)round(y)][(int)round(location[0])] == 3) && door_ext_y == 1))
         location[1] = y - 0.0625 * sin(angle) * mod;
-    }
     else if (map_arr[(int)round(y)][(int)round(location[0])] != 2 && map_arr[(int)round(y)][(int)round(location[0])] != 3) {
-        if (sin(angle) < 0) {
+        if (sin(angle) < 0)
             location[1] = round(y) + 0.51;
-        }
-        else {
+        else
             location[1] = round(y) - 0.51;
-        }
     }
-    if (map_arr[(int)round(location[1])][(int)round(x)] == 0 || ((map_arr[(int)round(location[1])][(int)round(x)] == 2 || map_arr[(int)round(location[1])][(int)round(x)] == 3) && door_ext_x == 1)) {
+    if (map_arr[(int)round(location[1])][(int)round(x)] == 0 || ((map_arr[(int)round(location[1])][(int)round(x)] == 2 || map_arr[(int)round(location[1])][(int)round(x)] == 3) && door_ext_x == 1))
         location[0] = x - 0.0625 * cos(angle) * mod;
-    }
     else if (map_arr[(int)round(location[1])][(int)round(x)] != 2 && map_arr[(int)round(location[1])][(int)round(x)] != 3) {
-        if (cos(angle) < 0) {
+        if (cos(angle) < 0)
             location[0] = round(x) + 0.51;
-        }
-        else {
+        else
             location[0] = round(x) - 0.51;
-        }
     }
 }
 
@@ -316,6 +311,7 @@ int main(void)
             map_scale = config[4];
         }
     }
+    int last_width = 0;
     float half_map_scale = map_scale / 2;
     float mod = 1.0; // variable for speeding up the player movement if shift is pressed
     float angle, move_direction_h, move_direction_v;
@@ -337,8 +333,10 @@ int main(void)
 
     for (i=0; i<MAP_H; i++) {
         for (j=0; j<MAP_W; j++) {
-            if (map_arr[i][j] == 2 || map_arr[i][j] == 3) door_num++; // 2 - horizontal door, 3 - vertical door
-            else if (map_arr[i][j] == 4) sprite_num++;
+            if (map_arr[i][j] == 2 || map_arr[i][j] == 3)
+                door_num++; // 2 - horizontal door, 3 - vertical door
+            else if (map_arr[i][j] == 4)
+                sprite_num++;
         }
     }
 
@@ -353,8 +351,8 @@ int main(void)
 
     float floor_x, floor_y;
     float vx,vy,xov,yov,rxv,ryv,rxh,ryh,xoh,yoh,disV,disH;
-    int last_offset, last_side;
-    last_offset = last_side = 0;
+    int last_offset;
+    last_offset = 0;
     int door_indexH, door_indexV;
     int mxv,myv,mpv,dofv,mxh,myh,mph,dofh,side;
 
@@ -415,38 +413,52 @@ int main(void)
     SDL_Texture* buffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, length * scale, length );
     // set the textures, if no texture with the name is found, set to missing.png
     SDL_Texture* wall_texture;
-    if (fopen("wall.png", "r")!=NULL) { wall_texture = IMG_LoadTexture(renderer, "wall.png"); }
-    else { wall_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    if (fopen("wall.png", "r")!=NULL)
+        wall_texture = IMG_LoadTexture(renderer, "wall.png");
+    else
+        wall_texture = IMG_LoadTexture(renderer, "missing.png");
     SDL_SetTextureBlendMode(wall_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* door_texture;
-    if (fopen("door.png", "r")!=NULL) { door_texture = IMG_LoadTexture(renderer, "door.png"); }
-    else { door_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    if (fopen("door.png", "r")!=NULL)
+        door_texture = IMG_LoadTexture(renderer, "door.png");
+    else
+        door_texture = IMG_LoadTexture(renderer, "missing.png");
     SDL_SetTextureBlendMode(door_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* sprite_texture;
-    if (fopen("sprite.png", "r")!=NULL) { sprite_texture = IMG_LoadTexture(renderer, "sprite.png"); }
-    else { sprite_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    if (fopen("sprite.png", "r")!=NULL)
+        sprite_texture = IMG_LoadTexture(renderer, "sprite.png");
+    else
+        sprite_texture = IMG_LoadTexture(renderer, "missing.png");
     SDL_SetTextureBlendMode(sprite_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* floor_texture;
-    if (fopen("floor.png", "r")!=NULL) { floor_texture = IMG_LoadTexture(renderer, "floor.png"); }
-    else { floor_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    if (fopen("floor.png", "r")!=NULL)
+        floor_texture = IMG_LoadTexture(renderer, "floor.png");
+    else
+        floor_texture = IMG_LoadTexture(renderer, "missing.png");
     SDL_SetTextureBlendMode(floor_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* six_texture;
-    if (fopen("texture6.png", "r")!=NULL) { six_texture = IMG_LoadTexture(renderer, "texture6.png"); }
-    else { six_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    if (fopen("texture6.png", "r")!=NULL)
+        six_texture = IMG_LoadTexture(renderer, "texture6.png");
+    else
+        six_texture = IMG_LoadTexture(renderer, "missing.png");
     SDL_SetTextureBlendMode(six_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* seven_texture;
-    if (fopen("texture7.png", "r")!=NULL) { seven_texture = IMG_LoadTexture(renderer, "texture7.png"); }
-    else { seven_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    if (fopen("texture7.png", "r")!=NULL)
+        seven_texture = IMG_LoadTexture(renderer, "texture7.png");
+    else
+        seven_texture = IMG_LoadTexture(renderer, "missing.png");
     SDL_SetTextureBlendMode(seven_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* eight_texture;
-    if (fopen("texture8.png", "r")!=NULL) { eight_texture = IMG_LoadTexture(renderer, "texture8.png"); }
-    else { eight_texture = IMG_LoadTexture(renderer, "missing.png"); }
+    if (fopen("texture8.png", "r")!=NULL)
+        eight_texture = IMG_LoadTexture(renderer, "texture8.png");
+    else
+        eight_texture = IMG_LoadTexture(renderer, "missing.png");
     SDL_SetTextureBlendMode(eight_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* animation_list[ANIMATION_FRAMES];
@@ -484,16 +496,14 @@ int main(void)
     while (!quit) {
         SDL_SetRenderTarget(renderer, buffer);
         delta = SDL_GetTicks() - old_ticks; // time for the last frame in ms.
-        if (delta < target_fps) {
+        if (delta < target_fps)
             SDL_Delay((int)(target_fps) - delta); // cap the fps
-        }
         ticks = SDL_GetTicks();
         if (ticks >= frame_tick + 1000) { // get the fps
             fps[0] = fps[1] = fps[2] = 0;
             frame_tick = ticks;
-            if (frames > 999) {
+            if (frames > 999)
                 frames = 999;
-            }
             fps[2] = frames % 10;
             fps[1] = frames % 100 / 10;
             fps[0] = frames / 100;
@@ -515,59 +525,40 @@ int main(void)
             }
         }
         // handle user inputs
-        if (KEYS[SDL_SCANCODE_LSHIFT]) {
+        if (KEYS[SDL_SCANCODE_LSHIFT])
             mod = 2.0;
-        }
-        else {
+        else
             mod = 1.0;
-        }
         move_direction_h = -1;
         move_direction_v = -1;
-        if (KEYS[SDL_SCANCODE_A] && !KEYS[SDL_SCANCODE_D]) {
+        if (KEYS[SDL_SCANCODE_A] && !KEYS[SDL_SCANCODE_D])
             move_direction_h = 1.5;
-        }
-        else {
-            if (KEYS[SDL_SCANCODE_D] && !KEYS[SDL_SCANCODE_A]) {
-                move_direction_h = 0.5;
-            }
-        }
-        if (KEYS[SDL_SCANCODE_W] && !KEYS[SDL_SCANCODE_S]) {
+        else if (KEYS[SDL_SCANCODE_D] && !KEYS[SDL_SCANCODE_A])
+            move_direction_h = 0.5;
+        if (KEYS[SDL_SCANCODE_W] && !KEYS[SDL_SCANCODE_S])
             move_direction_v = 0.0;
-        }
-        else {
-            if (KEYS[SDL_SCANCODE_S] && !KEYS[SDL_SCANCODE_W]) {
-                move_direction_v = 1.0;
-            }
-        }
-        if (KEYS[SDL_SCANCODE_Q] || KEYS[SDL_SCANCODE_LEFT]) {
+        else if (KEYS[SDL_SCANCODE_S] && !KEYS[SDL_SCANCODE_W])
+            move_direction_v = 1.0;
+        if (KEYS[SDL_SCANCODE_Q] || KEYS[SDL_SCANCODE_LEFT])
             direction = rad_ch(direction + 0.01 * PI * mod);
-        }
-        if (KEYS[SDL_SCANCODE_E] || KEYS[SDL_SCANCODE_RIGHT]) {
+        if (KEYS[SDL_SCANCODE_E] || KEYS[SDL_SCANCODE_RIGHT])
             direction = rad_ch(direction - 0.01 * PI * mod);
-        }
-        if (!OLD_KEYS[SDL_SCANCODE_M] && KEYS[SDL_SCANCODE_M]) { // toggle, does not activate if the key is held down
+        if (!OLD_KEYS[SDL_SCANCODE_M] && KEYS[SDL_SCANCODE_M]) // toggle, does not activate if the key is held down
             show_map -= 1;
-        }
-        if (!OLD_KEYS[SDL_SCANCODE_F] && KEYS[SDL_SCANCODE_F]) {
+        if (!OLD_KEYS[SDL_SCANCODE_F] && KEYS[SDL_SCANCODE_F])
             show_fps -= 1;
-        }
-        if (!OLD_KEYS[SDL_SCANCODE_SPACE] && KEYS[SDL_SCANCODE_SPACE]) {
+        if (!OLD_KEYS[SDL_SCANCODE_SPACE] && KEYS[SDL_SCANCODE_SPACE])
             try_door -= 1;
-        }
         if (move_direction_h > 0) { // get the correct direction for movement
             if (move_direction_v >= 0) {
                 move_direction_h = (move_direction_h + move_direction_v) / 2;
-                if (move_direction_v == 0.0 && move_direction_h == 0.75) {
+                if (move_direction_v == 0.0 && move_direction_h == 0.75)
                     move_direction_h = 1.75;
-                }
             }
             move_f(map_arr, location, direction, rad_ch(move_direction_h * PI), mod, false, door_location, door_extencion, door_num);
         }
-        else {
-            if (move_direction_v >=0) {
-                move_f(map_arr, location, direction, move_direction_v * PI, mod, false, door_location, door_extencion, door_num);
-            }
-        }
+        else if (move_direction_v >=0)
+            move_f(map_arr, location, direction, move_direction_v * PI, mod, false, door_location, door_extencion, door_num);
  
         // clear window
         SDL_SetRenderDrawColor(renderer, 0, 240, 240, 255);
@@ -589,19 +580,15 @@ int main(void)
                 if (tile == 2 || tile == 3) {
                     for (j=0;j<door_num;j++) {
                         if (door_location[j][0] == tile_x && door_location[j][1] == tile_y) {
-                            if (door_ext_rate[j] == 0.0) {
+                            if (door_ext_rate[j] == 0.0)
                                 door_ext_rate[j] = 0.01;
-                            }
                             break;
                         }
                     }
                     break;
                 }
-                else {
-                    if (tile != 0) {
+                else if (tile != 0)
                         break;
-                    }
-                }
                 dist += 0.1;
             }
             try_door = false;
@@ -613,7 +600,6 @@ int main(void)
         float py = location[1] + 0.5;
         door_indexH = door_indexV = 0;
         int offset = 0;
-        int last_symbolH = 0;
         for (i = 0; i < length + 3; i++) {
             angle = rad_ch(_angle - angles[i]);
             bool is_doorV = false;
@@ -625,22 +611,50 @@ int main(void)
             // Vertical
             dofv=0; side=1; disV=DOF; // side 1 - vertical, 0 - horizontal
             float TanV=tan(angle);
-            if(Cos> 0.001){ rxv=(int)px+1;      ryv=(px-rxv)*TanV+py; xov= 1; yov=-xov*TanV;}//looking left
-            else if(Cos<-0.001){ rxv=(int)px -0.00001; ryv=(px-rxv)*TanV+py; xov=-1; yov=-xov*TanV;}//looking right
-            else { rxv=px; ryv=py; dofv=DOF;}                                                  //looking up or down. no hit
+            if(Cos> 0.001) { //looking left
+                rxv=(int)px+1;
+                ryv=(px-rxv)*TanV+py;
+                xov= 1;
+                yov=-xov*TanV;
+            }
+            else if(Cos<-0.001) { //looking right
+                rxv=(int)px -0.00001;
+                ryv=(px-rxv)*TanV+py;
+                xov=-1;
+                yov=-xov*TanV;
+            }
+            else { //looking up or down. no hit
+                rxv=px;
+                ryv=py;
+                dofv=DOF;
+            }
 
             // Horizontal
             dofh=0; disH=DOF;
             float TanH=1.0/TanV;
-            if(Sin> 0.001){ ryh=(int)py -0.00001; rxh=(py-ryh)*TanH+px; yoh=-1; xoh=-yoh*TanH;}//looking up
-            else if(Sin<-0.001){ ryh=(int)py+1;      rxh=(py-ryh)*TanH+px; yoh= 1; xoh=-yoh*TanH;}//looking down
-            else{ rxh=px; ryh=py; dofh=DOF;}                                                   //looking straight left or right
+            if(Sin> 0.001) { //looking up
+                ryh=(int)py -0.00001;
+                rxh=(py-ryh)*TanH+px; yoh=-1;
+                xoh=-yoh*TanH;
+            }
+            else if(Sin<-0.001) { //looking down
+                ryh=(int)py+1;
+                rxh=(py-ryh)*TanH+px;
+                yoh= 1;
+                xoh=-yoh*TanH;
+            }
+            else { //looking straight left or right
+                rxh=px;
+                ryh=py;
+                dofh=DOF;
+            }
 
             // DDA
-            while(dofh<DOF || dofv<DOF)
-            {
+            while(dofh<DOF || dofv<DOF) {
                 if (dofh < dofv && dofh < DOF) { // use the shortest ray
-                    mxh=(int)(rxh); myh=(int)(ryh); mph = myh * MAP_W + mxh;
+                    mxh=(int)(rxh);
+                    myh=(int)(ryh);
+                    mph = myh * MAP_W + mxh;
                     if (mph>-1 && mph<MAP_H*MAP_W && map_arr[myh][mxh] == 2) {
                         for(k=0; k<door_num; k++) { // get the door index
                             if (door_location[k][0] == mxh && door_location[k][1] == myh) {
@@ -650,8 +664,9 @@ int main(void)
                         }
                     }
                     // let the ray pass through the door, if the x mosition of the ray is more than x position of the doors end
-                    if(mph>-1 && mph<MAP_H*MAP_W && ((map_arr[myh][mxh]!=0 && map_arr[myh][mxh]!=2 && map_arr[myh][mxh]!=3) || (map_arr[myh][mxh] == 2 && (door_location[door_indexH][0] + door_extencion[door_indexH] < rxh + 0.5 * xoh)))){ //hit
-                        dofh=DOF; disH=Cos*(rxh-px)-Sin*(ryh-py);
+                    if(mph>-1 && mph<MAP_H*MAP_W && ((map_arr[myh][mxh]!=0 && map_arr[myh][mxh]!=2 && map_arr[myh][mxh]!=3) || (map_arr[myh][mxh] == 2 && (door_location[door_indexH][0] + door_extencion[door_indexH] < rxh + 0.5 * xoh)))) { //hit
+                        dofh=DOF;
+                        disH=Cos*(rxh-px)-Sin*(ryh-py);
                         symbolH = map_arr[myh][mxh];
                         if (symbolH == 2) { // make the door look embedded in the wall
                             disH += Sin*(-0.5 * yoh) + Cos*(0.5 * xoh);
@@ -660,10 +675,16 @@ int main(void)
                             is_doorH = true;
                         }
                     }
-                    else{ rxh+=xoh; ryh+=yoh; dofh+=1;} //check next horizontal
+                    else { //check next horizontal
+                        rxh+=xoh;
+                        ryh+=yoh;
+                        dofh+=1;
+                    }
                 }
                 else if (dofv < DOF) {
-                    mxv=(int)(rxv); myv=(int)(ryv); mpv = myv * MAP_W + mxv;
+                    mxv=(int)(rxv);
+                    myv=(int)(ryv);
+                    mpv = myv * MAP_W + mxv;
                     if (mpv>-1 && mpv<MAP_H*MAP_W && map_arr[myv][mxv] == 3) {
                         for(k=0; k<door_num; k++) { //get the door index
                             if (door_location[k][0] == mxv && door_location[k][1] == myv) {
@@ -673,8 +694,9 @@ int main(void)
                         }
                     }
                     // let the ray pass through the door, if the y mosition of the ray is more than y position of the doors end
-                    if(mpv>-1 && mpv<MAP_H*MAP_W && ((map_arr[myv][mxv]!=0 && map_arr[myv][mxv]!=2 && map_arr[myv][mxv]!=3) || (map_arr[myv][mxv] == 3 && (door_location[door_indexV][1] + door_extencion[door_indexV] < ryv + 0.5 * yov)))){ //hit
-                        dofv=DOF; disV=Cos*(rxv-px)-Sin*(ryv-py);
+                    if(mpv>-1 && mpv<MAP_H*MAP_W && ((map_arr[myv][mxv]!=0 && map_arr[myv][mxv]!=2 && map_arr[myv][mxv]!=3) || (map_arr[myv][mxv] == 3 && (door_location[door_indexV][1] + door_extencion[door_indexV] < ryv + 0.5 * yov)))) { //hit
+                        dofv=DOF;
+                        disV=Cos*(rxv-px)-Sin*(ryv-py);
                         symbolV = map_arr[myv][mxv];
                         if (symbolV == 3) { // make the door look embedded in the wall
                             disV += Cos*(0.5 * xov) + Sin*(-0.5 * yov);
@@ -683,11 +705,23 @@ int main(void)
                             is_doorV = true;
                         }
                     }
-                    else{ rxv+=xov; ryv+=yov; dofv+=1;} //check next horizontal
+                    else { //check next horizontal
+                        rxv+=xov;
+                        ryv+=yov;
+                        dofv+=1;
+                    }
                 }
             }
 
-            if(disV<disH){ rxh=rxv; ryh=ryv; disH=disV; side=0; is_doorH = is_doorV; door_indexH = door_indexV; symbolH = symbolV; } // the horizontal is set to the shortest ray
+            if(disV<disH) { // the horizontal is set to the shortest ray
+                rxh=rxv;
+                ryh=ryv;
+                disH=disV;
+                side=0;
+                is_doorH = is_doorV;
+                door_indexH = door_indexV;
+                symbolH = symbolV;
+            }
             hit_ang[i] = rad_ch(2.0 * PI - angle);
             hit_len[i] = (disH);
             float fisheye_correction = cos(direction - angle);
@@ -702,8 +736,10 @@ int main(void)
                 end = half_h * (1 + delta_h);
             }
             color = (int)round(color_intercept - 255.0 / delta_fade * hit_len[i]); // make the tiles fade between FADE and DOF, with DOF being transparent
-            if (color < 0) {color = 0;}
-            else if (color > 255) {color = 255;}
+            if (color < 0)
+                color = 0;
+            else if (color > 255)
+                color = 255;
             SDL_Rect r; // the column on the screen
             r.x = (i - 3) * scale;
             r.y = start;
@@ -711,83 +747,58 @@ int main(void)
             r.h = end - start;
             SDL_Rect texture_rect;
             if (!is_doorH) {
-                if (symbolH == 1) {
+                if (symbolH == 1)
                     SDL_SetTextureAlphaMod(wall_texture, color);
-                }
-                else if (symbolH == 6) {
+                else if (symbolH == 6)
                     SDL_SetTextureAlphaMod(six_texture, color);
-                }
-                else if (symbolH == 7) {
+                else if (symbolH == 7)
                     SDL_SetTextureAlphaMod(seven_texture, color);
-                }
-                else if (symbolH == 8) {
+                else if (symbolH == 8)
                     SDL_SetTextureAlphaMod(eight_texture, color);
-                }
                 // the texture part to be used for the column
                 if (side == 1) {
-                    if (Sin > 0) {
+                    if (Sin > 0)
                         offset = (int)((rxh - (int)rxh) * 1024); // offset from the side * 1024 (1024 is the picture resolution)
-                    }
-                    else {
+                    else
                         offset = (int)((1 - rxh + (int)rxh) * 1024);
-                    }
                 }
                 else {
-                    if (Cos > 0) {
+                    if (Cos > 0)
                         offset = (int)((ryh - (int)ryh) * 1024);
-                    }
-                    else {
+                    else
                         offset = (int)((1 - ryh + (int)ryh) * 1024);
-                    }
                 }
             }
             else {
                 SDL_SetTextureAlphaMod(door_texture, color); // same, but for doors
-                if (side == 1) { // offset from the doors end (the "moving" part)
+                if (side == 1) // offset from the doors end (the "moving" part)
                     offset = (int)((1 - rxh + (int)rxh + door_extencion[door_indexH]) * 1024);
-                }
-                else {
+                else
                     offset = (int)((1 - ryh + (int)ryh + door_extencion[door_indexH]) * 1024);
-                }
             }
+            if (offset > 1023)
+                offset = last_offset + 1;
             texture_rect.x = offset;
             texture_rect.y = 0;
             texture_rect.h = 1024;
-            if (!is_doorH) {
-                if (offset - last_offset + 1 > 0 || last_offset == 0) {
-                    if (last_offset == 0) {
-                        texture_rect.w = 1;
-                    }
-                    else {
-                        texture_rect.w = offset - last_offset + 1;
-                    }
-                }
-                else if (last_symbolH != 2 && last_symbolH != 3) {
-                        texture_rect.w = 1025 + offset - last_offset;
-                        offset = 0;
-                }
-            }
-            else
-                texture_rect.w = 1;
-            if (texture_rect.x + texture_rect.w > 1023 || texture_rect.w < 1) {
-                texture_rect.x = 1023;
-                texture_rect.w = 1;
-            }
+            texture_rect.w = 1;
             if (i > 2) {
-                if (is_doorH) {
+                if (is_doorH)
                     SDL_RenderCopy(renderer, door_texture, &texture_rect, &r);
-                }
                 else {
-                    if (symbolH == 1) SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
-                    else if (symbolH == 6) SDL_RenderCopy(renderer, six_texture, &texture_rect, &r);
-                    else if (symbolH == 7) SDL_RenderCopy(renderer, seven_texture, &texture_rect, &r);
-                    else if (symbolH == 8) SDL_RenderCopy(renderer, eight_texture, &texture_rect, &r);
+                    if (symbolH == 1)
+                        SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
+                    else if (symbolH == 6)
+                        SDL_RenderCopy(renderer, six_texture, &texture_rect, &r);
+                    else if (symbolH == 7)
+                        SDL_RenderCopy(renderer, seven_texture, &texture_rect, &r);
+                    else if (symbolH == 8)
+                        SDL_RenderCopy(renderer, eight_texture, &texture_rect, &r);
                 }
             }
-            last_side = side;
             last_offset = offset;
-            last_symbolH = symbolH;
-            r.h = floor_scale;
+
+            r.h = floor_scale; //floors
             r.w = scale;
             texture_rect.w = scale;
             texture_rect.h = floor_scale;
@@ -795,10 +806,11 @@ int main(void)
                 float floor_ray = floor_ray_temp / (j - hight / 2) / fisheye_correction;
                 floor_x = floor_ray * Cos + px;
                 floor_y = - floor_ray * Sin + py;
-//                if (floor_x > 0 && floor_x < MAP_W && floor_y > 0 && floor_y < MAP_H)  // check if tile is in the map
                 color = (int)round(color_intercept - 255.0 / delta_fade * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
-                if (color < 0) color = 0;
-                else if (color > 255) color = 255;
+                if (color < 0)
+                    color = 0;
+                else if (color > 255)
+                    color = 255;
                 SDL_SetTextureAlphaMod(floor_texture, color);
                 r.y = j;
                 texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
@@ -816,7 +828,8 @@ int main(void)
                     door_wait[i] = 300; // wait 300 frames
                 }
             }
-            else if (door_wait[i] > 0) door_wait[i] -= 1; //wait
+            else if (door_wait[i] > 0)
+                door_wait[i] -= 1; //wait
             else {
                 if (round(location[0]) != door_location[i][0] || round(location[1]) != door_location[i][1]) {
                     door_extencion[i] += door_ext_rate[i]; // closes the doors
