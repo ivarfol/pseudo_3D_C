@@ -17,7 +17,7 @@
 #define TARGET_FPS 60.0
 #define MAXLENGTH 6
 #define COMMENTMAXLENGTH 80
-#define LINES 5
+#define LINES 12 
 #define ANIMATION_FRAME_LEN 100
 #define ANIMATION_FRAMES 8
 #define PL_HEIGHT 0.5
@@ -216,7 +216,7 @@ void print_number(int number, int x_offset, int y_offset, SDL_Renderer* renderer
     }
 }
 
-int WinMain(void)
+int main(void)
 {
     short int map_arr[MAP_H][MAP_W] = { {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                                         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -296,6 +296,10 @@ int WinMain(void)
     float scale = 2;
     float floor_scale = 2;
     int map_scale = 6;
+    short int show_floor = 1;
+    int sky_r = 0;
+    int sky_g = 240;
+    int sky_b = 240;
     if (fptr != NULL) {
         for (i=0;i<LINES && j>0;i++) {
             fgets(contents, COMMENTMAXLENGTH, fptr);
@@ -304,12 +308,16 @@ int WinMain(void)
             for (k=0; k<j; k++)
                 config[i] += (contents[k] - '0') * pow(10, j - k - 1);
         }
-        if (i==LINES && config[0] > 0 && config[1] > 0 && config[2] > 0 && config[3] > 0 && config[4] > 0) {
+        if (i==LINES && config[0] > 0 && config[1] > 0 && config[2] > 0 && config[3] > 0 && config[4] > 0 && config[5] <= 1 && config[6] < 256 && config[7] < 256 && config[8] < 256 && config[9] < 256 && config[10] < 256 && config[11] < 256) {
             length = config[0];
             hight = config[1];
             scale = config[2];
             floor_scale = config[3];
             map_scale = config[4];
+            show_floor = config[5];
+            sky_r = config[9];
+            sky_g = config[10];
+            sky_b = config[11];
         }
     }
     int last_width = 0;
@@ -598,14 +606,17 @@ int WinMain(void)
             move_f(map_arr, location, direction, move_direction_v * PI, mod, false, door_location, door_extencion, door_num);
  
         // clear window
-        SDL_SetRenderDrawColor(renderer, 0, 240, 240, 255);
+        SDL_SetRenderDrawColor(renderer, sky_r, sky_g, sky_b, 255);
         SDL_RenderClear(renderer);
-//        SDL_Rect r; // draw the ground
-//        r.x = 0;
-//        r.y = 0;
-//        r.w = length * scale;                                   // less overdrawing
-//        r.h = hight / 2 * (1 + 0.5 / (DOF - FADE + 8) / 2 * RATIO) + 2; // set the ground upper limit, to the lowwer limit of the fading tiles
-//        SDL_RenderFillRect(renderer, &r);
+        if (show_floor == 0) {
+            SDL_SetRenderDrawColor(renderer, config[6], config[7], config[8], 255);
+            SDL_Rect r; // draw the ground
+            r.x = 0;
+            r.w = length * scale;                                   // less overdrawing
+            r.y = half_h * (1 + 0.5 / DOF * ratio);
+            r.h = hight - r.y;
+            SDL_RenderFillRect(renderer, &r);
+        }
 
         // toggles door if found in front
         if (try_door) {
@@ -835,24 +846,26 @@ int WinMain(void)
             }
             last_offset = offset;
 
-            r.h = floor_scale; //floors
-            r.w = scale;
-            texture_rect.w = scale;
-            texture_rect.h = floor_scale;
-            for (j=end; j<hight; j += floor_scale) {
-                float floor_ray = floor_ray_temp / (j - hight / 2) / fisheye_correction;
-                floor_x = floor_ray * Cos + px;
-                floor_y = - floor_ray * Sin + py;
-                color = (int)round(color_intercept - 255.0 / delta_fade * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
-                if (color < 0)
-                    color = 0;
-                else if (color > 255)
-                    color = 255;
-                SDL_SetTextureAlphaMod(floor_texture, color);
-                r.y = j;
-                texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
-                texture_rect.y = (int)((floor_y - (int)floor_y) * 1024);
-                SDL_RenderCopy(renderer, floor_texture, &texture_rect, &r);
+            if (show_floor == 1) {
+                r.h = floor_scale; //floors
+                r.w = scale;
+                texture_rect.w = scale;
+                texture_rect.h = floor_scale;
+                for (j=end; j<hight; j += floor_scale) {
+                    float floor_ray = floor_ray_temp / (j - hight / 2) / fisheye_correction;
+                    floor_x = floor_ray * Cos + px;
+                    floor_y = - floor_ray * Sin + py;
+                    color = (int)round(color_intercept - 255.0 / delta_fade * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
+                    if (color < 0)
+                        color = 0;
+                    else if (color > 255)
+                        color = 255;
+                    SDL_SetTextureAlphaMod(floor_texture, color);
+                    r.y = j;
+                    texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
+                    texture_rect.y = (int)((floor_y - (int)floor_y) * 1024);
+                    SDL_RenderCopy(renderer, floor_texture, &texture_rect, &r);
+                }
             }
         }
 
