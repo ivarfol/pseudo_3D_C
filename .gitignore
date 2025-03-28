@@ -3,6 +3,7 @@
 !.gitignore
 !binaries/
 !binaries/*.zip
+!img/
+!img/*.png
 !Makefile
-!*.png
 !conf

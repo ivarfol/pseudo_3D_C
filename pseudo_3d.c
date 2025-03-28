@@ -6,8 +6,8 @@
 #include <SDL2/SDL_image.h>
 
 #define PI 3.1415926535
-#define DOF 8
-#define FADE 6
+#define DOF 10
+#define FADE 7
 #define NO_PI_FOV 0.5
 #define FOV NO_PI_FOV * PI
 #define SHIFT FOV / 2
@@ -18,8 +18,9 @@
 #define MAXLENGTH 6
 #define COMMENTMAXLENGTH 80
 #define LINES 5
-#define ANIMATION_FRAME_LEN 1000
-#define ANIMATION_FRAMES 2
+#define ANIMATION_FRAME_LEN 100
+#define ANIMATION_FRAMES 8
+#define PL_HEIGHT 0.5
 
 #define MOV_SPR 0
 
@@ -413,72 +414,107 @@ int main(void)
     SDL_Texture* buffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, length * scale, length );
     // set the textures, if no texture with the name is found, set to missing.png
     SDL_Texture* wall_texture;
-    if (fopen("wall.png", "r")!=NULL)
-        wall_texture = IMG_LoadTexture(renderer, "wall.png");
+    if (fopen("img/wall.png", "r")!=NULL)
+        wall_texture = IMG_LoadTexture(renderer, "img/wall.png");
     else
-        wall_texture = IMG_LoadTexture(renderer, "missing.png");
+        wall_texture = IMG_LoadTexture(renderer, "img/missing.png");
     SDL_SetTextureBlendMode(wall_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* door_texture;
-    if (fopen("door.png", "r")!=NULL)
-        door_texture = IMG_LoadTexture(renderer, "door.png");
+    if (fopen("img/door.png", "r")!=NULL)
+        door_texture = IMG_LoadTexture(renderer, "img/door.png");
     else
-        door_texture = IMG_LoadTexture(renderer, "missing.png");
+        door_texture = IMG_LoadTexture(renderer, "img/missing.png");
     SDL_SetTextureBlendMode(door_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* sprite_texture;
-    if (fopen("sprite.png", "r")!=NULL)
-        sprite_texture = IMG_LoadTexture(renderer, "sprite.png");
+    if (fopen("img/sprite.png", "r")!=NULL)
+        sprite_texture = IMG_LoadTexture(renderer, "img/sprite.png");
     else
-        sprite_texture = IMG_LoadTexture(renderer, "missing.png");
+        sprite_texture = IMG_LoadTexture(renderer, "img/missing.png");
     SDL_SetTextureBlendMode(sprite_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* floor_texture;
-    if (fopen("floor.png", "r")!=NULL)
-        floor_texture = IMG_LoadTexture(renderer, "floor.png");
+    if (fopen("img/floor.png", "r")!=NULL)
+        floor_texture = IMG_LoadTexture(renderer, "img/floor.png");
     else
-        floor_texture = IMG_LoadTexture(renderer, "missing.png");
+        floor_texture = IMG_LoadTexture(renderer, "img/missing.png");
     SDL_SetTextureBlendMode(floor_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* six_texture;
-    if (fopen("texture6.png", "r")!=NULL)
-        six_texture = IMG_LoadTexture(renderer, "texture6.png");
+    if (fopen("img/texture6.png", "r")!=NULL)
+        six_texture = IMG_LoadTexture(renderer, "img/texture6.png");
     else
-        six_texture = IMG_LoadTexture(renderer, "missing.png");
+        six_texture = IMG_LoadTexture(renderer, "img/missing.png");
     SDL_SetTextureBlendMode(six_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* seven_texture;
-    if (fopen("texture7.png", "r")!=NULL)
-        seven_texture = IMG_LoadTexture(renderer, "texture7.png");
+    if (fopen("img/texture7.png", "r")!=NULL)
+        seven_texture = IMG_LoadTexture(renderer, "img/texture7.png");
     else
-        seven_texture = IMG_LoadTexture(renderer, "missing.png");
+        seven_texture = IMG_LoadTexture(renderer, "img/missing.png");
     SDL_SetTextureBlendMode(seven_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* eight_texture;
-    if (fopen("texture8.png", "r")!=NULL)
-        eight_texture = IMG_LoadTexture(renderer, "texture8.png");
+    if (fopen("img/texture8.png", "r")!=NULL)
+        eight_texture = IMG_LoadTexture(renderer, "img/texture8.png");
     else
-        eight_texture = IMG_LoadTexture(renderer, "missing.png");
+        eight_texture = IMG_LoadTexture(renderer, "img/missing.png");
     SDL_SetTextureBlendMode(eight_texture, SDL_BLENDMODE_BLEND);
 
     SDL_Texture* animation_list[ANIMATION_FRAMES];
 
-    if (fopen("animation1.png", "r")!=NULL)
-        animation_list[0] = IMG_LoadTexture(renderer, "animation1.png"); 
+    if (fopen("img/animation1.png", "r")!=NULL)
+        animation_list[0] = IMG_LoadTexture(renderer, "img/animation1.png"); 
     else
-        animation_list[0] = IMG_LoadTexture(renderer, "missing.png");
+        animation_list[0] = IMG_LoadTexture(renderer, "img/missing.png");
     SDL_SetTextureBlendMode(animation_list[0], SDL_BLENDMODE_BLEND);
  
-    SDL_Texture* animation_texture_two;
-    if (fopen("animation2.png", "r")!=NULL)
-        animation_list[1] = IMG_LoadTexture(renderer, "animation2.png");
+    if (fopen("img/animation2.png", "r")!=NULL)
+        animation_list[1] = IMG_LoadTexture(renderer, "img/animation2.png");
     else
-        animation_list[1]= IMG_LoadTexture(renderer, "missing.png");
+        animation_list[1]= IMG_LoadTexture(renderer, "img/missing.png");
     SDL_SetTextureBlendMode(animation_list[1], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation3.png", "r")!=NULL)
+        animation_list[2] = IMG_LoadTexture(renderer, "img/animation3.png");
+    else
+        animation_list[2]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[2], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation4.png", "r")!=NULL)
+        animation_list[3] = IMG_LoadTexture(renderer, "img/animation4.png");
+    else
+        animation_list[3]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[3], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation5.png", "r")!=NULL)
+        animation_list[4] = IMG_LoadTexture(renderer, "img/animation5.png");
+    else
+        animation_list[4]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[4], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation6.png", "r")!=NULL)
+        animation_list[5] = IMG_LoadTexture(renderer, "img/animation6.png");
+    else
+        animation_list[5]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[5], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation7.png", "r")!=NULL)
+        animation_list[6] = IMG_LoadTexture(renderer, "img/animation7.png");
+    else
+        animation_list[6]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[6], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation8.png", "r")!=NULL)
+        animation_list[7] = IMG_LoadTexture(renderer, "img/animation8.png");
+    else
+        animation_list[7]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[7], SDL_BLENDMODE_BLEND);
 
     const double base_angles = rad_ch(0.5 * PI - SHIFT);
     const double side_len = length * sin(base_angles) / sin(FOV);
-    const float floor_ray_temp = sin(base_angles) * length / 4 / sin(SHIFT) * scale; // sin(base_angles) * length / 2 / sin(SHIFT) is the distance to trhe screen
+    const float floor_ray_temp = sin(base_angles) * length / 2 / sin(SHIFT) * PL_HEIGHT * scale; // sin(base_angles) * length / 2 / sin(SHIFT) is the distance to trhe screen
     const float target_fps = 1000.0 / TARGET_FPS;
     const double base_angles_cos = cos(base_angles);
     const double side_len_squared = side_len * side_len;
@@ -494,6 +530,7 @@ int main(void)
 
     // the main loop
     while (!quit) {
+        sprite_direction[1] = rad_ch(sprite_direction[1] + 0.1);
         SDL_SetRenderTarget(renderer, buffer);
         delta = SDL_GetTicks() - old_ticks; // time for the last frame in ms.
         if (delta < target_fps)
@@ -899,10 +936,22 @@ int main(void)
                         sprite_side = sprite_angle_to_pl[sprite_index[i]] - sprite_direction[sprite_index[i]];
                     else
                         sprite_side = sprite_direction[sprite_index[i]] - sprite_angle_to_pl[sprite_index[i]];
-                    if (sprite_side < PI)
+                    if (sprite_side < PI * 0.25)
                         draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[0], renderer);
-                    else 
+                    else if (sprite_side < PI * 0.5)
                         draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[1], renderer);
+                    else if (sprite_side < PI * 0.75)
+                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[2], renderer);
+                    else if (sprite_side < PI)
+                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[3], renderer);
+                    else if (sprite_side < PI * 1.25)
+                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[4], renderer);
+                    else if (sprite_side < PI * 1.5)
+                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[5], renderer);
+                    else if (sprite_side < PI * 1.75)
+                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[6], renderer);
+                    else
+                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[7], renderer);
                 }
                 else
                     draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, sprite_texture, renderer);
