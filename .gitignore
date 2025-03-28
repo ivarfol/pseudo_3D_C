@@ -6,4 +6,4 @@
 !img/
 !img/*.png
 !Makefile
-!conf
+!conf.txt
