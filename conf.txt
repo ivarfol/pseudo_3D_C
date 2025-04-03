@@ -7,6 +7,6 @@
 0 floor R
 240 floor G
 0 floor B
-0 sky R
+200 sky R
 240 sky G
 240 sky B

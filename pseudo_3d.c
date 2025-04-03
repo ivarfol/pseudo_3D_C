@@ -12,8 +12,6 @@
 #define FOV NO_PI_FOV * PI
 #define SHIFT FOV / 2
 #define DOOR_NUM 2
-#define MAP_W 6
-#define MAP_H 6
 #define TARGET_FPS 60.0
 #define MAXLENGTH 6
 #define COMMENTMAXLENGTH 80
@@ -136,7 +134,7 @@ void swap(int* xp, int* yp)
     *yp = temp;
 }
 
-void move_f( short int map_arr[][MAP_W], float location[], float direction, float rot, float mod, bool noclip, int door_location[][2], float door_extencion[], int door_num)
+void move_f(int map_w, int map_h, short int map_arr[][map_w], float location[], float direction, float rot, float mod, bool noclip, int door_location[][2], float door_extencion[], int door_num)
 {
     float angle = -direction;                            //this function is responsible for moving the player
     angle = rad_ch(angle + rot);
@@ -235,21 +233,21 @@ void print_number(int number, int x_offset, int y_offset, SDL_Renderer* renderer
 
 int main(void)
 {
-    int color, start, end, i, j, k, wall_hit;
+    int color, start, end, i, j, k, wall_hit, map_h, map_w;
     FILE *fptr;
-    fptr = fopen("map", "r");
+    fptr = fopen("maps/map.map", "r");
     char line[MAX_MAP_LENGTH];
-    int dimentions[2] = {0, 0}; //x, y
+    map_h = map_w = 0;
     for (k=0; k<2; k++) {
         fgets(line, COMMENTMAXLENGTH, fptr);
         for (i=0; i<MAXLENGTH-1 && line[i] != EOF && line[i] >= '0' && line[i] <= '9'; i++);
-        for (j=0; j<i; j++) {
-            dimentions[k] += (line[j] - '0') * pow(10, i - j - 1);
-        }
+        if (k==0)
+            map_w += (line[j] - '0') * pow(10, i - j - 1);
+        else
+            map_h += (line[j] - '0') * pow(10, i - j - 1);
     }
-    short int map_arr[dimentions[1]][dimentions[0]];
-    gen_map(dimentions[0], map_arr, fptr, dimentions[1]);
-
+    short int map_arr[map_h][map_w];
+    gen_map(map_w, map_arr, fptr, map_h);
     float direction = 1.5 * PI; //direction the player is facing
     bool show_map, noclip, show_fps, quit, try_door;
     show_map = noclip = show_fps = quit = try_door = false;
@@ -306,8 +304,8 @@ int main(void)
     int animation_last_tick = 0;
     int animation_cycle = 0;
 
-    for (i=0; i<MAP_H; i++) {
-        for (j=0; j<MAP_W; j++) {
+    for (i=0; i<map_h; i++) {
+        for (j=0; j<map_w; j++) {
             if (map_arr[i][j] == 2 || map_arr[i][j] == 3)
                 door_num++; // 2 - horizontal door, 3 - vertical door
             else if (map_arr[i][j] == 4)
@@ -352,8 +350,8 @@ int main(void)
     sprite_direction_dependant[0] = false;
 
     door_num = sprite_num = 0;
-    for (i=0; i<MAP_H; i++) {
-        for (j=0; j<MAP_W; j++) {
+    for (i=0; i<map_h; i++) {
+        for (j=0; j<map_w; j++) {
             if (map_arr[i][j] == 2 || map_arr[i][j] == 3) { // 2 - horizontal door, 3 - vertical door
                 door_location[door_num][0] = j;
                 door_location[door_num][1] = i;
@@ -566,10 +564,10 @@ int main(void)
                 if (move_direction_v == 0.0 && move_direction_h == 0.75)
                     move_direction_h = 1.75;
             }
-            move_f(map_arr, location, direction, rad_ch(move_direction_h * PI), mod, false, door_location, door_extencion, door_num);
+            move_f(map_w, map_h, map_arr, location, direction, rad_ch(move_direction_h * PI), mod, false, door_location, door_extencion, door_num);
         }
         else if (move_direction_v >=0)
-            move_f(map_arr, location, direction, move_direction_v * PI, mod, false, door_location, door_extencion, door_num);
+            move_f(map_w, map_h, map_arr, location, direction, move_direction_v * PI, mod, false, door_location, door_extencion, door_num);
  
         // clear window
         SDL_SetRenderDrawColor(renderer, sky_r, sky_g, sky_b, 255);
@@ -668,8 +666,8 @@ int main(void)
                 if (dofh < dofv && dofh < DOF) { // use the shortest ray
                     mxh=(int)(rxh);
                     myh=(int)(ryh);
-                    mph = myh * MAP_W + mxh;
-                    if (mph>-1 && mph<MAP_H*MAP_W && map_arr[myh][mxh] == 2) {
+                    mph = myh * map_w+ mxh;
+                    if (mph>-1 && mph<map_h*map_w&& map_arr[myh][mxh] == 2) {
                         for(k=0; k<door_num; k++) { // get the door index
                             if (door_location[k][0] == mxh && door_location[k][1] == myh) {
                                 door_indexH = k;
@@ -678,7 +676,7 @@ int main(void)
                         }
                     }
                     // let the ray pass through the door, if the x mosition of the ray is more than x position of the doors end
-                    if(mph>-1 && mph<MAP_H*MAP_W && ((map_arr[myh][mxh]!=0 && map_arr[myh][mxh]!=2 && map_arr[myh][mxh]!=3) || (map_arr[myh][mxh] == 2 && (door_location[door_indexH][0] + door_extencion[door_indexH] < rxh + 0.5 * xoh)))) { //hit
+                    if(mph>-1 && mph<map_h*map_w&& ((map_arr[myh][mxh]!=0 && map_arr[myh][mxh]!=2 && map_arr[myh][mxh]!=3) || (map_arr[myh][mxh] == 2 && (door_location[door_indexH][0] + door_extencion[door_indexH] < rxh + 0.5 * xoh)))) { //hit
                         dofh=DOF;
                         disH=Cos*(rxh-px)-Sin*(ryh-py);
                         symbolH = map_arr[myh][mxh];
@@ -698,8 +696,8 @@ int main(void)
                 else if (dofv < DOF) {
                     mxv=(int)(rxv);
                     myv=(int)(ryv);
-                    mpv = myv * MAP_W + mxv;
-                    if (mpv>-1 && mpv<MAP_H*MAP_W && map_arr[myv][mxv] == 3) {
+                    mpv = myv * map_w+ mxv;
+                    if (mpv>-1 && mpv<map_h*map_w&& map_arr[myv][mxv] == 3) {
                         for(k=0; k<door_num; k++) { //get the door index
                             if (door_location[k][0] == mxv && door_location[k][1] == myv) {
                                 door_indexV = k;
@@ -708,7 +706,7 @@ int main(void)
                         }
                     }
                     // let the ray pass through the door, if the y mosition of the ray is more than y position of the doors end
-                    if(mpv>-1 && mpv<MAP_H*MAP_W && ((map_arr[myv][mxv]!=0 && map_arr[myv][mxv]!=2 && map_arr[myv][mxv]!=3) || (map_arr[myv][mxv] == 3 && (door_location[door_indexV][1] + door_extencion[door_indexV] < ryv + 0.5 * yov)))) { //hit
+                    if(mpv>-1 && mpv<map_h*map_w&& ((map_arr[myv][mxv]!=0 && map_arr[myv][mxv]!=2 && map_arr[myv][mxv]!=3) || (map_arr[myv][mxv] == 3 && (door_location[door_indexV][1] + door_extencion[door_indexV] < ryv + 0.5 * yov)))) { //hit
                         dofv=DOF;
                         disV=Cos*(rxv-px)-Sin*(ryv-py);
                         symbolV = map_arr[myv][mxv];
@@ -939,21 +937,21 @@ int main(void)
 
         // move a sprite towards the player
         if (sprite_dist[MOV_SPR] > 0.5)
-            move_f(map_arr, sprite_location[MOV_SPR], sprite_angle_to_pl[MOV_SPR], 0, 0.25, false, door_location, door_extencion, door_num);
+            move_f(map_w, map_h, map_arr, sprite_location[MOV_SPR], sprite_angle_to_pl[MOV_SPR], 0, 0.25, false, door_location, door_extencion, door_num);
         else
-            move_f(map_arr, sprite_location[MOV_SPR], rad_ch(PI + sprite_angle_to_pl[MOV_SPR]), 0, 0.5 - sprite_dist[MOV_SPR], false, door_location, door_extencion, door_num);
+            move_f(map_w, map_h, map_arr, sprite_location[MOV_SPR], rad_ch(PI + sprite_angle_to_pl[MOV_SPR]), 0, 0.5 - sprite_dist[MOV_SPR], false, door_location, door_extencion, door_num);
 
         if (show_map) { // render the map
             SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 ); // a background
             SDL_Rect r;
             r.x = 0;
             r.y = 0;
-            r.w = MAP_W * map_scale;
-            r.h = MAP_H * map_scale;
+            r.w = map_w* map_scale;
+            r.h = map_h* map_scale;
             SDL_RenderFillRect(renderer, &r);
             SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
-            for (i=0; i<MAP_H; i++) {
-                for (j=0; j<MAP_W; j++) {
+            for (i=0; i<map_h; i++) {
+                for (j=0; j<map_w; j++) {
                     if (map_arr[i][j] != 0) {
                         r.x = j * map_scale;
                         r.y = i * map_scale;
@@ -987,7 +985,7 @@ int main(void)
             r.h = (int)half_map_scale/2;
         }
         if (show_fps) { // show fps and player position
-            int x_offset = MAP_W * map_scale+ 10;
+            int x_offset = map_w* map_scale+ 10;
             SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 ); // a background
             SDL_Rect r;
             r.x = x_offset;

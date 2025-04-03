@@ -5,5 +5,7 @@
 !binaries/*.zip
 !img/
 !img/*.png
+!maps/
+!maps/*.map
 !Makefile
 !conf.txt
