@@ -50,11 +50,11 @@ float rad_ch(float a) // stops the a from going over 2 * PI (radians)
     return a;
 }
 
-void gen_map(int width, short int map_arr[][width], FILE* fptr, int height)
+void gen_map(int width, short int map_arr[][width], FILE* fptr, int hight)
 {
     int i, j, tiles;
     char line[MAX_MAP_LENGTH];
-    for (i=0; i<height; i++) {
+    for (i=0; i<hight; i++) {
         fgets(line, MAX_MAP_LENGTH, fptr);
         tiles = 0;
         for (j=0; tiles<width; j++) {
@@ -231,11 +231,9 @@ void print_number(int number, int x_offset, int y_offset, SDL_Renderer* renderer
     }
 }
 
-int main(void)
+int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window, SDL_Texture *animation_list[ANIMATION_FRAMES],  SDL_Texture *wall_texture, SDL_Texture *sprite_texture, SDL_Texture *floor_texture, SDL_Texture *six_texture, SDL_Texture *seven_texture, SDL_Texture *eight_texture, SDL_Texture *door_texture, int length, int hight, int scale, int floor_scale, int map_scale, int show_floor, int sky_r, int sky_g, int sky_b, int config[LINES])
 {
     int color, start, end, i, j, k, wall_hit, map_h, map_w;
-    FILE *fptr;
-    fptr = fopen("maps/map.map", "r");
     char line[MAX_MAP_LENGTH];
     map_h = map_w = 0;
     for (k=0; k<2; k++) {
@@ -251,39 +249,7 @@ int main(void)
     float direction = 1.5 * PI; //direction the player is facing
     bool show_map, noclip, show_fps, quit, try_door;
     show_map = noclip = show_fps = quit = try_door = false;
-    char contents[COMMENTMAXLENGTH];
-    int config[LINES];
-    fptr = fopen("conf.txt", "r");
-    j = 1;
-    int length = 600;
-    int hight = 600;
-    float scale = 2;
-    float floor_scale = 2;
-    int map_scale = 6;
-    short int show_floor = 1;
-    int sky_r = 0;
-    int sky_g = 240;
-    int sky_b = 240;
-    if (fptr != NULL) {
-        for (i=0;i<LINES && j>0;i++) {
-            fgets(contents, COMMENTMAXLENGTH, fptr);
-            config[i] = 0;
-            for (j=0; j<MAXLENGTH-1 && contents[j] != EOF && contents[j] >= '0' && contents[j] <= '9'; j++);
-            for (k=0; k<j; k++)
-                config[i] += (contents[k] - '0') * pow(10, j - k - 1);
-        }
-        if (i==LINES && config[0] > 0 && config[1] > 0 && config[2] > 0 && config[3] > 0 && config[4] > 0 && config[5] <= 1 && config[6] < 256 && config[7] < 256 && config[8] < 256 && config[9] < 256 && config[10] < 256 && config[11] < 256) {
-            length = config[0];
-            hight = config[1];
-            scale = config[2];
-            floor_scale = config[3];
-            map_scale = config[4];
-            show_floor = config[5];
-            sky_r = config[9];
-            sky_g = config[10];
-            sky_b = config[11];
-        }
-    }
+    
     int last_width = 0;
     float half_map_scale = map_scale / 2;
     float mod = 1.0; // variable for speeding up the player movement if shift is pressed
@@ -376,114 +342,6 @@ int main(void)
 
     // init SDL
  
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window * window = SDL_CreateWindow("Pseudo 3D",
-    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, length * scale, hight, 0);
-    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
-    SDL_Event event;
-    IMG_Init(IMG_INIT_PNG);
-
-    SDL_Texture* buffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, length * scale, length );
-    // set the textures, if no texture with the name is found, set to missing.png
-    SDL_Texture* wall_texture;
-    if (fopen("img/wall.png", "r")!=NULL)
-        wall_texture = IMG_LoadTexture(renderer, "img/wall.png");
-    else
-        wall_texture = IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(wall_texture, SDL_BLENDMODE_BLEND);
-
-    SDL_Texture* door_texture;
-    if (fopen("img/door.png", "r")!=NULL)
-        door_texture = IMG_LoadTexture(renderer, "img/door.png");
-    else
-        door_texture = IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(door_texture, SDL_BLENDMODE_BLEND);
-
-    SDL_Texture* sprite_texture;
-    if (fopen("img/sprite.png", "r")!=NULL)
-        sprite_texture = IMG_LoadTexture(renderer, "img/sprite.png");
-    else
-        sprite_texture = IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(sprite_texture, SDL_BLENDMODE_BLEND);
-
-    SDL_Texture* floor_texture;
-    if (fopen("img/floor.png", "r")!=NULL)
-        floor_texture = IMG_LoadTexture(renderer, "img/floor.png");
-    else
-        floor_texture = IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(floor_texture, SDL_BLENDMODE_BLEND);
-
-    SDL_Texture* six_texture;
-    if (fopen("img/texture6.png", "r")!=NULL)
-        six_texture = IMG_LoadTexture(renderer, "img/texture6.png");
-    else
-        six_texture = IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(six_texture, SDL_BLENDMODE_BLEND);
-
-    SDL_Texture* seven_texture;
-    if (fopen("img/texture7.png", "r")!=NULL)
-        seven_texture = IMG_LoadTexture(renderer, "img/texture7.png");
-    else
-        seven_texture = IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(seven_texture, SDL_BLENDMODE_BLEND);
-
-    SDL_Texture* eight_texture;
-    if (fopen("img/texture8.png", "r")!=NULL)
-        eight_texture = IMG_LoadTexture(renderer, "img/texture8.png");
-    else
-        eight_texture = IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(eight_texture, SDL_BLENDMODE_BLEND);
-
-    SDL_Texture* animation_list[ANIMATION_FRAMES];
-
-    if (fopen("img/animation1.png", "r")!=NULL)
-        animation_list[0] = IMG_LoadTexture(renderer, "img/animation1.png"); 
-    else
-        animation_list[0] = IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(animation_list[0], SDL_BLENDMODE_BLEND);
- 
-    if (fopen("img/animation2.png", "r")!=NULL)
-        animation_list[1] = IMG_LoadTexture(renderer, "img/animation2.png");
-    else
-        animation_list[1]= IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(animation_list[1], SDL_BLENDMODE_BLEND);
-
-    if (fopen("img/animation3.png", "r")!=NULL)
-        animation_list[2] = IMG_LoadTexture(renderer, "img/animation3.png");
-    else
-        animation_list[2]= IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(animation_list[2], SDL_BLENDMODE_BLEND);
-
-    if (fopen("img/animation4.png", "r")!=NULL)
-        animation_list[3] = IMG_LoadTexture(renderer, "img/animation4.png");
-    else
-        animation_list[3]= IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(animation_list[3], SDL_BLENDMODE_BLEND);
-
-    if (fopen("img/animation5.png", "r")!=NULL)
-        animation_list[4] = IMG_LoadTexture(renderer, "img/animation5.png");
-    else
-        animation_list[4]= IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(animation_list[4], SDL_BLENDMODE_BLEND);
-
-    if (fopen("img/animation6.png", "r")!=NULL)
-        animation_list[5] = IMG_LoadTexture(renderer, "img/animation6.png");
-    else
-        animation_list[5]= IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(animation_list[5], SDL_BLENDMODE_BLEND);
-
-    if (fopen("img/animation7.png", "r")!=NULL)
-        animation_list[6] = IMG_LoadTexture(renderer, "img/animation7.png");
-    else
-        animation_list[6]= IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(animation_list[6], SDL_BLENDMODE_BLEND);
-
-    if (fopen("img/animation8.png", "r")!=NULL)
-        animation_list[7] = IMG_LoadTexture(renderer, "img/animation8.png");
-    else
-        animation_list[7]= IMG_LoadTexture(renderer, "img/missing.png");
-    SDL_SetTextureBlendMode(animation_list[7], SDL_BLENDMODE_BLEND);
-
     const double base_angles = rad_ch(0.5 * PI - SHIFT);
     const double side_len = length * sin(base_angles) / sin(FOV);
     const float floor_ray_temp = sin(base_angles) * length / 2 / sin(SHIFT) * PL_HEIGHT * scale; // sin(base_angles) * length / 2 / sin(SHIFT) is the distance to trhe screen
@@ -500,10 +358,9 @@ int main(void)
     for (i=0; i<length + 3; i++)
         angles[i] = acos((side_len - (i - 3) * base_angles_cos) / sqrt(side_len_squared + (i - 3) * (i - 3 - denom_temp)));
 
-    // the main loop
+    // the loop
     while (!quit) {
         sprite_direction[1] = rad_ch(sprite_direction[1] + 0.1);
-        SDL_SetRenderTarget(renderer, buffer);
         delta = SDL_GetTicks() - old_ticks; // time for the last frame in ms.
         if (delta < target_fps)
             SDL_Delay((int)(target_fps) - delta); // cap the fps
@@ -1014,9 +871,162 @@ int main(void)
         SDL_RenderPresent(renderer);
         old_ticks = ticks;
         SDL_SetRenderTarget(renderer, NULL);
-        SDL_RenderCopy(renderer, buffer, NULL, NULL);
     }
  
+    return 0;
+}
+
+int main(void)
+{
+    FILE *fptr;
+    int i, j, k;
+    int config[LINES];
+    char contents[COMMENTMAXLENGTH];
+
+    //config
+    fptr = fopen("conf.txt", "r");
+    int length = 600;
+    int hight = 600;
+    float scale = 2;
+    float floor_scale = 2;
+    int map_scale = 6;
+    short int show_floor = 1;
+    int sky_r = 0;
+    int sky_g = 240;
+    int sky_b = 240;
+    if (fptr != NULL) {
+        for (i=0;i<LINES && j>0;i++) {
+            fgets(contents, COMMENTMAXLENGTH, fptr);
+            config[i] = 0;
+            for (j=0; j<MAXLENGTH-1 && contents[j] != EOF && contents[j] >= '0' && contents[j] <= '9'; j++);
+            for (k=0; k<j; k++)
+                config[i] += (contents[k] - '0') * pow(10, j - k - 1);
+        }
+        if (i==LINES && config[0] > 0 && config[1] > 0 && config[2] > 0 && config[3] > 0 && config[4] > 0 && config[5] <= 1 && config[6] < 256 && config[7] < 256 && config[8] < 256 && config[9] < 256 && config[10] < 256 && config[11] < 256) {
+            length = config[0];
+            hight = config[1];
+            scale = config[2];
+            floor_scale = config[3];
+            map_scale = config[4];
+            show_floor = config[5];
+            sky_r = config[9];
+            sky_g = config[10];
+            sky_b = config[11];
+        }
+    }
+
+    //setup SDL
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Window * window = SDL_CreateWindow("Pseudo 3D",
+    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, length * scale, hight, 0);
+    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
+    SDL_Event event;
+    IMG_Init(IMG_INIT_PNG);
+
+    // set the textures, if no texture with the name is found, set to missing.png
+    SDL_Texture* wall_texture;
+    if (fopen("img/wall.png", "r")!=NULL)
+        wall_texture = IMG_LoadTexture(renderer, "img/wall.png");
+    else
+        wall_texture = IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(wall_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* door_texture;
+    if (fopen("img/door.png", "r")!=NULL)
+        door_texture = IMG_LoadTexture(renderer, "img/door.png");
+    else
+        door_texture = IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(door_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* sprite_texture;
+    if (fopen("img/sprite.png", "r")!=NULL)
+        sprite_texture = IMG_LoadTexture(renderer, "img/sprite.png");
+    else
+        sprite_texture = IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(sprite_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* floor_texture;
+    if (fopen("img/floor.png", "r")!=NULL)
+        floor_texture = IMG_LoadTexture(renderer, "img/floor.png");
+    else
+        floor_texture = IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(floor_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* six_texture;
+    if (fopen("img/texture6.png", "r")!=NULL)
+        six_texture = IMG_LoadTexture(renderer, "img/texture6.png");
+    else
+        six_texture = IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(six_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* seven_texture;
+    if (fopen("img/texture7.png", "r")!=NULL)
+        seven_texture = IMG_LoadTexture(renderer, "img/texture7.png");
+    else
+        seven_texture = IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(seven_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* eight_texture;
+    if (fopen("img/texture8.png", "r")!=NULL)
+        eight_texture = IMG_LoadTexture(renderer, "img/texture8.png");
+    else
+        eight_texture = IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(eight_texture, SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* animation_list[ANIMATION_FRAMES];
+
+    if (fopen("img/animation1.png", "r")!=NULL)
+        animation_list[0] = IMG_LoadTexture(renderer, "img/animation1.png"); 
+    else
+        animation_list[0] = IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[0], SDL_BLENDMODE_BLEND);
+ 
+    if (fopen("img/animation2.png", "r")!=NULL)
+        animation_list[1] = IMG_LoadTexture(renderer, "img/animation2.png");
+    else
+        animation_list[1]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[1], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation3.png", "r")!=NULL)
+        animation_list[2] = IMG_LoadTexture(renderer, "img/animation3.png");
+    else
+        animation_list[2]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[2], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation4.png", "r")!=NULL)
+        animation_list[3] = IMG_LoadTexture(renderer, "img/animation4.png");
+    else
+        animation_list[3]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[3], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation5.png", "r")!=NULL)
+        animation_list[4] = IMG_LoadTexture(renderer, "img/animation5.png");
+    else
+        animation_list[4]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[4], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation6.png", "r")!=NULL)
+        animation_list[5] = IMG_LoadTexture(renderer, "img/animation6.png");
+    else
+        animation_list[5]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[5], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation7.png", "r")!=NULL)
+        animation_list[6] = IMG_LoadTexture(renderer, "img/animation7.png");
+    else
+        animation_list[6]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[6], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/animation8.png", "r")!=NULL)
+        animation_list[7] = IMG_LoadTexture(renderer, "img/animation8.png");
+    else
+        animation_list[7]= IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(animation_list[7], SDL_BLENDMODE_BLEND);
+    fptr = fopen("maps/map.map", "r");
+    game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config);
+    fptr = fopen("maps/map1.map", "r");
+    game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config);
+
     // cleanup SDL
     SDL_DestroyTexture(wall_texture);
     wall_texture = NULL;
@@ -1032,10 +1042,8 @@ int main(void)
     seven_texture = NULL;
     SDL_DestroyTexture(eight_texture);
     eight_texture = NULL;
-    SDL_DestroyTexture(animation_list[0]);
-    SDL_DestroyTexture(animation_list[1]);
-    SDL_DestroyTexture(buffer);
-    buffer = NULL;
+    for (i=0;i<ANIMATION_FRAMES;i++)
+        SDL_DestroyTexture(animation_list[i]);
     SDL_DestroyRenderer(renderer);
     renderer = NULL;
     SDL_DestroyWindow(window);
