@@ -20,6 +20,7 @@
 #define ANIMATION_FRAMES 8
 #define PL_HEIGHT 0.5
 #define MAX_MAP_LENGTH 128
+#define EXIT_DELAY 60
 
 #define MOV_SPR 0
 
@@ -231,10 +232,11 @@ void print_number(int number, int x_offset, int y_offset, SDL_Renderer* renderer
     }
 }
 
-int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window, SDL_Texture *animation_list[ANIMATION_FRAMES],  SDL_Texture *wall_texture, SDL_Texture *sprite_texture, SDL_Texture *floor_texture, SDL_Texture *six_texture, SDL_Texture *seven_texture, SDL_Texture *eight_texture, SDL_Texture *door_texture, int length, int hight, int scale, int floor_scale, int map_scale, int show_floor, int sky_r, int sky_g, int sky_b, int config[LINES])
+int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window, SDL_Texture *animation_list[ANIMATION_FRAMES],  SDL_Texture *wall_texture, SDL_Texture *sprite_texture, SDL_Texture *floor_texture, SDL_Texture *six_texture, SDL_Texture *seven_texture, SDL_Texture *eight_texture, SDL_Texture *door_texture, int length, int hight, int scale, int floor_scale, int map_scale, int show_floor, int sky_r, int sky_g, int sky_b, int config[LINES], SDL_Texture* lever_texture[2])
 {
-    int color, start, end, i, j, k, wall_hit, map_h, map_w;
+    int color, start, end, i, j, k, wall_hit, map_h, map_w, lever_active, end_count;
     char line[MAX_MAP_LENGTH];
+    lever_active = end_count = 0;
     map_h = map_w = 0;
     for (k=0; k<2; k++) {
         fgets(line, COMMENTMAXLENGTH, fptr);
@@ -247,7 +249,8 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
     short int map_arr[map_h][map_w];
     gen_map(map_w, map_arr, fptr, map_h);
     float direction = 1.5 * PI; //direction the player is facing
-    bool show_map, noclip, show_fps, quit, try_door;
+    bool show_map, noclip, show_fps, quit, try_door, end_game;
+    end_game = false;
     show_map = noclip = show_fps = quit = try_door = false;
     
     int last_width = 0;
@@ -358,7 +361,7 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
     for (i=0; i<length + 3; i++)
         angles[i] = acos((side_len - (i - 3) * base_angles_cos) / sqrt(side_len_squared + (i - 3) * (i - 3 - denom_temp)));
 
-    // the loop
+    // Game loop
     while (!quit) {
         sprite_direction[1] = rad_ch(sprite_direction[1] + 0.1);
         delta = SDL_GetTicks() - old_ticks; // time for the last frame in ms.
@@ -439,6 +442,12 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             SDL_RenderFillRect(renderer, &r);
         }
 
+        if (lever_active == 1) {
+            end_count++;
+            if (end_count == EXIT_DELAY)
+                quit = true;
+        }
+
         // toggles door if found in front
         if (try_door) {
             float dist = 0.1;
@@ -456,8 +465,13 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                     }
                     break;
                 }
+                else if (tile == 5) {
+                    end_game = true;
+                    lever_active = 1;
+                    break;
+                }
                 else if (tile != 0)
-                        break;
+                    break;
                 dist += 0.1;
             }
             try_door = false;
@@ -618,6 +632,8 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             if (!is_doorH) {
                 if (symbolH == 1)
                     SDL_SetTextureAlphaMod(wall_texture, color);
+                else if (symbolH == 5)
+                    SDL_SetTextureAlphaMod(lever_texture[lever_active], color);
                 else if (symbolH == 6)
                     SDL_SetTextureAlphaMod(six_texture, color);
                 else if (symbolH == 7)
@@ -657,6 +673,8 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                 else {
                     if (symbolH == 1)
                         SDL_RenderCopy(renderer, wall_texture, &texture_rect, &r);
+                    else if (symbolH == 5)
+                        SDL_RenderCopy(renderer, lever_texture[lever_active], &texture_rect, &r);
                     else if (symbolH == 6)
                         SDL_RenderCopy(renderer, six_texture, &texture_rect, &r);
                     else if (symbolH == 7)
@@ -1022,10 +1040,24 @@ int main(void)
     else
         animation_list[7]= IMG_LoadTexture(renderer, "img/missing.png");
     SDL_SetTextureBlendMode(animation_list[7], SDL_BLENDMODE_BLEND);
+
+    SDL_Texture* lever_texture[2];
+    if (fopen("img/lever_one.png", "r")!=NULL)
+        lever_texture[0] = IMG_LoadTexture(renderer, "img/lever_one.png");
+    else
+        lever_texture[0] = IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(lever_texture[0], SDL_BLENDMODE_BLEND);
+
+    if (fopen("img/lever_two.png", "r")!=NULL)
+        lever_texture[1] = IMG_LoadTexture(renderer, "img/lever_two.png");
+    else
+        lever_texture[1] = IMG_LoadTexture(renderer, "img/missing.png");
+    SDL_SetTextureBlendMode(lever_texture[1], SDL_BLENDMODE_BLEND);
+
     fptr = fopen("maps/map.map", "r");
-    game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config);
+    game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config, lever_texture);
     fptr = fopen("maps/map1.map", "r");
-    game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config);
+    game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config, lever_texture);
 
     // cleanup SDL
     SDL_DestroyTexture(wall_texture);
