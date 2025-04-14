@@ -384,6 +384,7 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             switch (event.type) {
                 case SDL_QUIT:
                     quit = true;
+                    lever_active = 0;
                     break;
                 case SDL_KEYDOWN:
                     KEYS[event.key.keysym.scancode] = true;
@@ -890,8 +891,7 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
         old_ticks = ticks;
         SDL_SetRenderTarget(renderer, NULL);
     }
- 
-    return 0;
+    return lever_active;
 }
 
 int main(void)
@@ -905,8 +905,8 @@ int main(void)
     fptr = fopen("conf.txt", "r");
     int length = 600;
     int hight = 600;
-    float scale = 2;
-    float floor_scale = 2;
+    float scale = 2.f;
+    float floor_scale = 2.f;
     int map_scale = 6;
     short int show_floor = 1;
     int sky_r = 0;
@@ -1055,9 +1055,10 @@ int main(void)
     SDL_SetTextureBlendMode(lever_texture[1], SDL_BLENDMODE_BLEND);
 
     fptr = fopen("maps/map.map", "r");
-    game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config, lever_texture);
-    fptr = fopen("maps/map1.map", "r");
-    game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config, lever_texture);
+    if (game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config, lever_texture) == 1) {
+        fptr = fopen("maps/map1.map", "r");
+        game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config, lever_texture);
+    }
 
     // cleanup SDL
     SDL_DestroyTexture(wall_texture);
