@@ -2,7 +2,7 @@
 600 hight
 5 length multiplier
 2 floor hight multiplier
-4 map tile size in pixels
+10 map tile size in pixels
 1 show floor
 0 floor R
 240 floor G

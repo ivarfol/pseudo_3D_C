@@ -412,6 +412,8 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             }
         }
         // handle user inputs
+        if (KEYS[SDL_SCANCODE_ESCAPE])
+            quit = true;
         if (KEYS[SDL_SCANCODE_LSHIFT])
             mod = 2.0;
         else
@@ -917,6 +919,7 @@ int main(void)
     int i, j, k;
     int config[LINES];
     char contents[COMMENTMAXLENGTH];
+    j = 1;
 
     //config
     fptr = fopen("conf.txt", "r");
@@ -934,7 +937,7 @@ int main(void)
     conf.floor_g = 80;
     conf.floor_b = 0;
     if (fptr != NULL) {
-        for (i=0;i<LINES;i++) {
+        for (i=0;i<LINES && j>0;i++) {
             fgets(contents, COMMENTMAXLENGTH, fptr);
             config[i] = 0;
             for (j=0; j<MAXLENGTH-1 && contents[j] != EOF && contents[j] >= '0' && contents[j] <= '9'; j++);
