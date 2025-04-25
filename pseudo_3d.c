@@ -37,6 +37,21 @@
 #define top_r_bot_l(r, x, y) SDL_RenderDrawLine(r, x, y + 18, x + 8, y + 2)
 #define y_left_top(r, x, y) SDL_RenderDrawLine(r, x + 4, y + 9, x, y + 2)
 
+struct config {
+    int length;
+    int hight;
+    float scale;
+    float floor_scale;
+    int map_scale;
+    int show_floor;
+    int sky_r;
+    int sky_g;
+    int sky_b;
+    int floor_r;
+    int floor_g;
+    int floor_b;
+};
+
 float rad_ch(float a) // stops the a from going over 2 * PI (radians)
 {
     if (a > 2 * PI)
@@ -232,7 +247,7 @@ void print_number(int number, int x_offset, int y_offset, SDL_Renderer* renderer
     }
 }
 
-int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window, SDL_Texture *animation_list[ANIMATION_FRAMES],  SDL_Texture *wall_texture, SDL_Texture *sprite_texture, SDL_Texture *floor_texture, SDL_Texture *six_texture, SDL_Texture *seven_texture, SDL_Texture *eight_texture, SDL_Texture *door_texture, int length, int hight, int scale, int floor_scale, int map_scale, int show_floor, int sky_r, int sky_g, int sky_b, int config[LINES], SDL_Texture* lever_texture[2])
+int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window, SDL_Texture *animation_list[ANIMATION_FRAMES],  SDL_Texture *wall_texture, SDL_Texture *sprite_texture, SDL_Texture *floor_texture, SDL_Texture *six_texture, SDL_Texture *seven_texture, SDL_Texture *eight_texture, SDL_Texture *door_texture, struct config conf, SDL_Texture* lever_texture[2])
 {
     int color, start, end, i, j, k, wall_hit, map_h, map_w, lever_active, end_count;
     char line[MAX_MAP_LENGTH];
@@ -241,10 +256,12 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
     for (k=0; k<2; k++) {
         fgets(line, COMMENTMAXLENGTH, fptr);
         for (i=0; i<MAXLENGTH-1 && line[i] != EOF && line[i] >= '0' && line[i] <= '9'; i++);
-        if (k==0)
-            map_w += (line[j] - '0') * pow(10, i - j - 1);
-        else
-            map_h += (line[j] - '0') * pow(10, i - j - 1);
+        for (j=0; j<i; j++) {
+            if (k==0)
+                map_w += (line[j] - '0') * pow(10, i - j - 1);
+            else
+                map_h += (line[j] - '0') * pow(10, i - j - 1);
+        }
     }
     short int map_arr[map_h][map_w];
     gen_map(map_w, map_arr, fptr, map_h);
@@ -254,11 +271,11 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
     show_map = noclip = show_fps = quit = try_door = false;
     
     int last_width = 0;
-    float half_map_scale = map_scale / 2;
+    float half_map_scale = conf.map_scale / 2;
     float mod = 1.0; // variable for speeding up the player movement if shift is pressed
     float angle, move_direction_h, move_direction_v;
-    float hit_ang[length + 3];
-    float hit_len[length + 3];
+    float hit_ang[conf.length + 3];
+    float hit_len[conf.length + 3];
     bool KEYS[322]; //keys that are currently pressed
     bool OLD_KEYS[322]; //keys that were pressed on the previous frame
     unsigned int ticks, old_ticks, frame_tick;
@@ -346,19 +363,19 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
     // init SDL
  
     const double base_angles = rad_ch(0.5 * PI - SHIFT);
-    const double side_len = length * sin(base_angles) / sin(FOV);
-    const float floor_ray_temp = sin(base_angles) * length / 2 / sin(SHIFT) * PL_HEIGHT * scale; // sin(base_angles) * length / 2 / sin(SHIFT) is the distance to trhe screen
+    const double side_len = conf.length * sin(base_angles) / sin(FOV);
+    const float floor_ray_temp = sin(base_angles) * conf.length / 2 / sin(SHIFT) * PL_HEIGHT * conf.scale; // sin(base_angles) * length / 2 / sin(SHIFT) is the distance to trhe screen
     const float target_fps = 1000.0 / TARGET_FPS;
     const double base_angles_cos = cos(base_angles);
     const double side_len_squared = side_len * side_len;
     const double denom_temp = 2 * side_len * base_angles_cos;
     const short int delta_fade = DOF - FADE;
     const float color_intercept = 255 * (FADE / (delta_fade) + 1); // make the tiles fade between FADE and DOF, with DOF being transparent
-    const float ratio = length * scale / hight / NO_PI_FOV / 2;
-    const float half_h = hight / 2;
+    const float ratio = conf.length * conf.scale / conf.hight / NO_PI_FOV / 2;
+    const float half_h = conf.hight / 2;
 
-    float angles[length+3];
-    for (i=0; i<length + 3; i++)
+    float angles[conf.length+3];
+    for (i=0; i<conf.length + 3; i++)
         angles[i] = acos((side_len - (i - 3) * base_angles_cos) / sqrt(side_len_squared + (i - 3) * (i - 3 - denom_temp)));
 
     // Game loop
@@ -431,15 +448,15 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             move_f(map_w, map_h, map_arr, location, direction, move_direction_v * PI, mod, false, door_location, door_extencion, door_num);
  
         // clear window
-        SDL_SetRenderDrawColor(renderer, sky_r, sky_g, sky_b, 255);
+        SDL_SetRenderDrawColor(renderer, conf.sky_r, conf.sky_g, conf.sky_b, 255);
         SDL_RenderClear(renderer);
-        if (show_floor == 0) {
-            SDL_SetRenderDrawColor(renderer, config[6], config[7], config[8], 255);
+        if (conf.show_floor == 0) {
+            SDL_SetRenderDrawColor(renderer, conf.floor_r, conf.floor_g, conf.floor_b, 255);
             SDL_Rect r; // draw the ground
             r.x = 0;
-            r.w = length * scale;                                   // less overdrawing
+            r.w = conf.length * conf.scale;                                   // less overdrawing
             r.y = half_h * (1 + 0.5 / DOF * ratio);
-            r.h = hight - r.y;
+            r.h = conf.hight - r.y;
             SDL_RenderFillRect(renderer, &r);
         }
 
@@ -484,7 +501,7 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
         float py = location[1] + 0.5;
         door_indexH = door_indexV = 0;
         int offset = 0;
-        for (i = 0; i < length + 3; i++) {
+        for (i = 0; i < conf.length + 3; i++) {
             angle = rad_ch(_angle - angles[i]);
             bool is_doorV = false;
             bool is_doorH = false;
@@ -613,7 +630,7 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
 
             // vertical lines for the screen output
             start = 0;
-            end = hight - 1;
+            end = conf.hight - 1;
             if(disH != 0 && disH == disH) {
                 float delta_h = 0.5 / disH * ratio;
                 start = half_h * (1 - delta_h);
@@ -625,9 +642,9 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             else if (color > 255)
                 color = 255;
             SDL_Rect r; // the column on the screen
-            r.x = (i - 3) * scale;
+            r.x = (i - 3) * conf.scale;
             r.y = start;
-            r.w = scale;
+            r.w = conf.scale;
             r.h = end - start;
             SDL_Rect texture_rect;
             if (!is_doorH) {
@@ -686,13 +703,13 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             }
             last_offset = offset;
 
-            if (show_floor == 1) {
-                r.h = floor_scale; //floors
-                r.w = scale;
-                texture_rect.w = scale;
-                texture_rect.h = floor_scale;
-                for (j=end; j<hight; j += floor_scale) {
-                    float floor_ray = floor_ray_temp / (j - hight / 2) / fisheye_correction;
+            if (conf.show_floor == 1) {
+                r.h = conf.floor_scale; //floors
+                r.w = conf.scale;
+                texture_rect.w = conf.scale;
+                texture_rect.h = conf.floor_scale;
+                for (j=end; j<conf.hight; j += conf.floor_scale) {
+                    float floor_ray = floor_ray_temp / (j - conf.hight / 2) / fisheye_correction;
                     floor_x = floor_ray * Cos + px;
                     floor_y = - floor_ray * Sin + py;
                     color = (int)round(color_intercept - 255.0 / delta_fade * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
@@ -781,7 +798,7 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                     if (animation_cycle >= ANIMATION_FRAMES)
                         animation_cycle = 0;
                 }
-                draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[animation_cycle], renderer);
+                draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[animation_cycle], renderer);
             }
             else {
                 if (sprite_direction_dependant[sprite_index[i]]) {
@@ -790,24 +807,24 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                     else
                         sprite_side = sprite_direction[sprite_index[i]] - sprite_angle_to_pl[sprite_index[i]];
                     if (sprite_side < PI * 0.25)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[0], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[0], renderer);
                     else if (sprite_side < PI * 0.5)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[1], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[1], renderer);
                     else if (sprite_side < PI * 0.75)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[2], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[2], renderer);
                     else if (sprite_side < PI)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[3], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[3], renderer);
                     else if (sprite_side < PI * 1.25)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[4], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[4], renderer);
                     else if (sprite_side < PI * 1.5)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[5], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[5], renderer);
                     else if (sprite_side < PI * 1.75)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[6], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[6], renderer);
                     else
-                        draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[7], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[7], renderer);
                 }
                 else
-                    draw_sprite(direction, sprite_angle, sprite_index[i], length, scale, hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, sprite_texture, renderer);
+                    draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, sprite_texture, renderer);
             }
         }
 
@@ -822,46 +839,46 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             SDL_Rect r;
             r.x = 0;
             r.y = 0;
-            r.w = map_w* map_scale;
-            r.h = map_h* map_scale;
+            r.w = map_w * conf.map_scale;
+            r.h = map_h * conf.map_scale;
             SDL_RenderFillRect(renderer, &r);
             SDL_SetRenderDrawColor( renderer, 0, 0, 242, 255 );
             for (i=0; i<map_h; i++) {
                 for (j=0; j<map_w; j++) {
                     if (map_arr[i][j] != 0) {
-                        r.x = j * map_scale;
-                        r.y = i * map_scale;
-                        r.w = map_scale;
-                        r.h = map_scale;
+                        r.x = j * conf.map_scale;
+                        r.y = i * conf.map_scale;
+                        r.w = conf.map_scale;
+                        r.h = conf.map_scale;
                         SDL_RenderDrawRect( renderer, &r );
                     }
                 }
             }
             SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 ); // the player rectangle
-            r.x = round(location[0] * map_scale)+half_map_scale- (int)half_map_scale/4;
-            r.y = round(location[1] * map_scale)+half_map_scale- (int)half_map_scale/4;
+            r.x = round(location[0] * conf.map_scale)+half_map_scale- (int)half_map_scale/4;
+            r.y = round(location[1] * conf.map_scale)+half_map_scale- (int)half_map_scale/4;
             r.w = (int)half_map_scale/2;
             r.h = (int)half_map_scale/2;
             SDL_RenderDrawRect(renderer, &r);
-            for (i=2; i<length + 3; i++) { // shows the rays on the map
-                SDL_RenderDrawLine(renderer, round(location[0]*map_scale+ half_map_scale), round(location[1]*map_scale+ half_map_scale), ceil((location[0] + hit_len[i] * cos(hit_ang[i])) * map_scale+half_map_scale), ceil((location[1] + hit_len[i] * sin(hit_ang[i])) * map_scale+half_map_scale));
+            for (i=2; i<conf.length + 3; i++) { // shows the rays on the map
+                SDL_RenderDrawLine(renderer, round(location[0] * conf.map_scale+ half_map_scale), round(location[1] * conf.map_scale+ half_map_scale), ceil((location[0] + hit_len[i] * cos(hit_ang[i])) * conf.map_scale + half_map_scale), ceil((location[1] + hit_len[i] * sin(hit_ang[i])) * conf.map_scale+half_map_scale));
             }
             for (i=0; i<sprite_num; i++) {
                 SDL_SetRenderDrawColor( renderer, 242, 0, 0, 255 ); // the player rectangle
-                r.x = round(sprite_location[i][0] * map_scale)+half_map_scale- (int)half_map_scale/4;
-                r.y = round(sprite_location[i][1] * map_scale)+half_map_scale- (int)half_map_scale/4;
+                r.x = round(sprite_location[i][0] * conf.map_scale)+half_map_scale- (int)half_map_scale/4;
+                r.y = round(sprite_location[i][1] * conf.map_scale)+half_map_scale- (int)half_map_scale/4;
                 r.w = (int)half_map_scale/2;
                 r.h = (int)half_map_scale/2;
                 SDL_RenderDrawRect(renderer, &r);
             }
             SDL_SetRenderDrawColor( renderer, 0, 242, 0, 255 ); // the player rectangle
-            r.x = round(location[0] * map_scale)+half_map_scale- (int)half_map_scale/4;
-            r.y = round(location[1] * map_scale)+half_map_scale- (int)half_map_scale/4;
+            r.x = round(location[0] * conf.map_scale)+half_map_scale- (int)half_map_scale/4;
+            r.y = round(location[1] * conf.map_scale)+half_map_scale- (int)half_map_scale/4;
             r.w = (int)half_map_scale/2;
             r.h = (int)half_map_scale/2;
         }
         if (show_fps) { // show fps and player position
-            int x_offset = map_w* map_scale+ 10;
+            int x_offset = map_w* conf.map_scale+ 10;
             SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 ); // a background
             SDL_Rect r;
             r.x = x_offset;
@@ -903,17 +920,21 @@ int main(void)
 
     //config
     fptr = fopen("conf.txt", "r");
-    int length = 600;
-    int hight = 600;
-    float scale = 2.f;
-    float floor_scale = 2.f;
-    int map_scale = 6;
-    short int show_floor = 1;
-    int sky_r = 0;
-    int sky_g = 240;
-    int sky_b = 240;
+    struct config conf;
+    conf.length = 600;
+    conf.hight = 600;
+    conf.scale = 2.0f;
+    conf.floor_scale = 2.0f;
+    conf.map_scale = 6;
+    conf.show_floor = 1;
+    conf.sky_r = 0;
+    conf.sky_g = 240;
+    conf.sky_b = 240;
+    conf.floor_r = 0;
+    conf.floor_g = 80;
+    conf.floor_b = 0;
     if (fptr != NULL) {
-        for (i=0;i<LINES && j>0;i++) {
+        for (i=0;i<LINES;i++) {
             fgets(contents, COMMENTMAXLENGTH, fptr);
             config[i] = 0;
             for (j=0; j<MAXLENGTH-1 && contents[j] != EOF && contents[j] >= '0' && contents[j] <= '9'; j++);
@@ -921,22 +942,25 @@ int main(void)
                 config[i] += (contents[k] - '0') * pow(10, j - k - 1);
         }
         if (i==LINES && config[0] > 0 && config[1] > 0 && config[2] > 0 && config[3] > 0 && config[4] > 0 && config[5] <= 1 && config[6] < 256 && config[7] < 256 && config[8] < 256 && config[9] < 256 && config[10] < 256 && config[11] < 256) {
-            length = config[0];
-            hight = config[1];
-            scale = config[2];
-            floor_scale = config[3];
-            map_scale = config[4];
-            show_floor = config[5];
-            sky_r = config[9];
-            sky_g = config[10];
-            sky_b = config[11];
+            conf.length = config[0];
+            conf.hight = config[1];
+            conf.scale = config[2];
+            conf.floor_scale = config[3];
+            conf.map_scale = config[4];
+            conf.show_floor = config[5];
+            conf.floor_r = config[6];
+            conf.floor_g = config[7];
+            conf.floor_b = config[8];
+            conf.sky_r = config[9];
+            conf.sky_g = config[10];
+            conf.sky_b = config[11];
         }
     }
 
     //setup SDL
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window * window = SDL_CreateWindow("Pseudo 3D",
-    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, length * scale, hight, 0);
+    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, conf.length * conf.scale, conf.hight, 0);
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_Event event;
     IMG_Init(IMG_INIT_PNG);
@@ -1055,9 +1079,9 @@ int main(void)
     SDL_SetTextureBlendMode(lever_texture[1], SDL_BLENDMODE_BLEND);
 
     fptr = fopen("maps/map.map", "r");
-    if (game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config, lever_texture) == 1) {
+    if (game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, conf, lever_texture) == 1) {
         fptr = fopen("maps/map1.map", "r");
-        game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, length, hight, scale, floor_scale, map_scale, show_floor, sky_r, sky_g, sky_b, config, lever_texture);
+        game(fptr, renderer, event, window, animation_list, wall_texture, sprite_texture, floor_texture, six_texture, seven_texture, eight_texture, door_texture, conf, lever_texture);
     }
 
     // cleanup SDL
