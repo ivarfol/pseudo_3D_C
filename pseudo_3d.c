@@ -82,7 +82,7 @@ void gen_map(int width, short int map_arr[][width], FILE* fptr, int hight)
     }
 }
 
-void draw_sprite(float direction, float sprite_angle[], int index, int length, int scale, int hight, float ratio, float sprite_dist[], float color_intercept, float delta_fade, float hit_len[], SDL_Texture* sprite_texture, SDL_Renderer* renderer)
+void draw_sprite(float direction, float sprite_angle[], int index, int length, int scale, int hight, float ratio, float sprite_dist[], float color_intercept, float delta_fade, float hit_len[], SDL_Texture* sprite_texture, SDL_Renderer* renderer, int rp_shift)
 {
     bool rad_skip = false;
     float border_one = direction + SHIFT;
@@ -114,7 +114,7 @@ void draw_sprite(float direction, float sprite_angle[], int index, int length, i
         int column;
         SDL_Rect r;
         r.x = start_pos;
-        r.y= hight / 2 * (1 - 0.5 / tmp_dist * ratio);
+        r.y= hight / 2 * (1 - 0.5 / tmp_dist * ratio) + rp_shift;
         r.w = start_width;
         r.h = dimention;
         SDL_Rect texture_rect;
@@ -332,8 +332,10 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
         sprite_animated[i] = false;
         sprite_direction_dependant[i] = true;
     }
-    sprite_animated[0] = true;//tmp
-    sprite_direction_dependant[0] = false;
+    if (sprite_num >= 1) {
+        sprite_animated[0] = true;//tmp
+        sprite_direction_dependant[0] = false;
+    }
 
     door_num = sprite_num = 0;
     for (i=0; i<map_h; i++) {
@@ -377,6 +379,8 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
     float angles[conf.length+3];
     for (i=0; i<conf.length + 3; i++)
         angles[i] = acos((side_len - (i - 3) * base_angles_cos) / sqrt(side_len_squared + (i - 3) * (i - 3 - denom_temp)));
+
+    int rp_shift = 0;
 
     // Game loop
     while (!quit) {
@@ -438,6 +442,14 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             show_fps -= 1;
         if (!OLD_KEYS[SDL_SCANCODE_SPACE] && KEYS[SDL_SCANCODE_SPACE])
             try_door -= 1;
+        if (KEYS[SDL_SCANCODE_UP] && !KEYS[SDL_SCANCODE_DOWN]) {
+            if (rp_shift + 4 < conf.hight)
+                rp_shift += 4;
+        }
+        if (!KEYS[SDL_SCANCODE_UP] && KEYS[SDL_SCANCODE_DOWN]) {
+            if (rp_shift - 4 > -conf.hight)
+                rp_shift -= 4;
+        }
         if (move_direction_h > 0) { // get the correct direction for movement
             if (move_direction_v >= 0) {
                 move_direction_h = (move_direction_h + move_direction_v) / 2;
@@ -631,12 +643,12 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             disH=disH * fisheye_correction ; //fix fisheye
 
             // vertical lines for the screen output
-            start = 0;
-            end = conf.hight - 1;
+            start = 0 + rp_shift;
+            end = conf.hight - 1 + rp_shift;
             if(disH != 0 && disH == disH) {
                 float delta_h = 0.5 / disH * ratio;
-                start = half_h * (1 - delta_h);
-                end = half_h * (1 + delta_h);
+                start = half_h * (1 - delta_h) + rp_shift;
+                end = half_h * (1 + delta_h) + rp_shift;
             }
             color = (int)round(color_intercept - 255.0 / delta_fade * hit_len[i]); // make the tiles fade between FADE and DOF, with DOF being transparent
             if (color < 0)
@@ -710,8 +722,8 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                 r.w = conf.scale;
                 texture_rect.w = conf.scale;
                 texture_rect.h = conf.floor_scale;
-                for (j=end; j<conf.hight; j += conf.floor_scale) {
-                    float floor_ray = floor_ray_temp / (j - conf.hight / 2) / fisheye_correction;
+                for (j=end; j<conf.hight + abs(rp_shift); j += conf.floor_scale) {
+                    float floor_ray = floor_ray_temp / (j - conf.hight / 2 - rp_shift) / fisheye_correction;
                     floor_x = floor_ray * Cos + px;
                     floor_y = - floor_ray * Sin + py;
                     color = (int)round(color_intercept - 255.0 / delta_fade * floor_ray); // make the tiles fade between FADE and DOF, with DOF being transparent
@@ -800,7 +812,7 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                     if (animation_cycle >= ANIMATION_FRAMES)
                         animation_cycle = 0;
                 }
-                draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[animation_cycle], renderer);
+                draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[animation_cycle], renderer, rp_shift);
             }
             else {
                 if (sprite_direction_dependant[sprite_index[i]]) {
@@ -809,24 +821,24 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                     else
                         sprite_side = sprite_direction[sprite_index[i]] - sprite_angle_to_pl[sprite_index[i]];
                     if (sprite_side < PI * 0.25)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[0], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[0], renderer, rp_shift);
                     else if (sprite_side < PI * 0.5)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[1], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[1], renderer, rp_shift);
                     else if (sprite_side < PI * 0.75)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[2], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[2], renderer, rp_shift);
                     else if (sprite_side < PI)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[3], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[3], renderer, rp_shift);
                     else if (sprite_side < PI * 1.25)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[4], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[4], renderer, rp_shift);
                     else if (sprite_side < PI * 1.5)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[5], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[5], renderer, rp_shift);
                     else if (sprite_side < PI * 1.75)
-                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[6], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[6], renderer, rp_shift);
                     else
-                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[7], renderer);
+                        draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, animation_list[7], renderer, rp_shift);
                 }
                 else
-                    draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, sprite_texture, renderer);
+                    draw_sprite(direction, sprite_angle, sprite_index[i], conf.length, conf.scale, conf.hight, ratio, sprite_dist, color_intercept, delta_fade, hit_len, sprite_texture, renderer, rp_shift);
             }
         }
 
