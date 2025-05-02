@@ -21,6 +21,7 @@
 #define PL_HEIGHT 0.5
 #define MAX_MAP_LENGTH 128
 #define EXIT_DELAY 60
+#define SENSETIVITY 0.001
 
 #define MOV_SPR 0
 
@@ -362,8 +363,6 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
         }
     }
 
-    // init SDL
- 
     const double base_angles = rad_ch(0.5 * PI - SHIFT);
     const double side_len = conf.length * sin(base_angles) / sin(FOV);
     const float floor_ray_temp = sin(base_angles) * conf.length / 2 / sin(SHIFT) * PL_HEIGHT * conf.scale; // sin(base_angles) * length / 2 / sin(SHIFT) is the distance to trhe screen
@@ -413,6 +412,14 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                 case SDL_KEYUP:
                     KEYS[event.key.keysym.scancode] = false;
                     break;
+                case SDL_MOUSEMOTION:
+                    direction = rad_ch(direction - event.motion.xrel * SENSETIVITY);
+                    rp_shift = rp_shift - event.motion.yrel;
+                    if (rp_shift > conf.hight)
+                        rp_shift = conf.hight;
+                    else if (rp_shift < -conf.hight)
+                        rp_shift = -conf.hight;
+                    break;
             }
         }
         // handle user inputs
@@ -436,6 +443,7 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
             direction = rad_ch(direction + 0.01 * PI * mod);
         if (KEYS[SDL_SCANCODE_E] || KEYS[SDL_SCANCODE_RIGHT])
             direction = rad_ch(direction - 0.01 * PI * mod);
+        
         if (!OLD_KEYS[SDL_SCANCODE_M] && KEYS[SDL_SCANCODE_M]) // toggle, does not activate if the key is held down
             show_map -= 1;
         if (!OLD_KEYS[SDL_SCANCODE_F] && KEYS[SDL_SCANCODE_F])
@@ -990,6 +998,7 @@ int main(void)
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
     SDL_Event event;
     IMG_Init(IMG_INIT_PNG);
+    SDL_SetRelativeMouseMode(SDL_TRUE);
 
     // set the textures, if no texture with the name is found, set to missing.png
     SDL_Texture* wall_texture;
