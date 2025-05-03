@@ -451,12 +451,12 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
         if (!OLD_KEYS[SDL_SCANCODE_SPACE] && KEYS[SDL_SCANCODE_SPACE])
             try_door -= 1;
         if (KEYS[SDL_SCANCODE_UP] && !KEYS[SDL_SCANCODE_DOWN]) {
-            if (rp_shift + 4 < conf.hight)
-                rp_shift += 4;
+            if (rp_shift + 4 * mod < conf.hight)
+                rp_shift += 4 * mod;
         }
         if (!KEYS[SDL_SCANCODE_UP] && KEYS[SDL_SCANCODE_DOWN]) {
-            if (rp_shift - 4 > -conf.hight)
-                rp_shift -= 4;
+            if (rp_shift - 4 * mod > -conf.hight)
+                rp_shift -= 4 * mod;
         }
         if (move_direction_h > 0) { // get the correct direction for movement
             if (move_direction_v >= 0) {
@@ -743,7 +743,8 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                     r.y = j;
                     texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
                     texture_rect.y = (int)((floor_y - (int)floor_y) * 1024);
-                    SDL_RenderCopy(renderer, floor_texture, &texture_rect, &r);
+                    if (r.y < conf.hight && r.y + r.h > 0)
+                        SDL_RenderCopy(renderer, floor_texture, &texture_rect, &r);
                 }
             }
         }
