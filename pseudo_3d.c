@@ -383,7 +383,8 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
 
     // Game loop
     while (!quit) {
-        sprite_direction[1] = rad_ch(sprite_direction[1] + 0.1);
+        if (sprite_num > 1)
+            sprite_direction[1] = rad_ch(sprite_direction[1] + 0.1);
         delta = SDL_GetTicks() - old_ticks; // time for the last frame in ms.
         if (delta < target_fps)
             SDL_Delay((int)(target_fps) - delta); // cap the fps
