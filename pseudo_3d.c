@@ -958,7 +958,7 @@ int main(void)
     conf.floor_r = 0;
     conf.floor_g = 80;
     conf.floor_b = 0;
-    conf.sens = 2 * PI * 0.05;
+    conf.sens = 2 * PI * 0.001;
     if (fptr != NULL) {
         for (i=0;i<LINES && j>0;i++) {
             fgets(contents, COMMENTMAXLENGTH, fptr);
@@ -980,7 +980,7 @@ int main(void)
             conf.sky_r = config[9];
             conf.sky_g = config[10];
             conf.sky_b = config[11];
-            conf.sens = 2 * PI / 1000 * config[12];
+            conf.sens = 2 * PI / 100000 * config[12];
         }
     }
 
