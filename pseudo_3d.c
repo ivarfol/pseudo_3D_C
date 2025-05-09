@@ -15,13 +15,12 @@
 #define TARGET_FPS 60.0
 #define MAXLENGTH 6
 #define COMMENTMAXLENGTH 80
-#define LINES 12 
+#define LINES 13
 #define ANIMATION_FRAME_LEN 100
 #define ANIMATION_FRAMES 8
 #define PL_HEIGHT 0.5
 #define MAX_MAP_LENGTH 128
 #define EXIT_DELAY 60
-#define SENSETIVITY 0.001
 
 #define MOV_SPR 0
 
@@ -51,6 +50,7 @@ struct config {
     int floor_r;
     int floor_g;
     int floor_b;
+    float sens;
 };
 
 float rad_ch(float a) // stops the a from going over 2 * PI (radians)
@@ -365,7 +365,7 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
 
     const double base_angles = rad_ch(0.5 * PI - SHIFT);
     const double side_len = conf.length * sin(base_angles) / sin(FOV);
-    const float floor_ray_temp = sin(base_angles) * conf.length / 2 / sin(SHIFT) * PL_HEIGHT * conf.scale; // sin(base_angles) * length / 2 / sin(SHIFT) is the distance to trhe screen
+    const float floor_ray_temp = tan(0.5 * PI - SHIFT) * 0.5 * conf.length * PL_HEIGHT * conf.scale; // sin(base_angles) * length / 2 / sin(SHIFT) is the distance to trhe screen
     const float target_fps = 1000.0 / TARGET_FPS;
     const double base_angles_cos = cos(base_angles);
     const double side_len_squared = side_len * side_len;
@@ -414,8 +414,8 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                     KEYS[event.key.keysym.scancode] = false;
                     break;
                 case SDL_MOUSEMOTION:
-                    direction = rad_ch(direction - event.motion.xrel * SENSETIVITY);
-                    rp_shift = rp_shift - event.motion.yrel;
+                    direction = rad_ch(direction - event.motion.xrel * conf.sens);
+                    rp_shift = rp_shift - event.motion.yrel * conf.sens * 1000;
                     if (rp_shift > conf.hight)
                         rp_shift = conf.hight;
                     else if (rp_shift < -conf.hight)
@@ -958,6 +958,7 @@ int main(void)
     conf.floor_r = 0;
     conf.floor_g = 80;
     conf.floor_b = 0;
+    conf.sens = 2 * PI * 0.05;
     if (fptr != NULL) {
         for (i=0;i<LINES && j>0;i++) {
             fgets(contents, COMMENTMAXLENGTH, fptr);
@@ -966,7 +967,7 @@ int main(void)
             for (k=0; k<j; k++)
                 config[i] += (contents[k] - '0') * pow(10, j - k - 1);
         }
-        if (i==LINES && config[0] > 0 && config[1] > 0 && config[2] > 0 && config[3] > 0 && config[4] > 0 && config[5] <= 1 && config[6] < 256 && config[7] < 256 && config[8] < 256 && config[9] < 256 && config[10] < 256 && config[11] < 256) {
+        if (i==LINES && config[0] > 0 && config[1] > 0 && config[2] > 0 && config[3] > 0 && config[4] > 0 && config[5] <= 1 && config[6] < 256 && config[7] < 256 && config[8] < 256 && config[9] < 256 && config[10] < 256 && config[11] < 256, config[12] > 0) {
             conf.length = config[0];
             conf.hight = config[1];
             conf.scale = config[2];
@@ -979,6 +980,7 @@ int main(void)
             conf.sky_r = config[9];
             conf.sky_g = config[10];
             conf.sky_b = config[11];
+            conf.sens = 2 * PI / 1000 * config[12];
         }
     }
 
