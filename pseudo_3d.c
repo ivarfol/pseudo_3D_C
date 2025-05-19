@@ -21,6 +21,7 @@
 #define PL_HEIGHT 0.5
 #define MAX_MAP_LENGTH 128
 #define EXIT_DELAY 60
+#define TEX_SIDE_LENGTH 1024
 
 #define MOV_SPR 0
 
@@ -120,11 +121,11 @@ void draw_sprite(float direction, float sprite_angle[], int index, int length, i
         r.h = dimention;
         SDL_Rect texture_rect;
         texture_rect.y = 0;
-        texture_rect.h = 1024;
+        texture_rect.h = TEX_SIDE_LENGTH;
         texture_rect.x = 0;
         texture_rect.w = 1;
         SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
-        float texture_width = 1024 / (dimention - ceil(start_pos / scale) * scale + start_pos) * scale;
+        float texture_width = TEX_SIDE_LENGTH/ (dimention - ceil(start_pos / scale) * scale + start_pos) * scale;
         r.w = scale;
         texture_rect.w = texture_width;
         for (j=0;j<=slices;j++) {
@@ -138,7 +139,7 @@ void draw_sprite(float direction, float sprite_angle[], int index, int length, i
         }
         if (column >= 0 && column < length && sprite_dist[index] < hit_len[column + 3]) {
             r.w = h_position + dimention / 2 - scale * ceil(start_pos / scale + slices);
-            texture_rect.w = 1024 - texture_rect.x;
+            texture_rect.w = TEX_SIDE_LENGTH- texture_rect.x;
             SDL_RenderCopy(renderer, sprite_texture, &texture_rect, &r);
         }
     }
@@ -684,29 +685,29 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                 // the texture part to be used for the column
                 if (side == 1) {
                     if (Sin > 0)
-                        offset = (int)((rxh - (int)rxh) * 1024); // offset from the side * 1024 (1024 is the picture resolution)
+                        offset = (int)((rxh - (int)rxh) * TEX_SIDE_LENGTH); // offset from the side * TEX_SIDE_LENGTH(TEX_SIDE_LENGTHis the picture resolution)
                     else
-                        offset = (int)((1 - rxh + (int)rxh) * 1024);
+                        offset = (int)((1 - rxh + (int)rxh) * TEX_SIDE_LENGTH);
                 }
                 else {
                     if (Cos > 0)
-                        offset = (int)((ryh - (int)ryh) * 1024);
+                        offset = (int)((ryh - (int)ryh) * TEX_SIDE_LENGTH);
                     else
-                        offset = (int)((1 - ryh + (int)ryh) * 1024);
+                        offset = (int)((1 - ryh + (int)ryh) * TEX_SIDE_LENGTH);
                 }
             }
             else {
                 SDL_SetTextureAlphaMod(door_texture, color); // same, but for doors
                 if (side == 1) // offset from the doors end (the "moving" part)
-                    offset = (int)((1 - rxh + (int)rxh + door_extencion[door_indexH]) * 1024);
+                    offset = (int)((1 - rxh + (int)rxh + door_extencion[door_indexH]) * TEX_SIDE_LENGTH);
                 else
-                    offset = (int)((1 - ryh + (int)ryh + door_extencion[door_indexH]) * 1024);
+                    offset = (int)((1 - ryh + (int)ryh + door_extencion[door_indexH]) * TEX_SIDE_LENGTH);
             }
-            if (offset > 1023)
+            if (offset > TEX_SIDE_LENGTH - 1)
                 offset = last_offset + 1;
             texture_rect.x = offset;
             texture_rect.y = 0;
-            texture_rect.h = 1024;
+            texture_rect.h = TEX_SIDE_LENGTH;
             texture_rect.w = 1;
             if (i > 2) {
                 if (is_doorH)
@@ -742,8 +743,8 @@ int game(FILE *fptr, SDL_Renderer *renderer, SDL_Event event, SDL_Window *window
                         color = 255;
                     SDL_SetTextureAlphaMod(floor_texture, color);
                     r.y = j;
-                    texture_rect.x = (int)((floor_x - (int)floor_x) * 1024);
-                    texture_rect.y = (int)((floor_y - (int)floor_y) * 1024);
+                    texture_rect.x = (int)((floor_x - (int)floor_x) * TEX_SIDE_LENGTH);
+                    texture_rect.y = (int)((floor_y - (int)floor_y) * TEX_SIDE_LENGTH);
                     if (r.y < conf.hight && r.y + r.h > 0)
                         SDL_RenderCopy(renderer, floor_texture, &texture_rect, &r);
                 }
